@@ -10,6 +10,7 @@ node_modules
 **/.DS_Store
 *.g*
 /.wasmc*
+/build
 /deps/build
 /examples/*/build 
 /test/benchmark/.yarn
