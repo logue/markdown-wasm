@@ -29,9 +29,9 @@ console.log(markdown.parse("# hello\n*world*"));
 ES module with WASM loaded separately
 
 ```js
-import * as markdown from "./dist/markdown.es.js";
-await markdown.ready;
-console.log(markdown.parse("# hello\n*world*"));
+import { ready, parse } from "./dist/markdown.es.js";
+await ready;
+console.log(parse("# hello\n*world*"));
 ```
 
 Web browser
@@ -66,6 +66,7 @@ Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v19.3.0
 | commonmark  | 0.30.0  |
 | markdown-it | 13.0.1  |
 | marked      | 4.2.5   |
+| remarkable  | 2.0.1   |
 | showdown    | 2.1.0   |
 
 ### Average ops/second

@@ -1,129 +1,92 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>markdown-wasm demo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" href="https://rsms.me/raster/raster.css?v=8" />
-    <script type="text/javascript" src="markdown.js"></script>
-    <link
-      rel="stylesheet"
-      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css"
-    />
-    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
-    <style type="text/css">
-      :root {
-        --fontSize: 14px;
-      }
 
-      c.label {
-        font-weight: 500;
-        letter-spacing: 0;
-        color: #999;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>markdown-wasm demo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    integrity="sha256-ky6hUQiSiZG88MCkZBX8ZS3l/8AVjDUgU1e5DGXus4Y=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css" />
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css" />
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+  <script type="text/javascript" src="markdown.js"></script>
+  <style type="text/css">
+    h1>a.anchor,
+    h2>a.anchor,
+    h3>a.anchor,
+    h4>a.anchor,
+    h5>a.anchor,
+    h6>a.anchor {
+      display: inline-block;
+      height: 1.2em;
+      width: 1em;
+      margin-left: -1em;
+      position: relative;
+      outline: none;
+    }
 
-      c.input,
-      c.output {
-        max-width: 50vw;
-      }
+    /*.anchor:target { background: yellow; }*/
+    h1>a.anchor:before,
+    h2>a.anchor:before,
+    h3>a.anchor:before,
+    h4>a.anchor:before,
+    h5>a.anchor:before,
+    h6>a.anchor:before {
+      visibility: hidden;
+      position: absolute;
+      opacity: 0.2;
+      right: 0;
+      top: 0;
+      width: 1em;
+      font-weight: 300;
+      line-height: inherit;
+      content: "☰";
+      /* U+E08F */
+      text-align: center;
+    }
 
-      c.textarea {
-        display: flex;
-        justify-content: stretch;
-      }
-      c.textarea textarea {
-        flex: 1 1 auto;
-        min-height: 50vh;
-        border: 2px solid black;
-        border-radius: 3px;
-        padding: 1rem;
-        font-size: 14px;
-      }
-      c.textarea textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
+    h1>a.anchor:hover:before,
+    h2>a.anchor:hover:before,
+    h3>a.anchor:hover:before,
+    h4>a.anchor:hover:before,
+    h5>a.anchor:hover:before,
+    h6>a.anchor:hover:before {
+      visibility: visible;
+      opacity: 0.8;
+    }
 
-      blockquote {
-        padding-left: var(--lineHeight);
-        border-left: 2px solid #ccc;
-      }
+    h1>a.anchor:focus:before,
+    h2>a.anchor:focus:before,
+    h3>a.anchor:focus:before,
+    h4>a.anchor:focus:before,
+    h5>a.anchor:focus:before,
+    h6>a.anchor:focus:before,
+    h1:hover .anchor:before,
+    h2:hover .anchor:before,
+    h3:hover .anchor:before,
+    h4:hover .anchor:before,
+    h5:hover .anchor:before,
+    h6:hover .anchor:before {
+      visibility: visible;
+    }
+  </style>
+</head>
 
-      h1 > a.anchor,
-      h2 > a.anchor,
-      h3 > a.anchor,
-      h4 > a.anchor,
-      h5 > a.anchor,
-      h6 > a.anchor {
-        display: inline-block;
-        float: left;
-        height: 1.2em;
-        width: 1em;
-        margin-left: -1em;
-        position: relative;
-        outline: none;
-      }
-      /*.anchor:target { background: yellow; }*/
-      h1 > a.anchor:before,
-      h2 > a.anchor:before,
-      h3 > a.anchor:before,
-      h4 > a.anchor:before,
-      h5 > a.anchor:before,
-      h6 > a.anchor:before {
-        visibility: hidden;
-        position: absolute;
-        opacity: 0.2;
-        right: 0;
-        top: 0;
-        width: 1em;
-        font-weight: 300;
-        line-height: inherit;
-        content: ""; /* U+E08F */
-        text-align: center;
-      }
-      h1 > a.anchor:hover:before,
-      h2 > a.anchor:hover:before,
-      h3 > a.anchor:hover:before,
-      h4 > a.anchor:hover:before,
-      h5 > a.anchor:hover:before,
-      h6 > a.anchor:hover:before {
-        visibility: visible;
-        opacity: 0.8;
-      }
-      h1 > a.anchor:focus:before,
-      h2 > a.anchor:focus:before,
-      h3 > a.anchor:focus:before,
-      h4 > a.anchor:focus:before,
-      h5 > a.anchor:focus:before,
-      h6 > a.anchor:focus:before,
-      h1:hover .anchor:before,
-      h2:hover .anchor:before,
-      h3:hover .anchor:before,
-      h4:hover .anchor:before,
-      h5:hover .anchor:before,
-      h6:hover .anchor:before {
-        visibility: visible;
-      }
-    </style>
-  </head>
-  <body>
-    <grid columns="2" class="_debug">
-      <c><h1>Markdown-wasm demo</h1></c>
-      <c>
-        <p>
-          Fast Markdown parser and HTML renderer implemented in WebAssembly.
-          <a href="https://github.com/logue/markdown-wasm"
-            >Get it from GitHub</a
-          >
-        </p>
-      </c>
-
-      <c class="label">Type some Markdown here</c>
-      <c class="label">HTML output from markdown-wasm</c>
-
-      <c class="input textarea">
-        <textarea class="code" id="markdown-input">
+<body>
+  <header>
+    <div class="container-fluid">
+      <h1>Markdown-wasm demo</h1>
+      <p class="bd-lead">Fast Markdown parser and HTML renderer implemented in WebAssembly.</p>
+      <p><a href="https://github.com/logue/markdown-wasm" class="btn btn-primary">Get it from GitHub</a></p>
+    </div>
+  </header>
+  <main class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <label for="markdown-input" class="form-label">Type some Markdown here</label>
+        <textarea class="form-control font-monospace" id="markdown-input">
 # Example
 
 A third of the distance across the Beach, the meadow ends and sand begins. This slopes gradually up for another third of the distance, to the foot of the sand hills, which seem tumbled into their places by some mighty power, sometimes three tiers of them deep, sometimes two, _and sometimes only one._ A third of the distance across the Beach, the meadow ends and sand begins.
@@ -236,16 +199,16 @@ With default settings, markdown-wasm allows embedded HTML.
 | `FF D8 FF`                | image/jpeg   | jpg jpeg   | JPEG image
 | `4D 4D 00 2B`             | image/tiff   | tif tiff   | TIFF image
 | `42 4D`                   | image/bmp    | bmp        | Bitmap image
-| `00 00 01 00`             | image/x-icon | ico        | Icon image
-
-
-</textarea
-        >
-      </c>
-      <c class="output" id="html-output">
-        <div title="Loading markdown module...">•••</div>
-      </c>
-    </grid>
+| `00 00 01 00`             | image/x-icon | ico        | Icon image</textarea>
+      </div>
+      <div class="col">
+        <label>HTML output from markdown-wasm</label>
+        <article class="markdown-body" id="html-output">
+          <div title="Loading markdown module...">•••</div>
+        </article>
+      </div>
+    </div>
+    </div>
 
     <script type="text/javascript">
       // await the loading of the web assembly module
@@ -283,6 +246,19 @@ With default settings, markdown-wasm allows embedded HTML.
         // load the markdown module to make it playable in the browser console
         console.log("markdown module API:", markdown);
       });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("textarea").forEach(textareaEl => {
+          textareaEl.setAttribute("style", `height: ${textareaEl.scrollHeight}px;`);
+          textareaEl.addEventListener("input", setTextareaHeight);
+        });
+
+        function setTextareaHeight() {
+          this.style.height = "auto";
+          this.style.height = `${this.scrollHeight}px`;
+        }
+      });
     </script>
-  </body>
+</body>
+
 </html>

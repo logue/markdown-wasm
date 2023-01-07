@@ -3,28 +3,29 @@ const Benchmark = require("benchmark").Benchmark;
 const fs = require("fs");
 const Path = require("path");
 
-const commonmark = require("commonmark");
-const Showdown = require("showdown");
+const { Parser, HtmlRenderer } = require("commonmark");
+const { Converter } = require("showdown");
 const marked = require("marked");
 const markdownit = require("markdown-it")("commonmark");
+const { Remarkable } = require("remarkable");
 const markdown_wasm = require("../../dist/markdown.node.js");
 
-// setup markdownit
-// disable expensive IDNa links encoding:
+/** setup markdownit*/
+
 const markdownit_encode = markdownit.utils.lib.mdurl.encode;
-markdownit.normalizeLink = function (url) {
-  return markdownit_encode(url);
-};
-markdownit.normalizeLinkText = function (str) {
-  return str;
-};
+markdownit.normalizeLink = (url) => markdownit_encode(url);
+// disable expensive IDNa links encoding:
+markdownit.normalizeLinkText = (str) => str;
 
-// setup showdown
-var showdown = new Showdown.Converter();
+/** setup showdown */
+const showdown = new Converter();
 
-// setup commonmark
-var parser = new commonmark.Parser();
-var renderer = new commonmark.HtmlRenderer();
+/** setup commonmark */
+const parser = new Parser();
+const renderer = new HtmlRenderer();
+
+/** setup remarkable */
+const remarkable = new Remarkable();
 
 // parse CLI input
 let filename = process.argv[2];
@@ -55,12 +56,12 @@ function csv(values) {
 }
 
 function benchmarkFile(benchfile) {
-  var contents = fs.readFileSync(benchfile, "utf8");
-  var contentsBuffer = fs.readFileSync(benchfile);
+  const contents = fs.readFileSync(benchfile, "utf8");
+  const contentsBuffer = fs.readFileSync(benchfile);
 
-  let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
-    contentsBuffer.length
-  },`;
+  // let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
+  //   contentsBuffer.length
+  // },`;
 
   new Benchmark.Suite({
     onCycle(ev) {
@@ -73,21 +74,12 @@ function benchmarkFile(benchfile) {
     //   console.log("onComplete", {ev}, b.stats, b.times)
     // }
   })
-    .add("commonmark", function () {
-      renderer.render(parser.parse(contents));
-    })
-    .add("showdown", function () {
-      showdown.makeHtml(contents);
-    })
-    .add("marked", function () {
-      marked.parse(contents);
-    })
-    .add("markdown-it", function () {
-      markdownit.render(contents);
-    })
-    .add("markdown-wasm", function () {
-      markdown_wasm.parse(contentsBuffer, { asMemoryView: true });
-    })
+    .add("commonmark", () => renderer.render(parser.parse(contents)))
+    .add("showdown", () => showdown.makeHtml(contents))
+    .add("marked", () => marked.parse(contents))
+    .add("markdown-it", () => markdownit.render(contents))
+    .add("remarkable", () => remarkable.render(contents))
+    .add("markdown-wasm", () => markdown_wasm.parse(contentsBuffer))
     // .add('markdown-wasm/string', function() {
     //   markdown_wasm.parse(contents);
     // })
