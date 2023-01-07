@@ -57,7 +57,14 @@ The [`test/benchmark`](test/benchmark) directory contain a benchmark suite which
 run yourself. It tests a few popular markdown parser-renderers by parsing & rendering a bunch
 of different sample markdown files.
 
-The following results were samples on a 2.9 GHz MacBook running macOS 10.15, NodeJS v14.11.0
+| Name        | Version |
+| ----------- | ------- |
+| commonmark  | 0.30.0  |
+| markdown-it | 13.0.1  |
+| marked      | 4.2.5   |
+| showdown    | 2.1.0   |
+
+The following results were samples on a 4.75 GHz running Windows 11, NodeJS v19.3.0.
 
 ### Average ops/second
 
