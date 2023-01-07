@@ -57,6 +57,10 @@ The [`test/benchmark`](test/benchmark) directory contain a benchmark suite which
 run yourself. It tests a few popular markdown parser-renderers by parsing & rendering a bunch
 of different sample markdown files.
 
+### Test Environments
+
+Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v19.3.0
+
 | Name        | Version |
 | ----------- | ------- |
 | commonmark  | 0.30.0  |
@@ -64,14 +68,12 @@ of different sample markdown files.
 | marked      | 4.2.5   |
 | showdown    | 2.1.0   |
 
-The following results were samples on a 4.75 GHz running Windows 11, NodeJS v19.3.0.
-
 ### Average ops/second
 
 Ops/second represents how many times a library is able to parse markdown and render HTML
 during a second, on average across all sample files.
 
-![](test/benchmark/results/avg-ops-per-sec.svg Average ops/second)
+![Average ops/second](test/benchmark/results/avg-ops-per-sec.svg)
 
 ### Average throughput
 
@@ -79,14 +81,14 @@ Throughput is the average amount of markdown data processed during a second whil
 and rendering to HTML. The statistics does not include HTML generated but only bytes of markdown
 source text parsed.
 
-![](test/benchmark/results/avg-throughput.svg Average throughput)
+![Average throughput](test/benchmark/results/avg-throughput.svg)
 
 ### Min–max parse time
 
 This graph shows the spread between the fastest and slowest parse-and-render operations
 for each library. Lower numbers are better.
 
-![](test/benchmark/results/minmax-parse-time.svg Min–max parse time)
+![Min–max parse time](test/benchmark/results/minmax-parse-time.svg)
 
 See [`test/benchmark`](test/benchmark#readme) for more information.
 
