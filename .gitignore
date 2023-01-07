@@ -1,6 +1,15 @@
+/.yarn/*
+# !/.yarn/patches
+# !/.yarn/plugins
+!/.yarn/releases
+# !/.yarn/sdks
+# !/.yarn/cache
+node_modules
+.DS_Store
 /_*
 **/.DS_Store
-/build
-/node_modules
-/test/spec/spec.html
-*.sublime*
+*.g*
+/.wasmc*
+/deps/build
+/examples/*/build 
+/test/benchmark/.yarn

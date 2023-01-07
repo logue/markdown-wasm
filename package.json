@@ -1,16 +1,17 @@
 {
-  "name": "markdown-wasm",
-  "version": "1.2.0",
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@logue/markdown-wasm",
+  "version": "1.3.1",
   "description": "Markdown parser and html generator implemented in WebAssembly",
   "browser": "dist/markdown.js",
   "main": "dist/markdown.node.js",
   "jsnext:main": "dist/markdown.es.js",
   "module": "dist/markdown.es.js",
   "typings": "markdown.d.ts",
-  "homepage": "https://github.com/rsms/markdown-wasm",
+  "homepage": "https://github.com/logue/markdown-wasm",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rsms/markdown-wasm.git"
+    "url": "git+https://github.com/logue/markdown-wasm.git"
   },
   "files": [
     "dist/markdown.wasm",
@@ -32,9 +33,20 @@
     "update-web": "cp dist/markdown.js dist/markdown.wasm docs/",
     "print-gzip-size": "echo 'dist/markdown.{js,wasm} gzipped:' $(gzip -9 -c dist/markdown.js dist/markdown.wasm | wc -c | cat) bytes"
   },
-  "author": "Rasmus Andersson <https://rsms.me/>",
+  "author": {
+    "name": "rsms",
+    "url": "https://rsms.me/"
+  },
+  "contributors": [
+    {
+      "name": "Logue",
+      "email": "logue@hotmail.co.jp",
+      "url": "https://logue.dev"
+    }
+  ],
   "license": "MIT",
+  "packageManager": "yarn@3.3.1",
   "devDependencies": {
-    "wasmc": "^2.2.1"
+    "@logue/wasmc": "^2.2.2"
   }
 }

@@ -1,4 +1,11 @@
-# markdown-wasm
+# @logue/markdown-wasm
+
+[![jsdelivr CDN](https://data.jsdelivr.com/v1/package/npm/@logue/markdown-wasm/badge)](https://www.jsdelivr.com/package/npm/@logue/markdown-wasm)
+[![NPM Downloads](https://img.shields.io/npm/dm/@logue/markdown-wasm.svg?style=flat)](https://www.npmjs.com/package/@logue/markdown-wasm)
+[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/@logue/markdown-wasm/file/README.md)
+[![npm version](https://img.shields.io/npm/v/@logue/markdown-wasm.svg)](https://www.npmjs.com/package/@logue/markdown-wasm)
+[![Open in Gitpod](https://shields.io/badge/Open%20in-Gitpod-green?logo=Gitpod)](https://gitpod.io/#https://github.com/logue/@logue/markdown-wasm)
+[![Twitter Follow](https://img.shields.io/twitter/follow/logue256?style=plastic)](https://twitter.com/logue256)
 
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
@@ -8,22 +15,23 @@ Very fast Markdown parser & HTML renderer implemented in WebAssembly
 - [Very fast](#benchmarks)
 - Based on [md4c](http://github.com/mity/md4c) — compliant to the CommonMark specification
 
+Notice: This fork replaces md4c to `0.4.8`, and some options are available. It also works with nested lists that didn't parse properly in the original.
 
 ## Examples
 
 In NodeJS, single file with embedded compressed WASM
 
 ```js
-const markdown = require("./dist/markdown.node.js")
-console.log(markdown.parse("# hello\n*world*"))
+const markdown = require("./dist/markdown.node.js");
+console.log(markdown.parse("# hello\n*world*"));
 ```
 
 ES module with WASM loaded separately
 
 ```js
-import * as markdown from "./dist/markdown.es.js"
-await markdown.ready
-console.log(markdown.parse("# hello\n*world*"))
+import * as markdown from "./dist/markdown.es.js";
+await markdown.ready;
+console.log(markdown.parse("# hello\n*world*"));
 ```
 
 Web browser
@@ -31,20 +39,17 @@ Web browser
 ```html
 <script src="markdown.js"></script>
 <script>
-window["markdown"].ready.then(markdown => {
-  console.log(markdown.parse("# hello\n*world*"))
-})
+  window["markdown"].ready.then((markdown) => {
+    console.log(markdown.parse("# hello\n*world*"));
+  });
 </script>
 ```
 
-
 ## Install
 
-```
+```sh
 npm install markdown-wasm
 ```
-
-
 
 ## Benchmarks
 
@@ -54,33 +59,29 @@ of different sample markdown files.
 
 The following results were samples on a 2.9 GHz MacBook running macOS 10.15, NodeJS v14.11.0
 
-
-#### Average ops/second
+### Average ops/second
 
 Ops/second represents how many times a library is able to parse markdown and render HTML
 during a second, on average across all sample files.
 
-![](test/benchmark/results/avg-ops-per-sec.svg)
+![](test/benchmark/results/avg-ops-per-sec.svg Average ops/second)
 
-
-#### Average throughput
+### Average throughput
 
 Throughput is the average amount of markdown data processed during a second while both parsing
 and rendering to HTML. The statistics does not include HTML generated but only bytes of markdown
 source text parsed.
 
-![](test/benchmark/results/avg-throughput.svg)
+![](test/benchmark/results/avg-throughput.svg Average throughput)
 
-
-#### Min–max parse time
+### Min–max parse time
 
 This graph shows the spread between the fastest and slowest parse-and-render operations
 for each library. Lower numbers are better.
 
-![](test/benchmark/results/minmax-parse-time.svg)
+![](test/benchmark/results/minmax-parse-time.svg Min–max parse time)
 
 See [`test/benchmark`](test/benchmark#readme) for more information.
-
 
 ## API
 
@@ -89,19 +90,25 @@ See [`test/benchmark`](test/benchmark#readme) for more information.
  * parse reads markdown source at s and converts it to HTML.
  * When output is a byte array, it will be a reference.
  */
-export function parse(s :Source, o? :ParseOptions & { bytes? :never|false }) :string
-export function parse(s :Source, o? :ParseOptions & { bytes :true }) :Uint8Array
+export function parse(
+  s: Source,
+  o?: ParseOptions & { bytes?: never | false }
+): string;
+export function parse(
+  s: Source,
+  o?: ParseOptions & { bytes: true }
+): Uint8Array;
 
 /** Markdown source code can be provided as a JavaScript string or UTF8 encoded data */
-type Source = string | ArrayLike<number>
+type Source = string | ArrayLike<number>;
 
 /** Options for the parse function */
 export interface ParseOptions {
   /** Customize parsing. Defaults to ParseFlags.DEFAULT */
-  parseFlags? :ParseFlags
+  parseFlags?: ParseFlags;
 
   /** Select output format. Defaults to "html" */
-  format? : "html" | "xhtml"
+  format?: "html" | "xhtml";
 
   /**
    * bytes=true causes parse() to return the result as a Uint8Array instead of a string.
@@ -113,10 +120,10 @@ export interface ParseOptions {
    * This only provides a performance benefit when you never need to convert the output
    * to a string. In most cases you're better off leaving this unset or false.
    */
-  bytes? :boolean
+  bytes?: boolean;
 
   /** Allow "javascript:" in links */
-  allowJSURIs? :boolean
+  allowJSURIs?: boolean;
 
   /**
    * Optional callback which if provided is called for each code block.
@@ -131,34 +138,51 @@ export interface ParseOptions {
    * Note that use of this callback has an adverse impact on performance as it casues
    * calls and data to be bridged between WASM and JS on every invocation.
    */
-  onCodeBlock? :(langname :string, body :UTF8Bytes) => Uint8Array|string|null|undefined
+  onCodeBlock?: (
+    langname: string,
+    body: UTF8Bytes
+  ) => Uint8Array | string | null;
 
   /** @depreceated use "bytes" instead (v1.1.1) */
-  asMemoryView? :boolean
+  asMemoryView?: boolean;
 }
 
 /** UTF8Bytes is a Uint8Array representing UTF8 text  */
 export interface UTF8Bytes extends Uint8Array {
   /** toString returns a UTF8 decoded string (lazily decoded and cached) */
-  toString() :string
+  toString(): string;
 }
 
 /** Flags that customize Markdown parsing */
 export enum ParseFlags {
-  /** In TEXT, collapse non-trivial whitespace into single ' ' */ COLLAPSE_WHITESPACE,
-  /** Enable $ and $$ containing LaTeX equations. */              LATEX_MATH_SPANS,
-  /** Disable raw HTML blocks. */                                 NO_HTML_BLOCKS,
-  /** Disable raw HTML (inline). */                               NO_HTML_SPANS,
-  /** Disable indented code blocks. (Only fenced code works.) */  NO_INDENTED_CODE_BLOCKS,
-  /** Do not require space in ATX headers ( ###header ) */        PERMISSIVE_ATX_HEADERS,
-  /** Recognize e-mails as links even without <...> */            PERMISSIVE_EMAIL_AUTO_LINKS,
-  /** Recognize URLs as links even without <...> */               PERMISSIVE_URL_AUTO_LINKS,
-  /** Enable WWW autolinks (without proto; just 'www.') */        PERMISSIVE_WWW_AUTOLINKS,
-  /** Enable strikethrough extension. */                          STRIKETHROUGH,
-  /** Enable tables extension. */                                 TABLES,
-  /** Enable task list extension. */                              TASK_LISTS,
-  /** Enable wiki links extension. */                             WIKI_LINKS,
-  /** Enable underline extension (disables '_' for emphasis) */   UNDERLINE,
+  /** In TEXT, collapse non-trivial whitespace into single ' ' */
+  COLLAPSE_WHITESPACE,
+  /** Enable $ and $$ containing LaTeX equations. */
+  LATEX_MATH_SPANS,
+  /** Disable raw HTML blocks. */
+  NO_HTML_BLOCKS,
+  /** Disable raw HTML (inline). */
+  NO_HTML_SPANS,
+  /** Disable indented code blocks. (Only fenced code works.) */
+  NO_INDENTED_CODE_BLOCKS,
+  /** Do not require space in ATX headers ( ###header ) */
+  PERMISSIVE_ATX_HEADERS,
+  /** Recognize e-mails as links even without <...> */
+  PERMISSIVE_EMAIL_AUTO_LINKS,
+  /** Recognize URLs as links even without <...> */
+  PERMISSIVE_URL_AUTO_LINKS,
+  /** Enable WWW autolinks (without proto; just 'www.') */
+  PERMISSIVE_WWW_AUTOLINKS,
+  /** Enable strikethrough extension. */
+  STRIKETHROUGH,
+  /** Enable tables extension. */
+  TABLES,
+  /** Enable task list extension. */
+  TASK_LISTS,
+  /** Enable wiki links extension. */
+  WIKI_LINKS,
+  /** Enable underline extension (disables '_' for emphasis) */
+  UNDERLINE,
 
   /** Default flags are:
    *    COLLAPSE_WHITESPACE |
@@ -172,22 +196,27 @@ export enum ParseFlags {
 
   /** Shorthand for NO_HTML_BLOCKS | NO_HTML_SPANS */
   NO_HTML,
+
+  /** All options are off */
+  COMMONMARK,
+
+  /** Shorhand for PERMISSIVE_URL_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS */
+  GITHUB,
 }
 ```
 
 See [`markdown.d.ts`](markdown.d.ts)
 
-
 ## Building from source
 
-```
+```sh
 npm install
 npx wasmc
 ```
 
 Build debug version of markdown into ./build/debug and watch source files:
 
-```
+```sh
 npx wasmc -g -w
 ```
 
@@ -197,10 +226,11 @@ edit the `wasmc.js` file and add `module({...})` directives.
 Example:
 
 ```js
-module({ ...m,
-  name:   "markdown-custom",
-  out:    outdir + "/markdown.custom.js",
-  embed:  true,
+module({
+  ...m,
+  name: "markdown-custom",
+  out: outdir + "/markdown.custom.js",
+  embed: true,
   format: "es",
-})
+});
 ```

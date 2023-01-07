@@ -1,119 +1,130 @@
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>markdown-wasm demo</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <link rel="stylesheet" href="https://rsms.me/raster/raster.css?v=8">
-  <script type="text/javascript" src="markdown.js"></script>
-  <script type="text/javascript" async src="highlight.js"></script>
-  <style type="text/css">
+  <head>
+    <meta charset="utf-8" />
+    <title>markdown-wasm demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="https://rsms.me/raster/raster.css?v=8" />
+    <script type="text/javascript" src="markdown.js"></script>
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css"
+    />
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+    <style type="text/css">
+      :root {
+        --fontSize: 14px;
+      }
 
-:root {
-  --fontSize: 14px;
-}
+      c.label {
+        font-weight: 500;
+        letter-spacing: 0;
+        color: #999;
+      }
 
-c.label { font-weight:500; letter-spacing:0; color:#999; }
+      c.input,
+      c.output {
+        max-width: 50vw;
+      }
 
-c.input, c.output {
-  max-width:50vw;
-}
+      c.textarea {
+        display: flex;
+        justify-content: stretch;
+      }
+      c.textarea textarea {
+        flex: 1 1 auto;
+        min-height: 50vh;
+        border: 2px solid black;
+        border-radius: 3px;
+        padding: 1rem;
+        font-size: 14px;
+      }
+      c.textarea textarea:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
 
-c.textarea {
-  display: flex;
-  justify-content: stretch;
-}
-c.textarea textarea {
-  flex: 1 1 auto;
-  min-height: 50vh;
-  border: 2px solid black;
-  border-radius: 3px;
-  padding: 1rem;
-  font-size: 14px;
-}
-c.textarea textarea:focus {
-  outline: none;
-  border-color: var(--blue);
-}
+      blockquote {
+        padding-left: var(--lineHeight);
+        border-left: 2px solid #ccc;
+      }
 
-blockquote {
-  padding-left: var(--lineHeight);
-  border-left: 2px solid #ccc;
-}
+      h1 > a.anchor,
+      h2 > a.anchor,
+      h3 > a.anchor,
+      h4 > a.anchor,
+      h5 > a.anchor,
+      h6 > a.anchor {
+        display: inline-block;
+        float: left;
+        height: 1.2em;
+        width: 1em;
+        margin-left: -1em;
+        position: relative;
+        outline: none;
+      }
+      /*.anchor:target { background: yellow; }*/
+      h1 > a.anchor:before,
+      h2 > a.anchor:before,
+      h3 > a.anchor:before,
+      h4 > a.anchor:before,
+      h5 > a.anchor:before,
+      h6 > a.anchor:before {
+        visibility: hidden;
+        position: absolute;
+        opacity: 0.2;
+        right: 0;
+        top: 0;
+        width: 1em;
+        font-weight: 300;
+        line-height: inherit;
+        content: ""; /* U+E08F */
+        text-align: center;
+      }
+      h1 > a.anchor:hover:before,
+      h2 > a.anchor:hover:before,
+      h3 > a.anchor:hover:before,
+      h4 > a.anchor:hover:before,
+      h5 > a.anchor:hover:before,
+      h6 > a.anchor:hover:before {
+        visibility: visible;
+        opacity: 0.8;
+      }
+      h1 > a.anchor:focus:before,
+      h2 > a.anchor:focus:before,
+      h3 > a.anchor:focus:before,
+      h4 > a.anchor:focus:before,
+      h5 > a.anchor:focus:before,
+      h6 > a.anchor:focus:before,
+      h1:hover .anchor:before,
+      h2:hover .anchor:before,
+      h3:hover .anchor:before,
+      h4:hover .anchor:before,
+      h5:hover .anchor:before,
+      h6:hover .anchor:before {
+        visibility: visible;
+      }
+    </style>
+  </head>
+  <body>
+    <grid columns="2" class="_debug">
+      <c><h1>Markdown-wasm demo</h1></c>
+      <c>
+        <p>
+          Fast Markdown parser and HTML renderer implemented in WebAssembly.
+          <a href="https://github.com/logue/markdown-wasm"
+            >Get it from GitHub</a
+          >
+        </p>
+      </c>
 
-h1 > a.anchor,
-h2 > a.anchor,
-h3 > a.anchor,
-h4 > a.anchor,
-h5 > a.anchor,
-h6 > a.anchor {
-  display: inline-block;
-  float: left;
-  height: 1.2em;
-  width: 1em;
-  margin-left: -1em;
-  position: relative;
-  outline: none;
-}
-/*.anchor:target { background: yellow; }*/
-h1 > a.anchor:before,
-h2 > a.anchor:before,
-h3 > a.anchor:before,
-h4 > a.anchor:before,
-h5 > a.anchor:before,
-h6 > a.anchor:before {
-  visibility: hidden;
-  position: absolute;
-  opacity: 0.2;
-  right:0;
-  top:0;
-  width:  1em;
-  font-weight:300;
-  line-height: inherit;
-  content: ""; /* U+E08F */
-  text-align: center;
-}
-h1 > a.anchor:hover:before,
-h2 > a.anchor:hover:before,
-h3 > a.anchor:hover:before,
-h4 > a.anchor:hover:before,
-h5 > a.anchor:hover:before,
-h6 > a.anchor:hover:before {
-  visibility: visible;
-  opacity:0.8;
-}
-h1 > a.anchor:focus:before,
-h2 > a.anchor:focus:before,
-h3 > a.anchor:focus:before,
-h4 > a.anchor:focus:before,
-h5 > a.anchor:focus:before,
-h6 > a.anchor:focus:before,
-h1:hover .anchor:before,
-h2:hover .anchor:before,
-h3:hover .anchor:before,
-h4:hover .anchor:before,
-h5:hover .anchor:before,
-h6:hover .anchor:before {
-  visibility: visible;
-}
+      <c class="label">Type some Markdown here</c>
+      <c class="label">HTML output from markdown-wasm</c>
 
-  </style>
-</head>
-<body>
-  <grid columns=2 class=_debug>
-    <c><h1>Markdown-wasm demo</h1></c>
-    <c>
-      <p>
-        Fast Markdown parser and HTML renderer implemented in WebAssembly.
-        <a href="https://github.com/rsms/markdown-wasm">Get it from GitHub</a>
-      </p>
-    </c>
-
-    <c class=label>Type some Markdown here</c>
-    <c class=label>HTML output from markdown-wasm</c>
-
-    <c class="input textarea"><textarea class="code" id="markdown-input"># Example
+      <c class="input textarea">
+        <textarea class="code" id="markdown-input">
+# Example
 
 A third of the distance across the Beach, the meadow ends and sand begins. This slopes gradually up for another third of the distance, to the foot of the sand hills, which seem tumbled into their places by some mighty power, sometimes three tiers of them deep, sometimes two, _and sometimes only one._ A third of the distance across the Beach, the meadow ends and sand begins.
 
@@ -186,6 +197,12 @@ With default settings, markdown-wasm allows embedded HTML.
 - Lists
 - Hello
 
+- Nested 1
+  - Nested 1-1
+  - Nested 1-2
+- Nested 2
+  - Nested 2-1
+
 ### Ordered lists
 
 1. Ordered
@@ -222,48 +239,50 @@ With default settings, markdown-wasm allows embedded HTML.
 | `00 00 01 00`             | image/x-icon | ico        | Icon image
 
 
-</textarea></c>
-    <c class="output" id="html-output">
-      <div title="Loading markdown module...">•••</div>
-    </c>
-  </grid>
+</textarea
+        >
+      </c>
+      <c class="output" id="html-output">
+        <div title="Loading markdown module...">•••</div>
+      </c>
+    </grid>
 
-<script type="text/javascript">
+    <script type="text/javascript">
+      // await the loading of the web assembly module
+      window["markdown"].ready.then((markdown) => {
+        const inputEl = document.getElementById("markdown-input");
+        const outputEl = document.getElementById("html-output");
+        let hljsTimer;
 
-// await the loading of the web assembly module
-window["markdown"].ready.then(markdown => {
+        function update() {
+          let source = inputEl.value;
+          let html = markdown.parse(source, {
+            parseFlags:
+              markdown.ParseFlags.DEFAULT | markdown.ParseFlags.NO_HTML,
+          });
+          outputEl.innerHTML = html;
+          updateCodeHighlight();
+        }
 
-const inputEl = document.getElementById("markdown-input")
-const outputEl = document.getElementById("html-output")
-let hljsTimer
+        function updateCodeHighlight() {
+          clearTimeout(hljsTimer);
+          if (typeof hljs == "undefined") {
+            hljsTimer = setTimeout(updateCodeSyntaxHighlighting, 500);
+            return;
+          }
+          document
+            .querySelectorAll('pre code[class^="language-"]')
+            .forEach((block) => {
+              hljs.highlightBlock(block);
+            });
+        }
 
-function update() {
-  let source = inputEl.value
-  let html = markdown.parse(source, {
-    parseFlags: markdown.ParseFlags.DEFAULT | markdown.ParseFlags.NO_HTML,
-  })
-  outputEl.innerHTML = html
-  updateCodeHighlight()
-}
+        inputEl.addEventListener("input", update);
+        update();
 
-function updateCodeHighlight() {
-  clearTimeout(hljsTimer)
-  if (typeof hljs == "undefined") {
-    hljsTimer = setTimeout(updateCodeSyntaxHighlighting, 500)
-    return
-  }
-  document.querySelectorAll('pre code[class^="language-"]').forEach(block => {
-    hljs.highlightBlock(block)
-  })
-}
-
-inputEl.addEventListener("input", update)
-update()
-
-// load the markdown module to make it playable in the browser console
-console.log("markdown module API:", markdown)
-
-})</script>
-<link rel="stylesheet" href="highlight.css">
-</body>
+        // load the markdown module to make it playable in the browser console
+        console.log("markdown module API:", markdown);
+      });
+    </script>
+  </body>
 </html>
