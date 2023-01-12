@@ -23,11 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-const fs = require("node:fs");
-const Path = require("node:path");
-const D3Node = require("d3-node");
-const d3 = require("d3");
-const SVGo = require("svgo");
+import fs from "node:fs";
+import Path from "node:path";
+import D3Node from "d3-node";
+import d3 from "d3";
+import SVGo from "svgo";
 
 function main() {
   if (process.argv.length < 3) {

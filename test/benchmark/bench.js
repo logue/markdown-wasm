@@ -1,24 +1,23 @@
 #!/usr/bin/env node
-const Benchmark = require("benchmark").Benchmark;
-const fs = require("fs");
-const Path = require("path");
+import Benchmark from "benchmark";
+import { statSync, readdirSync, readFileSync } from "fs";
 
-const { Parser, HtmlRenderer } = require("commonmark");
-const { Converter } = require("showdown");
-const marked = require("marked");
-const markdownit = require("markdown-it")("commonmark");
-const { Remarkable } = require("remarkable");
-const markdown_wasm = require("../../dist/markdown.node.js");
+import { Parser, HtmlRenderer } from "commonmark";
+import Showdown from "showdown";
+import { parse } from "marked";
+import MarkdownIt from "markdown-it";
+import { Remarkable } from "remarkable";
+import { parse as _parse } from "../../dist/markdown.node.js";
 
 /** setup markdownit*/
-
+const markdownit = new MarkdownIt();
 const markdownit_encode = markdownit.utils.lib.mdurl.encode;
 markdownit.normalizeLink = (url) => markdownit_encode(url);
 // disable expensive IDNa links encoding:
 markdownit.normalizeLinkText = (str) => str;
 
 /** setup showdown */
-const showdown = new Converter();
+const showdown = new Showdown.Converter();
 
 /** setup commonmark */
 const parser = new Parser();
@@ -39,10 +38,10 @@ if (!filename) {
 console.log(csv(["library", "file", "ops/sec", "filesize"]));
 
 // run tests on all files in a directory or a single file
-let st = fs.statSync(filename);
+let st = statSync(filename);
 if (st.isDirectory()) {
   process.chdir(filename);
-  for (let fn of fs.readdirSync(".")) {
+  for (let fn of readdirSync(".")) {
     benchmarkFile(fn);
   }
 } else {
@@ -56,8 +55,8 @@ function csv(values) {
 }
 
 function benchmarkFile(benchfile) {
-  const contents = fs.readFileSync(benchfile, "utf8");
-  const contentsBuffer = fs.readFileSync(benchfile);
+  const contents = readFileSync(benchfile, "utf8");
+  const contentsBuffer = readFileSync(benchfile);
 
   // let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
   //   contentsBuffer.length
@@ -76,10 +75,10 @@ function benchmarkFile(benchfile) {
   })
     .add("commonmark", () => renderer.render(parser.parse(contents)))
     .add("showdown", () => showdown.makeHtml(contents))
-    .add("marked", () => marked.parse(contents))
+    .add("marked", () => parse(contents))
     .add("markdown-it", () => markdownit.render(contents))
     .add("remarkable", () => remarkable.render(contents))
-    .add("markdown-wasm", () => markdown_wasm.parse(contentsBuffer))
+    .add("markdown-wasm", () => _parse(contentsBuffer))
     // .add('markdown-wasm/string', function() {
     //   markdown_wasm.parse(contents);
     // })
