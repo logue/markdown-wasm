@@ -23,11 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import fs from "node:fs";
-import Path from "node:path";
-import D3Node from "d3-node";
-import d3 from "d3";
-import SVGo from "svgo";
+import fs from 'node:fs';
+import Path from 'node:path';
+import D3Node from 'd3-node';
+import * as d3 from 'd3';
+import SVGo from 'svgo';
 
 function main() {
   if (process.argv.length < 3) {
@@ -37,7 +37,7 @@ function main() {
       <csvfile> should be a file produced by bench.js (or one with identical format)
     `
         .trim()
-        .replace(/\n\s+/g, "\n")
+        .replace(/\n\s+/g, '\n')
     );
     process.exit(1);
   }
@@ -55,21 +55,21 @@ function main() {
 
   writefile(
     outdir,
-    "avg-ops-per-sec.svg",
-    createBarChart(data, "avg_ops", {
+    'avg-ops-per-sec.svg',
+    createBarChart(data, 'avg_ops', {
       ...commonGraphConfig,
-      format: d3.format(",.0f"),
+      format: d3.format(',.0f'),
     })
   );
 
   writefile(
     outdir,
-    "avg-throughput.svg",
-    createBarChart(data, "avg_throughput", {
+    'avg-throughput.svg',
+    createBarChart(data, 'avg_throughput', {
       ...commonGraphConfig,
-      xAxisFormat: ",.0f",
+      xAxisFormat: ',.0f',
       xAxisTickCount: commonGraphConfig.width / 50,
-      format: (mb) => {
+      format: mb => {
         const bytes = mb * 1024000;
         return bytes <= 1024
           ? `${bytes.toFixed(0)}B/s`
@@ -82,17 +82,17 @@ function main() {
     })
   );
 
-  const rangeData = data.map((d) => ({
+  const rangeData = data.map(d => ({
     name: d.name,
     min: 1000000000 / d.max_ops, // convert to nanoseconds/op
     max: 1000000000 / d.min_ops, // convert to nanoseconds/op
   }));
   writefile(
     outdir,
-    "minmax-parse-time.svg",
+    'minmax-parse-time.svg',
     createMinMaxBarChart(rangeData, {
       ...commonGraphConfig,
-      format: (ns) =>
+      format: ns =>
         ns <= 1000
           ? `${ns.toFixed(0)}ns`
           : ns <= 1000000
@@ -112,15 +112,15 @@ function main() {
 }
 
 function loadData(csvfile) {
-  const csvText = fs.readFileSync(csvfile, "utf8");
+  const csvText = fs.readFileSync(csvfile, 'utf8');
 
   const libraries = {};
   const fileset = new Set();
 
-  d3.csvParse(csvText, (d) => {
+  d3.csvParse(csvText, d => {
     let lib = libraries[d.library] || (libraries[d.library] = {});
-    const ops_sec = parseFloat(d["ops/sec"]);
-    const filesize = parseInt(d["filesize"]);
+    const ops_sec = parseFloat(d['ops/sec']);
+    const filesize = parseInt(d['filesize']);
     fileset.add(d.file);
     lib[d.file] = { ops_sec, filesize };
   });
@@ -133,7 +133,7 @@ function loadData(csvfile) {
     const filenames = Object.keys(files);
 
     // ops/sec
-    const ops_values = filenames.map((filename) => files[filename].ops_sec);
+    const ops_values = filenames.map(filename => files[filename].ops_sec);
     ops_values.sort((a, b) => (a < b ? -1 : b < a ? 1 : 0));
     const avg_ops = vmath_avg(ops_values);
     const min_ops = ops_values[0];
@@ -143,7 +143,7 @@ function loadData(csvfile) {
 
     // throughput in megabytes
     const throughput_values = filenames.map(
-      (k) => (files[k].ops_sec * files[k].filesize) / 1024000
+      k => (files[k].ops_sec * files[k].filesize) / 1024000
     );
     throughput_values.sort((a, b) => (a < b ? -1 : b < a ? 1 : 0));
     const avg_throughput = vmath_avg(throughput_values);
@@ -215,7 +215,7 @@ function createBarChart(data, dataValueKey, graphConfig) {
   const height =
     Math.ceil((data.length + 0.1) * barHeight) + margin.top + margin.bottom;
   const width = graphConfig.width || 600;
-  const format = graphConfig.format || d3.format(",.2f");
+  const format = graphConfig.format || d3.format(',.2f');
   const xAxisFormat = graphConfig.xAxisFormat || format;
   const xAxisTickCount =
     graphConfig.xAxisTickCount || width / (xAxisLabelSize * 8);
@@ -237,7 +237,7 @@ function createBarChart(data, dataValueKey, graphConfig) {
   // Adapted from https://observablehq.com/@d3/horizontal-bar-chart
   const x = d3
     .scaleLinear()
-    .domain([0, d3.max(data, (d) => d[dataValueKey])])
+    .domain([0, d3.max(data, d => d[dataValueKey])])
     .range([margin.left, width - margin.right]);
   // .rangeRound([margin.left, width - margin.right])
 
@@ -248,67 +248,67 @@ function createBarChart(data, dataValueKey, graphConfig) {
     .padding(0.1);
 
   svg
-    .attr("viewBox", [0, 0, width, height])
-    .attr("font-family", fontFamily)
-    .attr("font-size", size);
+    .attr('viewBox', [0, 0, width, height])
+    .attr('font-family', fontFamily)
+    .attr('font-size', size);
 
   // y-axis labels
   let g = svg
-    .append("g")
-    .attr("text-anchor", "end")
-    .attr("font-weight", 500)
-    .selectAll("text")
+    .append('g')
+    .attr('text-anchor', 'end')
+    .attr('font-weight', 500)
+    .selectAll('text')
     .data(data)
-    .join("text")
-    .attr("alignment-baseline", "central")
-    .attr("x", (d) => x(0))
-    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
-    .attr("dx", -labelPadding * 2)
-    .text((d) => d.name);
+    .join('text')
+    .attr('alignment-baseline', 'central')
+    .attr('x', d => x(0))
+    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('dx', -labelPadding * 2)
+    .text(d => d.name);
 
   // bars
   svg
-    .append("g")
-    .selectAll("rect")
+    .append('g')
+    .selectAll('rect')
     .data(data)
-    .join("rect")
-    .attr("fill", (d) => color(d.name))
-    .attr("x", x(0))
-    .attr("y", (d, i) => y(i))
-    .attr("width", (d) => x(d[dataValueKey]) - x(0))
-    .attr("height", y.bandwidth());
+    .join('rect')
+    .attr('fill', d => color(d.name))
+    .attr('x', x(0))
+    .attr('y', (d, i) => y(i))
+    .attr('width', d => x(d[dataValueKey]) - x(0))
+    .attr('height', y.bandwidth());
 
   // value labes on top of bars
   svg
-    .append("g")
-    .attr("fill", "white")
-    .attr("text-anchor", "end")
-    .attr("font-weight", 500)
-    .selectAll("text")
+    .append('g')
+    .attr('fill', 'white')
+    .attr('text-anchor', 'end')
+    .attr('font-weight', 500)
+    .selectAll('text')
     .data(data)
-    .join("text")
-    .attr("x", (d) => x(d[dataValueKey]))
-    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
-    .attr("alignment-baseline", "central")
-    .attr("dx", -labelPadding)
-    .text((d) => format(d[dataValueKey]))
-    .call((text) =>
+    .join('text')
+    .attr('x', d => x(d[dataValueKey]))
+    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('alignment-baseline', 'central')
+    .attr('dx', -labelPadding)
+    .text(d => format(d[dataValueKey]))
+    .call(text =>
       text
-        .filter((d) => x(d[dataValueKey]) - x(0) < 40) // short bars
-        .attr("dx", labelPadding)
-        .attr("fill", "black")
-        .attr("text-anchor", "start")
+        .filter(d => x(d[dataValueKey]) - x(0) < 40) // short bars
+        .attr('dx', labelPadding)
+        .attr('fill', 'black')
+        .attr('text-anchor', 'start')
     );
 
   // x axis
-  svg.append("g").call((g) =>
+  svg.append('g').call(g =>
     g
-      .attr("transform", `translate(0,${margin.top})`)
+      .attr('transform', `translate(0,${margin.top})`)
       .call(d3.axisTop(x).ticks(xAxisTickCount, xAxisFormat))
-      .call((g) => g.select(".domain").remove())
-      .attr("font-family", fontFamily)
-      .attr("font-size", xAxisLabelSize)
-      .attr("opacity", xAxisLabelOpacity)
+      .call(g => g.select('.domain').remove())
+      .attr('font-family', fontFamily)
+      .attr('font-size', xAxisLabelSize)
+      .attr('opacity', xAxisLabelOpacity)
   );
 
   // y axis
@@ -334,16 +334,16 @@ function createMinMaxBarChart(data, graphConfig) {
   const height =
     Math.ceil((data.length + 0.1) * barHeight) + margin.top + margin.bottom;
   const width = graphConfig.width || 600;
-  const format = graphConfig.format || d3.format(",.2f");
+  const format = graphConfig.format || d3.format(',.2f');
   const color = graphConfig.color;
 
   const d3n = new D3Node();
   const svg = d3n.createSVG(width, height);
 
   svg
-    .attr("viewBox", [0, 0, width, height])
-    .attr("font-family", fontFamily)
-    .attr("font-size", size);
+    .attr('viewBox', [0, 0, width, height])
+    .attr('font-family', fontFamily)
+    .attr('font-size', size);
 
   data = data
     .slice()
@@ -351,7 +351,7 @@ function createMinMaxBarChart(data, graphConfig) {
 
   const x = d3
     .scaleLog()
-    .domain([d3.min(data, (d) => d.min), d3.max(data, (d) => d.max)])
+    .domain([d3.min(data, d => d.min), d3.max(data, d => d.max)])
     // .range([margin.left, width - margin.right])
     .rangeRound([margin.left, width - margin.right]);
 
@@ -365,69 +365,69 @@ function createMinMaxBarChart(data, graphConfig) {
 
   // bars
   svg
-    .append("g")
-    .selectAll("rect")
+    .append('g')
+    .selectAll('rect')
     .data(data)
-    .join("rect")
-    .attr("fill", (d) => color(d.name))
-    .attr("x", (d) => x(d.min))
-    .attr("y", (d, i) => y(i))
-    .attr("width", (d) => x(d.max) - x(d.min))
-    .attr("height", y.bandwidth());
+    .join('rect')
+    .attr('fill', d => color(d.name))
+    .attr('x', d => x(d.min))
+    .attr('y', (d, i) => y(i))
+    .attr('width', d => x(d.max) - x(d.min))
+    .attr('height', y.bandwidth());
 
   // name label inside bar, center aligned
   svg
-    .append("g")
-    .attr("fill", "white")
-    .attr("font-weight", 500)
-    .attr("text-anchor", "middle")
-    .selectAll("text")
+    .append('g')
+    .attr('fill', 'white')
+    .attr('font-weight', 500)
+    .attr('text-anchor', 'middle')
+    .selectAll('text')
     .data(data)
-    .join("text")
-    .attr("x", (d) => x(d.min) + (x(d.max) - x(d.min)) / 2)
-    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
-    .attr("alignment-baseline", "central")
-    .text((d) => d.name);
+    .join('text')
+    .attr('x', d => x(d.min) + (x(d.max) - x(d.min)) / 2)
+    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('alignment-baseline', 'central')
+    .text(d => d.name);
 
   // min value inside bar, left aligned
   svg
-    .append("g")
-    .attr("fill", "white")
-    .attr("font-weight", 500)
-    .attr("text-anchor", "start")
-    .selectAll("text")
+    .append('g')
+    .attr('fill', 'white')
+    .attr('font-weight', 500)
+    .attr('text-anchor', 'start')
+    .selectAll('text')
     .data(data)
-    .join("text")
-    .attr("x", (d) => x(d.min))
-    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
-    .attr("alignment-baseline", "central")
-    .attr("dx", labelPadding)
-    .text((d) => format(d.min));
+    .join('text')
+    .attr('x', d => x(d.min))
+    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('alignment-baseline', 'central')
+    .attr('dx', labelPadding)
+    .text(d => format(d.min));
 
   // max value inside bar, right aligned
   svg
-    .append("g")
-    .attr("fill", "white")
-    .attr("font-weight", 500)
-    .attr("text-anchor", "end")
-    .selectAll("text")
+    .append('g')
+    .attr('fill', 'white')
+    .attr('font-weight', 500)
+    .attr('text-anchor', 'end')
+    .selectAll('text')
     .data(data)
-    .join("text")
-    .attr("x", (d) => x(d.min) + (x(d.max) - x(d.min)))
-    .attr("y", (d, i) => y(i) + y.bandwidth() / 2)
-    .attr("alignment-baseline", "central")
-    .attr("dx", -labelPadding)
-    .text((d) => format(d.max));
+    .join('text')
+    .attr('x', d => x(d.min) + (x(d.max) - x(d.min)))
+    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('alignment-baseline', 'central')
+    .attr('dx', -labelPadding)
+    .text(d => format(d.max));
 
   // x axis
-  svg.append("g").call((g) =>
+  svg.append('g').call(g =>
     g
-      .attr("transform", `translate(0,${margin.top})`)
+      .attr('transform', `translate(0,${margin.top})`)
       .call(d3.axisTop(x).ticks(width / (xAxisLabelSize * 10), format))
-      .call((g) => g.select(".domain").remove())
-      .attr("font-family", fontFamily)
-      .attr("font-size", xAxisLabelSize)
-      .attr("opacity", xAxisLabelOpacity)
+      .call(g => g.select('.domain').remove())
+      .attr('font-family', fontFamily)
+      .attr('font-size', xAxisLabelSize)
+      .attr('opacity', xAxisLabelOpacity)
   );
 
   // const yAxis = g => g
@@ -446,76 +446,76 @@ function createStackedBarChart(data, graphConfig) {
   const height =
     Math.ceil((data.length + 0.1) * barHeight) + margin.top + margin.bottom;
   const width = graphConfig.width || 600;
-  const format = graphConfig.format || d3.format(",.2f");
+  const format = graphConfig.format || d3.format(',.2f');
   const color = graphConfig.color;
 
   const series = d3
     .stack()
     .keys(data.columns.slice(1))(data)
-    .map((d) => (d.forEach((v) => (v.key = d.key)), d));
+    .map(d => (d.forEach(v => (v.key = d.key)), d));
 
   const x = d3
     .scaleLinear()
-    .domain([0, d3.max(series, (d) => d3.max(d, (d) => d[1]))])
+    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
     .range([margin.left, width - margin.right]);
 
   const y = d3
     .scaleBand()
-    .domain(data.map((d) => d.name))
+    .domain(data.map(d => d.name))
     .range([margin.top, height - margin.bottom])
     .padding(0.08);
 
-  const xAxis = (g) =>
+  const xAxis = g =>
     g
-      .attr("transform", `translate(0,${margin.top})`)
-      .call(d3.axisTop(x).ticks(width / 100, "s"))
-      .call((g) => g.selectAll(".domain").remove());
+      .attr('transform', `translate(0,${margin.top})`)
+      .call(d3.axisTop(x).ticks(width / 100, 's'))
+      .call(g => g.selectAll('.domain').remove());
 
-  const yAxis = (g) =>
+  const yAxis = g =>
     g
-      .attr("transform", `translate(${margin.left},0)`)
+      .attr('transform', `translate(${margin.left},0)`)
       .call(d3.axisLeft(y).tickSizeOuter(0))
-      .call((g) => g.selectAll(".domain").remove());
+      .call(g => g.selectAll('.domain').remove());
 
   const d3n = new D3Node();
   const svg = d3n.createSVG(width, height);
 
-  svg.attr("viewBox", [0, 0, width, height]);
+  svg.attr('viewBox', [0, 0, width, height]);
 
   svg
-    .append("g")
-    .selectAll("g")
+    .append('g')
+    .selectAll('g')
     .data(series)
-    .join("g")
-    .attr("fill", (d) => color(d.key))
-    .selectAll("rect")
-    .data((d) => d)
-    .join("rect")
-    .attr("x", (d) => x(d[0]))
-    .attr("y", (d, i) => y(d.data.name))
-    .attr("width", (d) => x(d[1]) - x(d[0]))
-    .attr("height", y.bandwidth())
-    .append("title")
+    .join('g')
+    .attr('fill', d => color(d.key))
+    .selectAll('rect')
+    .data(d => d)
+    .join('rect')
+    .attr('x', d => x(d[0]))
+    .attr('y', (d, i) => y(d.data.name))
+    .attr('width', d => x(d[1]) - x(d[0]))
+    .attr('height', y.bandwidth())
+    .append('title')
     .text(
-      (d) => `${d.data.name} ${d.key}
+      d => `${d.data.name} ${d.key}
 ${format(d.data[d.key])}`
     );
 
-  svg.append("g").call(xAxis);
+  svg.append('g').call(xAxis);
 
-  svg.append("g").call(yAxis);
+  svg.append('g').call(yAxis);
 
   return d3n.svgString();
 }
 
 async function writefile(dir, filename, contents) {
   const ext = Path.extname(filename).toLowerCase();
-  if (ext == ".svg") {
+  if (ext == '.svg') {
     contents = await optimizeSvg(contents);
   }
   filename = Path.relative(process.cwd(), Path.resolve(dir, filename));
   console.log(`write ${filename}`);
-  fs.writeFileSync(filename, contents, "utf8");
+  fs.writeFileSync(filename, contents, 'utf8');
 }
 
 // const buf = canvas.toBuffer("image/png")
@@ -531,14 +531,14 @@ function displayImageInTerminal(imageBuffer, name) {
     `\x1B]1337;File=inline=1;width=100%;height=auto;inline=1`
   );
   if (name) {
-    process.stdout.write(`;name=${b64("chart.png")}:`);
+    process.stdout.write(`;name=${b64('chart.png')}:`);
   } else {
     process.stdout.write(`:`);
   }
-  process.stdout.write(imageBuffer.toString("base64"));
+  process.stdout.write(imageBuffer.toString('base64'));
   process.stdout.write(`\x07\n`);
   function b64(s) {
-    return Buffer.from(s, "utf8").toString("base64");
+    return Buffer.from(s, 'utf8').toString('base64');
   }
 }
 

@@ -1,2 +1,5 @@
 /node_modules
 /results/*.csv
+src/markdown.wasm
+src/markdown.js
+dist/*

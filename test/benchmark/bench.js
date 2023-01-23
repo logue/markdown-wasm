@@ -1,20 +1,20 @@
 #!/usr/bin/env node
-import Benchmark from "benchmark";
-import { statSync, readdirSync, readFileSync } from "fs";
+import Benchmark from 'benchmark';
+import { statSync, readdirSync, readFileSync } from 'fs';
 
-import { Parser, HtmlRenderer } from "commonmark";
-import Showdown from "showdown";
-import { parse } from "marked";
-import MarkdownIt from "markdown-it";
-import { Remarkable } from "remarkable";
-import { parse as _parse } from "../../dist/markdown.node.js";
+import { Parser, HtmlRenderer } from 'commonmark';
+import Showdown from 'showdown';
+import { parse } from 'marked';
+import MarkdownIt from 'markdown-it';
+import { Remarkable } from 'remarkable';
+import { ready, parse as _parse } from '../../dist/markdown.es.js';
 
 /** setup markdownit*/
 const markdownit = new MarkdownIt();
 const markdownit_encode = markdownit.utils.lib.mdurl.encode;
-markdownit.normalizeLink = (url) => markdownit_encode(url);
+markdownit.normalizeLink = url => markdownit_encode(url);
 // disable expensive IDNa links encoding:
-markdownit.normalizeLinkText = (str) => str;
+markdownit.normalizeLinkText = str => str;
 
 /** setup showdown */
 const showdown = new Showdown.Converter();
@@ -26,6 +26,9 @@ const renderer = new HtmlRenderer();
 /** setup remarkable */
 const remarkable = new Remarkable();
 
+/** Setup markdown-wasm */
+await ready();
+
 // parse CLI input
 let filename = process.argv[2];
 if (!filename) {
@@ -35,13 +38,13 @@ if (!filename) {
 }
 
 // print CSV header
-console.log(csv(["library", "file", "ops/sec", "filesize"]));
+console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
 
 // run tests on all files in a directory or a single file
 let st = statSync(filename);
 if (st.isDirectory()) {
   process.chdir(filename);
-  for (let fn of readdirSync(".")) {
+  for (let fn of readdirSync('.')) {
     benchmarkFile(fn);
   }
 } else {
@@ -51,11 +54,11 @@ if (st.isDirectory()) {
 // Benchmark.options.maxTime = 10
 
 function csv(values) {
-  return values.map((s) => String(s).replace(/,/g, "\\,")).join(",");
+  return values.map(s => String(s).replace(/,/g, '\\,')).join(',');
 }
 
 function benchmarkFile(benchfile) {
-  const contents = readFileSync(benchfile, "utf8");
+  const contents = readFileSync(benchfile, 'utf8');
   const contentsBuffer = readFileSync(benchfile);
 
   // let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
@@ -73,12 +76,12 @@ function benchmarkFile(benchfile) {
     //   console.log("onComplete", {ev}, b.stats, b.times)
     // }
   })
-    .add("commonmark", () => renderer.render(parser.parse(contents)))
-    .add("showdown", () => showdown.makeHtml(contents))
-    .add("marked", () => parse(contents))
-    .add("markdown-it", () => markdownit.render(contents))
-    .add("remarkable", () => remarkable.render(contents))
-    .add("markdown-wasm", () => _parse(contentsBuffer))
+    .add('commonmark', () => renderer.render(parser.parse(contents)))
+    .add('showdown', () => showdown.makeHtml(contents))
+    .add('marked', () => parse(contents))
+    .add('markdown-it', () => markdownit.render(contents))
+    .add('remarkable', () => remarkable.render(contents))
+    .add('markdown-wasm', () => _parse(contentsBuffer))
     // .add('markdown-wasm/string', function() {
     //   markdown_wasm.parse(contents);
     // })

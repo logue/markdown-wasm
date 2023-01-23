@@ -19,29 +19,21 @@ Notice: This fork replaces md4c to `0.4.8`, and some options are available. It a
 
 ## Examples
 
-In NodeJS, single file with embedded compressed WASM
-
-```js
-const markdown = require("./dist/markdown.node.js");
-console.log(markdown.parse("# hello\n*world*"));
-```
-
 ES module with WASM loaded separately
 
 ```js
-import { ready, parse } from "./dist/markdown.es.js";
-await ready;
-console.log(parse("# hello\n*world*"));
+import { ready, parse } from './dist/markdown.es.js';
+await ready();
+console.log(parse('# hello\n*world*'));
 ```
 
 Web browser
 
 ```html
-<script src="markdown.js"></script>
+<script src="markdown.umd.js"></script>
 <script>
-  window["markdown"].ready.then((markdown) => {
-    console.log(markdown.parse("# hello\n*world*"));
-  });
+  const markdown = await window['markdown'].ready()
+  console.log(markdown.parse('# hello\n*world*'));
 </script>
 ```
 
@@ -65,7 +57,7 @@ Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v19.3.0
 | ----------- | ------- |
 | commonmark  | 0.30.0  |
 | markdown-it | 13.0.1  |
-| marked      | 4.2.5   |
+| marked      | 4.2.12  |
 | remarkable  | 2.0.1   |
 | showdown    | 2.1.0   |
 
@@ -118,7 +110,7 @@ export interface ParseOptions {
   parseFlags?: ParseFlags;
 
   /** Select output format. Defaults to "html" */
-  format?: "html" | "xhtml";
+  format?: 'html' | 'xhtml';
 
   /**
    * bytes=true causes parse() to return the result as a Uint8Array instead of a string.
@@ -219,28 +211,9 @@ See [`markdown.d.ts`](markdown.d.ts)
 
 ## Building from source
 
+Install latest emscripten to your environment.
+
 ```sh
 npm install
-npx wasmc
-```
-
-Build debug version of markdown into ./build/debug and watch source files:
-
-```sh
-npx wasmc -g -w
-```
-
-If you need special builds, like for example an ES module with embedded WASM,
-edit the `wasmc.js` file and add `module({...})` directives.
-
-Example:
-
-```js
-module({
-  ...m,
-  name: "markdown-custom",
-  out: outdir + "/markdown.custom.js",
-  embed: true,
-  format: "es",
-});
+yarn build
 ```

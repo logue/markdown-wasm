@@ -1,0 +1,8 @@
+.yarn/
+.husky/
+.vscode/
+src/markdown.js
+docs/
+dist/
+build/
+test/benchmark/samples

@@ -37,7 +37,7 @@ line 2
 
 ```js
 function codeBlocks() {
-  return "Can be inserted";
+  return 'Can be inserted';
 }
 ```
 

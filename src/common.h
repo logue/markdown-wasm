@@ -3,7 +3,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
-// #include <emscripten/emscripten.h>
+
+#ifndef export
+  #include <emscripten/emscripten.h>
+  #define export EMSCRIPTEN_KEEPALIVE
+#endif
 
 #ifdef _MSC_VER
   #ifndef __cplusplus

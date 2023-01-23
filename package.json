@@ -1,13 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/markdown-wasm",
-  "version": "1.3.1",
+  "version": "1.3.2",
+  "type": "module",
   "description": "Markdown parser and html generator implemented in WebAssembly",
   "browser": "dist/markdown.js",
   "main": "dist/markdown.node.js",
   "jsnext:main": "dist/markdown.es.js",
   "module": "dist/markdown.es.js",
-  "typings": "markdown.d.ts",
+  "types": "markdown.d.ts",
   "homepage": "https://github.com/logue/markdown-wasm",
   "repository": {
     "type": "git",
@@ -25,13 +26,19 @@
     "README.md",
     "LICENSE"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/markdown.es.js",
+      "default": "./dist/markdown.js",
+      "type": "./markdown.d.ts"
+    },
+    "./dist/*": "./dist/*"
+  },
   "scripts": {
-    "build": "wasmc",
-    "build-debug": "wasmc -g",
-    "build-watch": "wasmc -g -w",
-    "test": "wasmc -quiet && bash test/test.sh >/dev/null && echo OK",
-    "update-web": "cp dist/markdown.js dist/markdown.wasm docs/",
-    "print-gzip-size": "echo 'dist/markdown.{js,wasm} gzipped:' $(gzip -9 -c dist/markdown.js dist/markdown.wasm | wc -c | cat) bytes"
+    "dev": "vite",
+    "build": "src/build & vite build",
+    "test": "node test/spec/spec.js",
+    "lint": "eslint . && prettier . -w"
   },
   "author": {
     "name": "rsms",
@@ -47,6 +54,10 @@
   "license": "MIT",
   "packageManager": "yarn@3.3.1",
   "devDependencies": {
-    "@logue/wasmc": "^2.2.2"
+    "eslint": "^8.32.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.3",
+    "vite": "^4.0.4"
   }
 }

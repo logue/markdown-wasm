@@ -1,0 +1,18 @@
+root: true
+env:
+  browser: true
+  es2020: true
+  node: true
+extends:
+  - eslint:recommended
+  - eslint-config-prettier
+parserOptions:
+  ecmaVersion: latest
+  parser: babel-eslint
+  sourceType: module
+  createDefaultProgram: true
+rules:
+  new-cap: off
+  no-invalid-this: off
+  no-unused-vars: off
+  no-undef: off

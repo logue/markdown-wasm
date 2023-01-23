@@ -1,6 +1,12 @@
+/** Load Markdown wasm */
+export function ready(): void;
+
 /**
  * parse reads markdown source at s and converts it to HTML.
  * When output is a byte array, it will be a reference.
+ *
+ * @param s - markdown source text
+ * @param o - parse options
  */
 export function parse(
   s: Source,
@@ -20,7 +26,7 @@ export interface ParseOptions {
   parseFlags?: ParseFlags;
 
   /** Select output format. Defaults to "html" */
-  format?: "html" | "xhtml";
+  format?: 'html' | 'xhtml';
 
   /**
    * bytes=true causes parse() to return the result as a Uint8Array instead of a string.
