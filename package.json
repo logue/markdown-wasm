@@ -53,6 +53,8 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",
     "prettier": "^2.8.3",
-    "vite": "^4.0.4"
+    "vite": "^4.0.4",
+    "vite-plugin-banner": "^0.7.0",
+    "vite-plugin-checker": "^0.5.4"
   }
 }

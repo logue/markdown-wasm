@@ -1,7 +1,10 @@
-// import { checker } from 'vite-plugin-checker';
+import { checker } from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
+import banner from 'vite-plugin-banner';
 
 import { fileURLToPath, URL } from 'node:url';
+
+const pkg = require('./package.json');
 
 // Export vite config
 export default defineConfig(async ({ mode }) => {
@@ -18,7 +21,6 @@ export default defineConfig(async ({ mode }) => {
       },
       cors: false,
     },
-    /*
     plugins: [
       // vite-plugin-checker
       // https://github.com/fi3ework/vite-plugin-checker
@@ -26,11 +28,22 @@ export default defineConfig(async ({ mode }) => {
         typescript: false,
         vueTsc: false,
         eslint: {
-          lintCommand: `eslint`, // for example, lint .ts & .tsx
+          lintCommand: 'eslint',
         },
       }),
-
-    ],*/
+      // vite-plugin-banner
+      // https://github.com/chengpeiquan/vite-plugin-banner
+      banner(`/**
+ * ${pkg.name}
+ *
+ * @description ${pkg.description}
+ * @author ${pkg.author.name}
+ * @license ${pkg.license}
+ * @version ${pkg.version}
+ * @see {@link ${pkg.homepage}}
+ */
+`),
+    ],
     // Build Options
     // https://vitejs.dev/config/build-options.html
     build: {

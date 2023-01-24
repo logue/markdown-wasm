@@ -1,52 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100" data-bs-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>markdown-wasm demo</title>
+    <meta
+      name="description"
+      content="Markdown parser and html generator implemented in WebAssembly"
+    />
+    <meta name="author" content="Masashi Yoshikawa" />
+    <!-- ogp -->
+    <meta
+      property="og:title"
+      content="Markdown parser and html generator implemented in WebAssembly"
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://logue.github.io/Reverb.js/" />
+    <meta
+      property="og:image"
+      content="https://repository-images.githubusercontent.com/581348275/e5645a5f-f91e-4a30-bdbd-476dc76033cc"
+    />
+    <meta property="og:site_name" content="Logue's Lab" />
+    <meta
+      property="og:description"
+      content="Markdown parser and html generator implemented in WebAssembly"
+    />
+    <meta property="fb:app_id" content="129144050466298" />
+    <meta
+      property="article:publisher"
+      content="https://www.facebook.com/logue256"
+    />
+    <meta name="twitter:card" content="Summary" />
+    <meta name="twitter:site" content="@logue256" />
+    <meta name="twitter:title" content="JavaScript Reverb Effect Test" />
+    <meta name="twitter:url" content="https://logue.dev/markdown-wasm" />
+    <meta
+      name="twitter:description"
+      content="Markdown parser and html generator implemented in WebAssembly"
+    />
+    <meta
+      name="twitter:image"
+      content="https://repository-images.githubusercontent.com/581348275/e5645a5f-f91e-4a30-bdbd-476dc76033cc"
+    />
+    <title>Markdown wasm Demo</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'UA-33600926-1');
+    </script>
+    <!-- Bootstrap core CSS -->
     <link
-      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      integrity="sha256-ky6hUQiSiZG88MCkZBX8ZS3l/8AVjDUgU1e5DGXus4Y="
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
       crossorigin="anonymous"
     />
     <link
       rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+      integrity="sha256-4RctOgogjPAdwGbwq+rxfwAmSpZhWaafcZR9btzUk18="
+      crossorigin="anonymous"
+    />
+    <link
       href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css"
+      rel="stylesheet"
     />
     <link
       rel="stylesheet"
-      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css"
+      href="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/styles/github.css"
     />
-    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
     <script type="module" crossorigin src="./assets/index-f86f14ad.js"></script>
   </head>
 
-  <body>
+  <body class="d-flex flex-column h-100 text-body bg-body">
     <header>
-      <div class="container-fluid">
-        <h1>Markdown-wasm demo</h1>
-        <p class="bd-lead">
-          Fast Markdown parser and HTML renderer implemented in WebAssembly.
-        </p>
-        <p>
-          <a
-            href="https://github.com/logue/markdown-wasm"
-            class="btn btn-primary"
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="container-fluid d-flex justify-content-between">
+          <a class="navbar-brand" href="#">markdown-wasm</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            Get it from GitHub
-          </a>
-        </p>
-      </div>
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse flex-grow-0" id="navbarCollapse">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  aria-current="page"
+                  href="https://logue.dev/"
+                >
+                  Home
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="https://github.com/logue/markdown-wasm"
+                >
+                  <em class="bi bi-github"></em>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
     </header>
-    <main class="container-fluid">
-      <div class="row">
-        <div class="col">
-          <label for="markdown-input" class="form-label">
-            Type some Markdown here
-          </label>
-          <textarea class="form-control font-monospace" id="markdown-input">
+
+    <!-- Begin page content -->
+    <main role="main" class="flex-shrink-0">
+      <div class="container-fluid bg-light p-5 mb-3">
+        <div class="container">
+          <h1 class="display-5 fw-bold">Markdown-wasm demo</h1>
+          <p class="bd-lead">
+            Fast Markdown parser and HTML renderer implemented in WebAssembly.
+          </p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <label for="markdown-input" class="form-label">
+              Type some Markdown here
+            </label>
+            <textarea class="form-control font-monospace" id="markdown-input">
 # Example
 
 A third of the distance across the Beach, the meadow ends and sand begins. This slopes gradually up for another third of the distance, to the foot of the sand hills, which seem tumbled into their places by some mighty power, sometimes three tiers of them deep, sometimes two, _and sometimes only one._ A third of the distance across the Beach, the meadow ends and sand begins.
@@ -160,15 +252,20 @@ With default settings, markdown-wasm allows embedded HTML.
 | `4D 4D 00 2B`             | image/tiff   | tif tiff   | TIFF image
 | `42 4D`                   | image/bmp    | bmp        | Bitmap image
 | `00 00 01 00`             | image/x-icon | ico        | Icon image</textarea
-          >
-        </div>
-        <div class="col">
-          <label>HTML output from markdown-wasm</label>
-          <article class="markdown-body" id="html-output">
-            <div title="Loading markdown module...">•••</div>
-          </article>
+            >
+          </div>
+          <div class="col-6">
+            <label>HTML output from markdown-wasm</label>
+            <article class="markdown-body" id="html-output">
+              <div title="Loading markdown module...">•••</div>
+            </article>
+          </div>
         </div>
       </div>
     </main>
+    <script src="
+https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js
+"></script>
+    
   </body>
 </html>
