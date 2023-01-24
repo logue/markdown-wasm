@@ -9,7 +9,7 @@
 
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
-- Zero dependencies (31 kB gzipped)
+- Zero dependencies (47.81 kB gzipped without minify.)
 - Portable & safe (WASM executes in isolated memory and can run almost anywhere)
 - [Simple API](#api)
 - [Very fast](#benchmarks)
@@ -53,13 +53,14 @@ of different sample markdown files.
 
 Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v19.3.0
 
-| Name        | Version |
-| ----------- | ------- |
-| commonmark  | 0.30.0  |
-| markdown-it | 13.0.1  |
-| marked      | 4.2.12  |
-| remarkable  | 2.0.1   |
-| showdown    | 2.1.0   |
+| Name                                                      | Version |
+| --------------------------------------------------------- | ------- |
+| [commonmark](https://github.com/commonmark/commonmark.js) | 0.30.0  |
+| [markdown-it](https://github.com/markdown-it/markdown-it) | 13.0.1  |
+| [marked](https://github.com/markedjs/marked)              | 4.2.12  |
+| [micromark](https://github.com/micromark/micromark)       | 3.1.0   |
+| [remarkable](https://github.com/jonschlinkert/remarkable) | 2.0.1   |
+| [showdown](https://github.com/showdownjs/showdown)        | 2.1.0   |
 
 ### Average ops/second
 

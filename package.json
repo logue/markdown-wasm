@@ -1,42 +1,37 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/markdown-wasm",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "type": "module",
   "description": "Markdown parser and html generator implemented in WebAssembly",
-  "browser": "dist/markdown.js",
-  "main": "dist/markdown.node.js",
-  "jsnext:main": "dist/markdown.es.js",
-  "module": "dist/markdown.es.js",
-  "types": "markdown.d.ts",
   "homepage": "https://github.com/logue/markdown-wasm",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/logue/markdown-wasm.git"
   },
+  "main": "dist/markdown.umd.js",
+  "module": "dist/markdown.es.js",
+  "types": "markdown.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/markdown.es.js",
+      "require": "./dist/markdown.umd.js",
+      "types": "./markdown.d.ts"
+    }
+  },
   "files": [
-    "dist/markdown.wasm",
-    "dist/markdown.js",
-    "dist/markdown.js.map",
-    "dist/markdown.node.js",
-    "dist/markdown.node.js.map",
-    "dist/markdown.es.js",
-    "dist/markdown.es.js.map",
+    "./src/markdown.wasm",
+    "./src/markdown.js",
+    "./src/index.js",
+    "./dist",
     "markdown.d.ts",
     "README.md",
     "LICENSE"
   ],
-  "exports": {
-    ".": {
-      "import": "./dist/markdown.es.js",
-      "default": "./dist/markdown.js",
-      "type": "./markdown.d.ts"
-    },
-    "./dist/*": "./dist/*"
-  },
   "scripts": {
     "dev": "vite",
     "build": "src/build & vite build",
+    "build-docs": "vite build --mode=docs",
     "test": "node test/spec/spec.js",
     "lint": "eslint . && prettier . -w"
   },

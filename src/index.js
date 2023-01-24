@@ -1,4 +1,4 @@
-import init from './markdown';
+import init from './markdown.js';
 
 let Module;
 /** used by strFromUTF8Ptr as a temporary address-sized integer */

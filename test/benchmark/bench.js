@@ -7,7 +7,8 @@ import Showdown from 'showdown';
 import { parse } from 'marked';
 import MarkdownIt from 'markdown-it';
 import { Remarkable } from 'remarkable';
-import { ready, parse as _parse } from '../../dist/markdown.es.js';
+import { micromark } from 'micromark';
+import { ready, parse as _parse } from '../../src/index.js';
 
 /** setup markdownit*/
 const markdownit = new MarkdownIt();
@@ -81,6 +82,7 @@ function benchmarkFile(benchfile) {
     .add('marked', () => parse(contents))
     .add('markdown-it', () => markdownit.render(contents))
     .add('remarkable', () => remarkable.render(contents))
+    .add('micromark', () => micromark(contents))
     .add('markdown-wasm', () => _parse(contentsBuffer))
     // .add('markdown-wasm/string', function() {
     //   markdown_wasm.parse(contents);

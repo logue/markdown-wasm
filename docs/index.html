@@ -20,6 +20,7 @@
       href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css"
     />
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+    <script type="module" crossorigin src="./assets/index-f86f14ad.js"></script>
   </head>
 
   <body>
@@ -169,71 +170,5 @@ With default settings, markdown-wasm allows embedded HTML.
         </div>
       </div>
     </main>
-    <script type="text/javascript" src="markdown.umd.js"></script>
-    <script type="text/javascript">
-      /** @type {HTMLTextareaElement} */
-      const inputEl = document.getElementById('markdown-input');
-      /** @type {HTMLDivElement} */
-      const outputEl = document.getElementById('html-output');
-
-      // await the loading of the web assembly module
-      window.Markdown.ready().then(markdown => {
-        let line = inputEl.value.split('\n').length;
-        if (line <= 3) {
-          line = 3;
-        }
-        inputEl.rows = line + 1;
-
-        let hljsTimer;
-
-        function update() {
-          const source = inputEl.value;
-          const html = window.Markdown.parse(source, {
-            parseFlags:
-              window.Markdown.ParseFlags.DEFAULT |
-              window.Markdown.ParseFlags.NO_HTML,
-          });
-          outputEl.innerHTML = html;
-
-          updateCodeHighlight();
-        }
-
-        function updateCodeHighlight() {
-          clearTimeout(hljsTimer);
-          if (typeof hljs == 'undefined') {
-            hljsTimer = setTimeout(updateCodeSyntaxHighlighting, 500);
-            return;
-          }
-          document
-            .querySelectorAll('pre code[class^="language-"]')
-            .forEach(block => {
-              hljs.highlightBlock(block);
-            });
-        }
-
-        inputEl.addEventListener('input', update);
-        update();
-
-        // load the markdown module to make it playable in the browser console
-        console.log('markdown module API:', markdown);
-      });
-
-      window.addEventListener('DOMContentLoaded', () => {
-        let line = inputEl.value.split('\n').length;
-        if (line <= 3) {
-          line = 3;
-        }
-        console.log(line);
-
-        //行数分のrowsに変更
-        inputEl.setAttribute('rows', line + 1);
-        inputEl.addEventListener('input', setTextareaHeight);
-
-        function setTextareaHeight() {
-          this.style.height = 'auto';
-          this.style.height = `${this.scrollHeight}px`;
-        }
-      });
-    </script>
   </body>
 </html>

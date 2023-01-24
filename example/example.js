@@ -1,13 +1,15 @@
-import * as markdown from '../dist/markdown.node.js';
+import { ready, parse } from '../src/index.js';
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 // const md = require("../build/debug/markdown.node.js")
 
+await ready();
+
 const source = readFileSync(
   fileURLToPath(new URL('./example.md', import.meta.url))
 );
-const outbuf = markdown.parse(source, {
+const outbuf = parse(source, {
   bytes: true,
   onCodeBlock(lang, body) {
     console.log(`onCodeBlock (${lang})`);

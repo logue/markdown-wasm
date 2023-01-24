@@ -1,5 +1,5 @@
 import { basename } from 'node:path';
-import * as md from '../dist/markdown.es.js';
+import * as md from '../src/index.js';
 
 // const libdir = process.argv.includes('-debug') ? 'build/debug' : 'dist';
 // const md = require(`../${libdir}/markdown.node.js`);

@@ -1,4 +1,4 @@
-import { ready, parse } from '../../dist/markdown.es.js';
+import { ready, parse } from '../../src/index.js';
 import { exit } from '../testutil.js';
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -18,9 +18,13 @@ html = `
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Markdown spec</title>
+    <meta name="color-scheme" content="light dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css" integrity="sha512-KUoB3bZ1XRBYj1QcH4BHCQjurAZnCO3WdrswyLDtp7BMwCw7dPZngSLqILf68SGgvnWHTD5pPaYrXi6wiRJ65g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Markdown spec</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css"
+      rel="stylesheet"
+    />
   </head>
 
   <body class="markdown-body" style="padding: 1rem;">
