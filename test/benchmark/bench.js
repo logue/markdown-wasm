@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import Benchmark from 'benchmark';
-import { statSync, readdirSync, readFileSync } from 'fs';
 
 import { Parser, HtmlRenderer } from 'commonmark';
 import Showdown from 'showdown';
@@ -9,6 +8,8 @@ import MarkdownIt from 'markdown-it';
 import { Remarkable } from 'remarkable';
 import { micromark } from 'micromark';
 import { ready, parse as _parse } from '../../src/index.js';
+
+import { statSync, readdirSync, readFileSync } from 'node:fs';
 
 /** setup markdownit*/
 const markdownit = new MarkdownIt();
@@ -31,7 +32,7 @@ const remarkable = new Remarkable();
 await ready();
 
 // parse CLI input
-let filename = process.argv[2];
+const filename = process.argv[2];
 if (!filename) {
   console.error(`usage: bench.js <markdown-file>`);
   console.error(`usage: bench.js <dir-of-markdown-files>`);
@@ -42,8 +43,7 @@ if (!filename) {
 console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
 
 // run tests on all files in a directory or a single file
-let st = statSync(filename);
-if (st.isDirectory()) {
+if (statSync(filename).isDirectory()) {
   process.chdir(filename);
   for (let fn of readdirSync('.')) {
     benchmarkFile(fn);
@@ -68,7 +68,7 @@ function benchmarkFile(benchfile) {
 
   new Benchmark.Suite({
     onCycle(ev) {
-      let b = ev.target;
+      const b = ev.target;
       // console.log("cycle", b)
       console.log(csv([b.name, benchfile, b.hz, contentsBuffer.length]));
     },
@@ -84,11 +84,7 @@ function benchmarkFile(benchfile) {
     .add('remarkable', () => remarkable.render(contents))
     .add('micromark', () => micromark(contents))
     .add('markdown-wasm', () => _parse(contentsBuffer))
-    // .add('markdown-wasm/string', function() {
-    //   markdown_wasm.parse(contents);
-    // })
-    // .add('markdown-wasm/bytes', function() {
-    //   markdown_wasm.parse(contentsBuffer, {asMemoryView:true});
-    // })
+    // .add('markdown-wasm/string', () => _parse(contents))
+    // .add('markdown-wasm/bytes', () =>  _parse(contentsBuffer, { bytes: true })
     .run();
 }

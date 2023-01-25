@@ -1,4 +1,4 @@
-/*
+/**
 Generates benchmark graphs using d3.
 Intended to be run as a CLI script, accepting a single argument: CSV file from bench.js
 
@@ -23,11 +23,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-import fs from 'node:fs';
-import Path from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { dirname, extname, relative, resolve } from 'node:path';
+
 import D3Node from 'd3-node';
 import * as d3 from 'd3';
-import SVGo from 'svgo';
+import { optimize } from 'svgo';
 
 function main() {
   if (process.argv.length < 3) {
@@ -43,7 +44,7 @@ function main() {
   }
 
   const data = loadData(process.argv[2]);
-  const outdir = Path.dirname(Path.resolve(process.argv[2]));
+  const outdir = dirname(resolve(process.argv[2]));
   // console.log({data})
 
   const commonGraphConfig = {
@@ -112,13 +113,13 @@ function main() {
 }
 
 function loadData(csvfile) {
-  const csvText = fs.readFileSync(csvfile, 'utf8');
+  const csvText = readFileSync(csvfile, 'utf8');
 
   const libraries = {};
   const fileset = new Set();
 
   d3.csvParse(csvText, d => {
-    let lib = libraries[d.library] || (libraries[d.library] = {});
+    const lib = libraries[d.library] || (libraries[d.library] = {});
     const ops_sec = parseFloat(d['ops/sec']);
     const filesize = parseInt(d['filesize']);
     fileset.add(d.file);
@@ -126,9 +127,9 @@ function loadData(csvfile) {
   });
 
   const data = [];
-  const files = Array.from(fileset);
+  // const files = Array.from(fileset);
 
-  for (let library of Object.keys(libraries)) {
+  for (const library of Object.keys(libraries)) {
     const files = libraries[library];
     const filenames = Object.keys(files);
 
@@ -177,14 +178,14 @@ function vmath_avg(numbers) {
   // http://www.heikohoffmann.de/htmlthesis/node134.html
   let avg = 0.0;
   let t = 1;
-  for (let x of numbers) {
+  for (const x of numbers) {
     avg += (x - avg) / t;
     ++t;
   }
   return avg;
 }
 
-const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
+const fontFamily = `system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif`;
 const xAxisLabelOpacity = 0.5;
 
 // dataValueKey should be one of the following strings:
@@ -508,20 +509,20 @@ ${format(d.data[d.key])}`
   return d3n.svgString();
 }
 
-async function writefile(dir, filename, contents) {
-  const ext = Path.extname(filename).toLowerCase();
-  if (ext == '.svg') {
-    contents = await optimizeSvg(contents);
+function writefile(dir, filename, contents) {
+  if (extname(filename).toLowerCase() === '.svg') {
+    contents = optimizeSvg(contents);
   }
-  filename = Path.relative(process.cwd(), Path.resolve(dir, filename));
+  filename = relative(process.cwd(), resolve(dir, filename));
+
   console.log(`write ${filename}`);
-  fs.writeFileSync(filename, contents, 'utf8');
+  writeFileSync(filename, contents, 'utf8');
 }
 
 // const buf = canvas.toBuffer("image/png")
 // displayImageInTerminal(buf)
 
-// displayImageInTerminal(fs.readFileSync("output.png"))
+// displayImageInTerminal(readFileSync("output.png"))
 
 function displayImageInTerminal(imageBuffer, name) {
   // iTerm image:
@@ -542,14 +543,9 @@ function displayImageInTerminal(imageBuffer, name) {
   }
 }
 
-const svgo = new SVGo({});
-
 // optimizeSvg(svgText :string) :Promise<string>
-async function optimizeSvg(svgText) {
-  const config = {
-    multipass: true,
-  };
-  const { data } = await svgo.optimize(svgText, config);
+function optimizeSvg(svgText) {
+  const { data } = optimize(svgText, { multipass: true });
   return data;
 }
 

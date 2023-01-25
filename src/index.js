@@ -1,10 +1,11 @@
 import init from './markdown.js';
 
+/** Wasm Module */
 let Module;
 /** used by strFromUTF8Ptr as a temporary address-sized integer */
 let tmpPtr = 0;
 
-/** Initialize Function */
+/** Initialize Markdown Wasm */
 export const ready = async () => {
   Module = await init();
 
@@ -15,7 +16,7 @@ export const ready = async () => {
   return await Module.ready;
 };
 
-/** @type {Array<string, number>} - ParseFlags */
+/** @type {Record<string, number>} - ParseFlags */
 export const ParseFlags = {
   /** In TEXT, collapse non-trivial whitespace into single ' ' */
   COLLAPSE_WHITESPACE: 0x0001,
@@ -80,16 +81,21 @@ export const OutputFlags = {
  * @param {string | ArrayLike<number>} source - markdown text
  * @param {object} options - Parser options
  *
- * @returns {string | Uint8Array}
+ * @return {string | Uint8Array}
  */
-export function parse(source, options) {
-  options = options || {};
-
+export function parse(source, options = {}) {
+  if (!Module) {
+    throw new Error(
+      '[markdown-wasm] markdown-wasm does not initialized. Use `await ready();` before `parse()` function.'
+    );
+  }
+  /** @type {number} */
   const parseFlags =
     options.parseFlags === undefined
       ? ParseFlags.COMMONMARK
       : options.parseFlags;
 
+  /** @type {number} */
   let outputFlags = options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
 
   switch (options.format) {
@@ -108,11 +114,14 @@ export function parse(source, options) {
       throw new Error(`[markdown-wasm] invalid format "${options.format}"`);
   }
 
+  /** @type {number} */
   const onCodeBlockPtr = options.onCodeBlock
     ? create_onCodeBlock_fn(options.onCodeBlock)
     : 0;
 
+  /** @type {Uint8Array} */
   const buf = as_byte_array(source);
+  /** @type {Uint8Array} */
   const outbuf = withOutPtr(outptr =>
     withTmpBytePtr(buf, (inptr, inlen) =>
       Module._parseUTF8(
@@ -138,11 +147,7 @@ export function parse(source, options) {
   //   console.log(utf8.decode(outbuf))
   // }
 
-  if (options.bytes) {
-    return outbuf;
-  }
-
-  return utf8.decode(outbuf);
+  return options.bytes ? outbuf : new TextDecoder('utf-8').decode(outbuf);
 }
 
 /**
@@ -152,9 +157,10 @@ export function parse(source, options) {
  * Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c
  * @see {@link https://emscripten.org/docs/porting/connecting_cpp_and_javascript/}
  *
- * @param {*} onCodeBlock
+ * @param {Function} onCodeBlock
+ * @return {number}
  */
-async function create_onCodeBlock_fn(onCodeBlock) {
+function create_onCodeBlock_fn(onCodeBlock) {
   const fnptr = Module.addFunction((metaptr, metalen, inptr, inlen, outptr) => {
     try {
       // lang is the "language" tag, if any, provided with the code block
@@ -163,14 +169,11 @@ async function create_onCodeBlock_fn(onCodeBlock) {
           ? utf8.decode(HEAPU8.subarray(metaptr, metaptr + metalen))
           : '';
 
-      // body is a view into heap memory of the segment of source (UTF8 bytes)
+      /** @type {Uint8Array} body is a view into heap memory of the segment of source (UTF8 bytes) */
       const body = HEAPU8.subarray(inptr, inptr + inlen);
-      let bodystr = undefined;
-      body.toString = () => bodystr || (bodystr = utf8.decode(body));
 
-      // result is the result from the onCodeBlock function
-      let result = null;
-      result = onCodeBlock(lang, body);
+      /** result from the onCodeBlock function */
+      const result = onCodeBlock(lang, new TextDecoder('utf-8').decode(body));
 
       if (result === null || result === undefined) {
         // Callback indicates that it does not wish to filter.
@@ -178,7 +181,7 @@ async function create_onCodeBlock_fn(onCodeBlock) {
         return -1;
       }
 
-      let resbuf = as_byte_array(result);
+      const resbuf = as_byte_array(result);
       if (resbuf.length > 0) {
         // copy resbuf to WASM heap memory
         const resptr = mallocbuf(resbuf, resbuf.length);
@@ -190,7 +193,9 @@ async function create_onCodeBlock_fn(onCodeBlock) {
       return resbuf.length;
     } catch (err) {
       console.error(
-        `error in markdown onCodeBlock callback: ${err.stack || err}`
+        `[markdown-wasm] error in markdown onCodeBlock callback: ${
+          err.stack || err
+        }`
       );
       return -1;
     }
@@ -200,30 +205,19 @@ async function create_onCodeBlock_fn(onCodeBlock) {
 
 /**
  * to Byte Array
- * @param {number[] | string} something
  *
- * @returns {Uint8Array}
+ * @param {Uint8Array | string} something
+ *
+ * @return {Uint8Array}
  */
 function as_byte_array(something) {
-  if (typeof something == 'string') return utf8.encode(something);
-  if (something instanceof Uint8Array) return something;
+  if (typeof something === 'string') {
+    return new TextEncoder('utf-8').encode(something);
+  } else if (something instanceof Uint8Array) {
+    return something;
+  }
   return new Uint8Array(something);
 }
-
-/**
- * interface utf8 {
- *   encode(s :string) :Uint8Array
- *   decode(b :Uint8Array) :string
- * }
- */
-const utf8 = (() => {
-  const enc = new TextEncoder('utf-8');
-  const dec = new TextDecoder('utf-8');
-  return {
-    encode: s => enc.encode(s),
-    decode: b => dec.decode(b),
-  };
-})();
 
 /**
  * withOutPtr facilitates the following:
@@ -249,6 +243,8 @@ const utf8 = (() => {
  *
  * @param {Function} fn
  *
+ * @return {Uint8Array & {heapAddr: numer}}
+ *
  * @example
  *    // WASM module, in C:
  *    typedef struct Color_ { char r, g, b; } Color;
@@ -271,8 +267,8 @@ const utf8 = (() => {
  */
 function withOutPtr(fn) {
   const len = fn(tmpPtr);
-  let addr = Module.HEAP32[tmpPtr >> 2];
-  if (addr == 0) {
+  const addr = Module.HEAP32[tmpPtr >> 2];
+  if (addr === 0) {
     return null;
   }
   const buf = Module.HEAPU8.subarray(addr, addr + len);
@@ -331,7 +327,8 @@ function error_from_wasm() {
   const code = Module._WErrGetCode();
   if (code !== 0) {
     const msgptr = Module._WErrGetMsg();
-    const message = msgptr != 0 ? UTF8ArrayToString(Module.HEAPU8, msgptr) : '';
+    const message =
+      msgptr !== 0 ? UTF8ArrayToString(Module.HEAPU8, msgptr) : '';
     Module._WErrClear();
     return new WError(code, message);
   }

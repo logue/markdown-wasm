@@ -8,10 +8,9 @@ node_modules
 .DS_Store
 /_*
 **/.DS_Store
-*.g*
-/.wasmc*
-/build
 /dist
+/src/markdown.*
 /deps/build
 /examples/*/build
 /test/benchmark/.yarn
+/test/spec/spec.html

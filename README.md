@@ -145,9 +145,6 @@ export interface ParseOptions {
     langname: string,
     body: UTF8Bytes
   ) => Uint8Array | string | null;
-
-  /** @depreceated use "bytes" instead (v1.1.1) */
-  asMemoryView?: boolean;
 }
 
 /** UTF8Bytes is a Uint8Array representing UTF8 text  */
@@ -215,6 +212,7 @@ See [`markdown.d.ts`](markdown.d.ts)
 Install latest emscripten to your environment.
 
 ```sh
-npm install
-yarn build
+yarn install
+yarn build-wasm
+yarn build-bundle
 ```

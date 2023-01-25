@@ -78,7 +78,63 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/styles/github.css"
     />
-    <script type="module" crossorigin src="./assets/index-f86f14ad.js"></script>
+    <style>
+      .markdown-body h1 > a.before,
+      .markdown-body h2 > a.before,
+      .markdown-body h3 > a.before,
+      .markdown-body h4 > a.before,
+      .markdown-body h5 > a.before,
+      .markdown-body h6 > a.before {
+        display: block;
+        float: left;
+        height: 1.2em;
+        width: 1em;
+        margin-left: -1em;
+        position: relative;
+        outline: none;
+      }
+      /*.anchor:target { background: yellow; }*/
+      .markdown-body h1 > a.anchor:before,
+      .markdown-body h2 > a.anchor:before,
+      .markdown-body h3 > a.anchor:before,
+      .markdown-body h4 > a.anchor:before,
+      .markdown-body h5 > a.anchor:before,
+      .markdown-body h6 > a.anchor:before {
+        visibility: hidden;
+        position: absolute;
+        opacity: 0.2;
+        right: 0;
+        top: 0;
+        width: 1em;
+        font-weight: 300;
+        line-height: inherit;
+        content: ''; /* U+E08F */
+        text-align: center;
+      }
+      .markdown-body h1 > a.anchor:hover:before,
+      .markdown-body h2 > a.anchor:hover:before,
+      .markdown-body h3 > a.anchor:hover:before,
+      .markdown-body h4 > a.anchor:hover:before,
+      .markdown-body h5 > a.anchor:hover:before,
+      .markdown-body h6 > a.anchor:hover:before {
+        visibility: visible;
+        opacity: 0.8;
+      }
+      .markdown-body h1 > a.anchor:focus:before,
+      .markdown-body h2 > a.anchor:focus:before,
+      .markdown-body h3 > a.anchor:focus:before,
+      .markdown-body h4 > a.anchor:focus:before,
+      .markdown-body h5 > a.anchor:focus:before,
+      .markdown-body h6 > a.anchor:focus:before,
+      .markdown-body h1:hover .anchor:before,
+      .markdown-body h2:hover .anchor:before,
+      .markdown-body h3:hover .anchor:before,
+      .markdown-body h4:hover .anchor:before,
+      .markdown-body h5:hover .anchor:before,
+      .markdown-body h6:hover .anchor:before {
+        visibility: visible;
+      }
+    </style>
   </head>
 
   <body class="d-flex flex-column h-100 text-body bg-body">
@@ -263,9 +319,68 @@ With default settings, markdown-wasm allows embedded HTML.
         </div>
       </div>
     </main>
-    <script src="
-https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js
-"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+    <script type="module">
+      import { ready, parse, ParseFlags } from './src/index.js';
+      const markdown = await ready();
+
+      /** @type {HTMLTextareaElement} */
+      const inputEl = document.getElementById('markdown-input');
+      /** @type {HTMLDivElement} */
+      const outputEl = document.getElementById('html-output');
+
+      let line = inputEl.value.split('\n').length;
+      if (line <= 3) {
+        line = 3;
+      }
+      inputEl.rows = line + 1;
+
+      let hljsTimer;
+
+      function update() {
+        const source = inputEl.value;
+        const html = parse(source, {
+          parseFlags: ParseFlags.DEFAULT | ParseFlags.NO_HTML,
+        });
+        outputEl.innerHTML = html;
+        updateCodeHighlight();
+      }
+
+      function updateCodeHighlight() {
+        clearTimeout(hljsTimer);
+        if (typeof hljs == 'undefined') {
+          hljsTimer = setTimeout(updateCodeSyntaxHighlighting, 500);
+          return;
+        }
+        document
+          .querySelectorAll('pre code[class^="language-"]')
+          .forEach(block => {
+            hljs.highlightBlock(block);
+          });
+      }
+
+      inputEl.addEventListener('input', update);
+      update();
+
+      // load the markdown module to make it playable in the browser console
+      console.log('markdown module API:', markdown);
+
+      window.addEventListener('DOMContentLoaded', () => {
+        let line = inputEl.value.split('\n').length;
+        if (line <= 3) {
+          line = 3;
+        }
+        console.log(line);
+
+        //行数分のrowsに変更
+        inputEl.setAttribute('rows', line + 1);
+        inputEl.addEventListener('input', setTextareaHeight);
+
+        function setTextareaHeight() {
+          this.style.height = 'auto';
+          this.style.height = `${this.scrollHeight}px`;
+        }
+      });
+    </script>
   </body>
 </html>

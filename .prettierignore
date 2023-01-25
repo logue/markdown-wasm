@@ -1,7 +1,8 @@
 .yarn/
 .husky/
 .vscode/
-src/markdown.js
+src/markdown.*
 dist/
 build/
 test/benchmark/samples
+test/spec/spec.html
