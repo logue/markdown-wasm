@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
+        emscripten-version: [3.1.x]
 
     steps:
       - name: Checkout ✅
@@ -23,9 +24,23 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Setup Emscripten cache 💽
+        id: cache-system-libraries
+        uses: actions/cache@v2
+        with:
+          path: 'emsdk-cache'
+          key: ${{ matrix.emscripten-version }}-${{ runner.os }}
+        
+      - name: Use emscripten ${{ matrix.emscripten-version }} 🔧
+        uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: ${{ matrix.emscripten-version }}
+          actions-cache-folder: 'emsdk-cache'
+  
       - name: Build 🔧
         run: |
           yarn install
+          yarn build-wasm
           yarn build-docs
 
       - name: Deploy to gh-pages 🚀
