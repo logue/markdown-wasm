@@ -10,7 +10,7 @@ emcc ^
   -s ASSERTIONS=0 ^
   -s ENVIRONMENT=web,node ^
   -s EXPORT_ES6=1 ^
-  -s EXPORTED_RUNTIME_METHODS=addFunction,removeFunction,addOnPostRun ^
+  -s EXPORTED_RUNTIME_METHODS=addFunction,removeFunction,addOnPostRun,UTF8ArrayToString ^
   -s FILESYSTEM=0 ^
   -s MALLOC=emmalloc ^
   -s MODULARIZE=1 ^

@@ -9,7 +9,7 @@ node_modules
 /_*
 **/.DS_Store
 /dist
-/src/markdown.*
+/docs
 /deps/build
 /examples/*/build
 /test/benchmark/.yarn

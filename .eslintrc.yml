@@ -16,3 +16,21 @@ rules:
   no-invalid-this: off
   no-unused-vars: off
   no-undef: off
+settings:
+  import/parsers:
+    '@typescript-eslint/parser':
+      - .ts
+      - .tsx
+  import/resolver:
+    typescript: true
+    alias:
+      map:
+        - ['@', './src']
+      extensions:
+        - .js
+        - .ts
+        - .jsx
+        - .tsx
+        - .vue
+  vite:
+    configPath: ./vite.config.ts

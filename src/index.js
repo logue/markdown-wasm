@@ -2,7 +2,7 @@ import init from './markdown.js';
 
 /** Wasm Module */
 let Module;
-/** used by strFromUTF8Ptr as a temporary address-sized integer */
+/** @type {number} used by strFromUTF8Ptr as a temporary address-sized integer */
 let tmpPtr = 0;
 
 /** Initialize Markdown Wasm */
@@ -66,7 +66,7 @@ export const ParseFlags = {
 };
 
 /** @type {Record<string, number>} these should be in sync with "OutputFlags" in common.h */
-export const OutputFlags = {
+const OutputFlags = {
   /** Output HTML */
   HTML: 1 << 0,
   /** Output XHTML (only has effect with HTML flag set)  */
@@ -78,10 +78,10 @@ export const OutputFlags = {
 /**
  * Parse markdown
  *
- * @param {string | ArrayLike<number>} source - markdown text
+ * @param {string | Uint8Array} source - markdown text
  * @param {object} options - Parser options
  *
- * @return {string | Uint8Array}
+ * @return {string | Uint8Array | null}
  */
 export function parse(source, options = {}) {
   if (!Module) {
@@ -106,7 +106,6 @@ export function parse(source, options = {}) {
     case 'html':
     case undefined:
     case null:
-    case '':
       outputFlags |= OutputFlags.HTML;
       break;
 
@@ -142,10 +141,9 @@ export function parse(source, options = {}) {
   // check for error and throw if needed
   werrCheck();
 
-  // DEBUG
-  // if (outbuf) {
-  //   console.log(utf8.decode(outbuf))
-  // }
+  if (!outbuf) {
+    return null;
+  }
 
   return options.bytes ? outbuf : new TextDecoder('utf-8').decode(outbuf);
 }
@@ -166,11 +164,13 @@ function create_onCodeBlock_fn(onCodeBlock) {
       // lang is the "language" tag, if any, provided with the code block
       const lang =
         metalen > 0
-          ? utf8.decode(HEAPU8.subarray(metaptr, metaptr + metalen))
+          ? new TextDecoder('utf-8').decode(
+              Module.HEAPU8.subarray(metaptr, metaptr + metalen)
+            )
           : '';
 
       /** @type {Uint8Array} body is a view into heap memory of the segment of source (UTF8 bytes) */
-      const body = HEAPU8.subarray(inptr, inptr + inlen);
+      const body = Module.HEAPU8.subarray(inptr, inptr + inlen);
 
       /** result from the onCodeBlock function */
       const result = onCodeBlock(lang, new TextDecoder('utf-8').decode(body));
@@ -186,7 +186,7 @@ function create_onCodeBlock_fn(onCodeBlock) {
         // copy resbuf to WASM heap memory
         const resptr = mallocbuf(resbuf, resbuf.length);
         // write pointer value
-        HEAPU32[outptr >> 2 /* == outptr / 4 */] = resptr;
+        Module.HEAPU32[outptr >> 2 /* == outptr / 4 */] = resptr;
         // Note: fmt_html.c calls free(resptr)
       }
 
@@ -206,13 +206,13 @@ function create_onCodeBlock_fn(onCodeBlock) {
 /**
  * to Byte Array
  *
- * @param {Uint8Array | string} something
+ * @param {Uint8Array | string | number[]} something
  *
  * @return {Uint8Array}
  */
 function as_byte_array(something) {
   if (typeof something === 'string') {
-    return new TextEncoder('utf-8').encode(something);
+    return new TextEncoder().encode(something);
   } else if (something instanceof Uint8Array) {
     return something;
   }
@@ -282,8 +282,10 @@ function withOutPtr(fn) {
  * 2. calls fn(pointer, size)
  * 3. calls free(pointer)
  *
- * @param {ArrayBuffer} buf
+ * @param {Uint8Array} buf
  * @param {Function} fn
+ *
+ * @return {number}
  */
 function withTmpBytePtr(buf, fn) {
   const size = buf.length;
@@ -298,8 +300,8 @@ function withTmpBytePtr(buf, fn) {
  * from byteArray into the allocated location.
  * Returns the address to the allocated memory.
  *
- * @param {ArrayBuffer} byteArray
- * @param {number} size
+ * @param {Uint8Array} byteArray
+ * @param {number} length
  */
 function mallocbuf(byteArray, length) {
   const offs = Module._wrealloc(0, length);
@@ -321,14 +323,17 @@ class WError extends Error {
 /**
  * Get & clear last WErr. Returns null if there was no error.
  * Uses a descriptive name so to help in stack traces.
+ *
+ * @return {WError | undefined}
  */
 function error_from_wasm() {
-  // :WError|null
+  /** @type {number} */
   const code = Module._WErrGetCode();
   if (code !== 0) {
+    /** @type {string} */
     const msgptr = Module._WErrGetMsg();
     const message =
-      msgptr !== 0 ? UTF8ArrayToString(Module.HEAPU8, msgptr) : '';
+      msgptr !== '' ? Module.UTF8ArrayToString(Module.HEAPU8, msgptr) : '';
     Module._WErrClear();
     return new WError(code, message);
   }

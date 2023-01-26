@@ -79,12 +79,12 @@
       href="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/styles/github.css"
     />
     <style>
-      .markdown-body h1 > a.before,
-      .markdown-body h2 > a.before,
-      .markdown-body h3 > a.before,
-      .markdown-body h4 > a.before,
-      .markdown-body h5 > a.before,
-      .markdown-body h6 > a.before {
+      h1 > a.anchor,
+      h2 > a.anchor,
+      h3 > a.anchor,
+      h4 > a.anchor,
+      h5 > a.anchor,
+      h6 > a.anchor {
         display: block;
         float: left;
         height: 1.2em;
@@ -94,44 +94,42 @@
         outline: none;
       }
       /*.anchor:target { background: yellow; }*/
-      .markdown-body h1 > a.anchor:before,
-      .markdown-body h2 > a.anchor:before,
-      .markdown-body h3 > a.anchor:before,
-      .markdown-body h4 > a.anchor:before,
-      .markdown-body h5 > a.anchor:before,
-      .markdown-body h6 > a.anchor:before {
+      h1 > a.anchor:before,
+      h2 > a.anchor:before,
+      h3 > a.anchor:before,
+      h4 > a.anchor:before,
+      h5 > a.anchor:before,
+      h6 > a.anchor:before {
         visibility: hidden;
         position: absolute;
         opacity: 0.2;
         right: 0;
         top: 0;
-        width: 1em;
-        font-weight: 300;
+        width: 1.2em;
         line-height: inherit;
-        content: ''; /* U+E08F */
-        text-align: center;
+        content: '🔗';
       }
-      .markdown-body h1 > a.anchor:hover:before,
-      .markdown-body h2 > a.anchor:hover:before,
-      .markdown-body h3 > a.anchor:hover:before,
-      .markdown-body h4 > a.anchor:hover:before,
-      .markdown-body h5 > a.anchor:hover:before,
-      .markdown-body h6 > a.anchor:hover:before {
+      h1 > a.anchor:hover:before,
+      h2 > a.anchor:hover:before,
+      h3 > a.anchor:hover:before,
+      h4 > a.anchor:hover:before,
+      h5 > a.anchor:hover:before,
+      h6 > a.anchor:hover:before {
         visibility: visible;
         opacity: 0.8;
       }
-      .markdown-body h1 > a.anchor:focus:before,
-      .markdown-body h2 > a.anchor:focus:before,
-      .markdown-body h3 > a.anchor:focus:before,
-      .markdown-body h4 > a.anchor:focus:before,
-      .markdown-body h5 > a.anchor:focus:before,
-      .markdown-body h6 > a.anchor:focus:before,
-      .markdown-body h1:hover .anchor:before,
-      .markdown-body h2:hover .anchor:before,
-      .markdown-body h3:hover .anchor:before,
-      .markdown-body h4:hover .anchor:before,
-      .markdown-body h5:hover .anchor:before,
-      .markdown-body h6:hover .anchor:before {
+      h1 > a.anchor:focus:before,
+      h2 > a.anchor:focus:before,
+      h3 > a.anchor:focus:before,
+      h4 > a.anchor:focus:before,
+      h5 > a.anchor:focus:before,
+      h6 > a.anchor:focus:before,
+      h1:hover .anchor:before,
+      h2:hover .anchor:before,
+      h3:hover .anchor:before,
+      h4:hover .anchor:before,
+      h5:hover .anchor:before,
+      h6:hover .anchor:before {
         visibility: visible;
       }
     </style>
@@ -321,20 +319,21 @@ With default settings, markdown-wasm allows embedded HTML.
     </main>
     <script src="https://cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
     <script type="module">
-      import { ready, parse, ParseFlags } from './src/index.js';
+      import { ready, parse, ParseFlags } from './src/';
       const markdown = await ready();
 
       /** @type {HTMLTextareaElement} */
       const inputEl = document.getElementById('markdown-input');
       /** @type {HTMLDivElement} */
       const outputEl = document.getElementById('html-output');
-
+      /** @type {number} */
       let line = inputEl.value.split('\n').length;
       if (line <= 3) {
         line = 3;
       }
       inputEl.rows = line + 1;
 
+      /** @type {number} */
       let hljsTimer;
 
       function update() {
@@ -366,11 +365,11 @@ With default settings, markdown-wasm allows embedded HTML.
       console.log('markdown module API:', markdown);
 
       window.addEventListener('DOMContentLoaded', () => {
+        /** @type {number} */
         let line = inputEl.value.split('\n').length;
         if (line <= 3) {
           line = 3;
         }
-        console.log(line);
 
         //行数分のrowsに変更
         inputEl.setAttribute('rows', line + 1);

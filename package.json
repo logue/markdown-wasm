@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/markdown-wasm",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "type": "module",
   "description": "Markdown parser and html generator implemented in WebAssembly",
   "homepage": "https://github.com/logue/markdown-wasm",
@@ -22,7 +22,7 @@
   "files": [
     "./src/markdown.wasm",
     "./src/markdown.js",
-    "./src/markdown.wasm.js",
+    "./src/markdown.d.ts",
     "./src/index.js",
     "./dist",
     "markdown.d.ts",
@@ -31,11 +31,15 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build-bundle": "vite build",
-    "build-wasm": "src/build",
+    "clean": "rimraf node_modules/.vite",
+    "build": "run-p build-wasm build-only",
+    "build:clean": "rimraf dist",
+    "build-wasm": "./src/build",
+    "build-only": "vite build",
     "build-docs": "vite build --mode=docs",
+    "lint": "eslint . --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint && prettier . --write",
     "test": "node test/spec/spec.js",
-    "lint": "eslint . && prettier . -w"
+    "prepare": "husky install"
   },
   "author": {
     "name": "rsms",
@@ -51,12 +55,32 @@
   "license": "MIT",
   "packageManager": "yarn@3.3.1",
   "devDependencies": {
+    "@types/emscripten": "^1.39.6",
+    "@types/node": "^18.11.18",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-import-resolver-typescript": "^3.5.3",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^39.6.8",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.8.3",
+    "rimraf": "^4.1.2",
     "vite": "^4.0.4",
     "vite-plugin-banner": "^0.7.0",
-    "vite-plugin-checker": "^0.5.4"
+    "vite-plugin-checker": "^0.5.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,json,htm,html}": "eslint --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint",
+    "*": "prettier -w -u"
   }
 }

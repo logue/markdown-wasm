@@ -1,29 +1,32 @@
+/* eslint-disable spaced-comment */
+/// <reference types="emscripten" />
+
 /** Load Markdown wasm */
-export function ready(): void;
+export function ready(): Promise<EmscriptenModule>;
 
 /**
  * parse reads markdown source at s and converts it to HTML.
  * When output is a byte array, it will be a reference.
  *
- * @param s - markdown source text
- * @param o - parse options
+ * @param source - markdown source text
+ * @param options - parse options
  */
 export function parse(
-  s: Source,
-  o?: ParseOptions & { bytes?: never | false }
-): string;
+  source: string | Uint8Array,
+  options?: ParseOptions & { bytes?: never | false }
+): string | null;
 export function parse(
-  s: Source,
-  o?: ParseOptions & { bytes: true }
-): Uint8Array;
+  source: string | Uint8Array,
+  options?: ParseOptions & { bytes: true }
+): Uint8Array | null;
 
-/** Markdown source code can be provided as a JavaScript string or UTF8 encoded data */
-type Source = string | ArrayLike<number>;
+/** ParseFlag type */
+export type ParseFlagsType = (typeof ParseFlags)[keyof typeof ParseFlags];
 
 /** Options for the parse function */
 export interface ParseOptions {
   /** Customize parsing. Defaults to ParseFlags.DEFAULT */
-  parseFlags?: ParseFlags;
+  parseFlags?: ParseFlagsType;
 
   /** Select output format. Defaults to "html" */
   format?: 'html' | 'xhtml';
@@ -58,66 +61,55 @@ export interface ParseOptions {
    */
   onCodeBlock?: (
     langname: string,
-    body: UTF8Bytes
+    body: Uint8Array
   ) => Uint8Array | string | null;
-
-  /** @depreceated use "bytes" instead (v1.1.1) */
-  asMemoryView?: boolean;
 }
 
-/** UTF8Bytes is a Uint8Array representing UTF8 text  */
-export interface UTF8Bytes extends Uint8Array {
-  /** toString returns a UTF8 decoded string (lazily decoded and cached) */
-  toString(): string;
-}
-
-/** Flags that customize Markdown parsing */
-export enum ParseFlags {
+/** ParseFlags */
+export declare const ParseFlags: {
   /** In TEXT, collapse non-trivial whitespace into single ' ' */
-  COLLAPSE_WHITESPACE,
-  /** Enable $ and $$ containing LaTeX equations. */
-  LATEX_MATH_SPANS,
-  /** Disable raw HTML blocks. */
-  NO_HTML_BLOCKS,
-  /** Disable raw HTML (inline). */
-  NO_HTML_SPANS,
-  /** Disable indented code blocks. (Only fenced code works.) */
-  NO_INDENTED_CODE_BLOCKS,
+  readonly COLLAPSE_WHITESPACE: 0x0001;
   /** Do not require space in ATX headers ( ###header ) */
-  PERMISSIVE_ATX_HEADERS,
-  /** Recognize e-mails as links even without <...> */
-  PERMISSIVE_EMAIL_AUTO_LINKS,
+  readonly PERMISSIVE_ATX_HEADERS: 0x0002;
   /** Recognize URLs as links even without <...> */
-  PERMISSIVE_URL_AUTO_LINKS,
-  /** Enable WWW autolinks (without proto; just 'www.') */
-  PERMISSIVE_WWW_AUTOLINKS,
-  /** Enable strikethrough extension. */
-  STRIKETHROUGH,
+  readonly PERMISSIVE_URL_AUTO_LINKS: 0x0004;
+  /** Recognize e-mails as links even without <...> */
+  readonly PERMISSIVE_EMAIL_AUTO_LINKS: 0x0008;
+  /** Disable indented code blocks. (Only fenced code works) */
+  readonly NO_INDENTED_CODE_BLOCKS: 0x0010;
+  /** Disable raw HTML blocks. */
+  readonly NO_HTML_BLOCKS: 0x0020;
+  /** Disable raw HTML (inline). */
+  readonly NO_HTML_SPANS: 0x0040;
   /** Enable tables extension. */
-  TABLES,
+  readonly TABLES: 0x0100;
+  /** Enable strikethrough extension. */
+  readonly STRIKETHROUGH: 0x0200;
+  /** Enable WWW autolinks (without proto; just 'www.') */
+  readonly PERMISSIVE_WWW_AUTOLINKS: 0x0400;
   /** Enable task list extension. */
-  TASK_LISTS,
+  readonly TASK_LISTS: 0x0800;
+  /** Enable $ and $$ containing LaTeX equations. */
+  readonly LATEX_MATH_SPANS: 0x1000;
   /** Enable wiki links extension. */
-  WIKI_LINKS,
+  readonly WIKI_LINKS: 0x2000;
   /** Enable underline extension (disables '_' for emphasis) */
-  UNDERLINE,
+  readonly UNDERLINE: 0x4000;
 
-  /** Default flags are:
-   *    COLLAPSE_WHITESPACE |
-   *    PERMISSIVE_ATX_HEADERS |
-   *    PERMISSIVE_URL_AUTO_LINKS |
-   *    STRIKETHROUGH |
-   *    TABLES |
-   *    TASK_LISTS
-   */
-  DEFAULT,
+  /** Default flags */
+  readonly DEFAULT: 0x0001 | 0x0002 | 0x0004 | 0x0200 | 0x0100 | 0x0800;
+  // COLLAPSE_WHITESPACE
+  // PERMISSIVE_ATX_HEADERS
+  // PERMISSIVE_URL_AUTO_LINKS
+  // STRIKETHROUGH
+  // TABLES
+  // TASK_LISTS
 
-  /** Shorthand for NO_HTML_BLOCKS | NO_HTML_SPANS */
-  NO_HTML,
+  /** No HTML */
+  readonly NO_HTML: 0x0020 | 0x0040; // NO_HTML_BLOCKS | NO_HTML_SPANS
 
-  /** All options are off */
-  COMMONMARK,
-
-  /** Shorhand for PERMISSIVE_URL_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS */
-  GITHUB,
-}
+  /** Commonmark Comply */
+  readonly COMMONMARK: 0x0000;
+  /** Github Style */
+  readonly GITHUB: 0x0004 | 0x0100 | 0x0200 | 0x0800; // PERMISSIVE_URL_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
+};
