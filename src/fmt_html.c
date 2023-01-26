@@ -200,7 +200,7 @@ static void render_open_li_block(FmtHTML* r, const MD_BLOCK_LI_DETAIL* det) {
     if (det->task_mark == 'x' || det->task_mark == 'X') {
       render_literal(r, " checked");
     }
-    render_char(r, '>');
+    render_literal(r, (r->flags & OutputFlagXHTML) ? " />": ">");
   } else {
     render_literal(r, "<li>");
   }
@@ -319,7 +319,7 @@ static int enter_block_callback(MD_BLOCKTYPE type, void* detail, void* userdata)
     case MD_BLOCK_UL:    render_literal(r, "<ul>\n"); break;
     case MD_BLOCK_OL:    render_open_ol_block(r, (const MD_BLOCK_OL_DETAIL*)detail); break;
     case MD_BLOCK_LI:    render_open_li_block(r, (const MD_BLOCK_LI_DETAIL*)detail); break;
-    case MD_BLOCK_HR:    render_literal(r, (r->flags & OutputFlagXHTML) ? "<hr/>\n" : "<hr>\n"); break;
+    case MD_BLOCK_HR:    render_literal(r, (r->flags & OutputFlagXHTML) ? "<hr />\n" : "<hr>\n"); break;
     case MD_BLOCK_H:
     {
       render_literal(r, head[((MD_BLOCK_H_DETAIL*)detail)->level - 1]);
@@ -465,12 +465,12 @@ static int text_callback(MD_TEXTTYPE type, const MD_CHAR* text, MD_SIZE size, vo
       render_literal(
         r,
         r->imgnest == 0 ?
-          ((r->flags & OutputFlagXHTML) ? "<br/>\n" : "<br>\n") :
+          ((r->flags & OutputFlagXHTML) ? "<br />\n" : "<br>\n") :
           " "
       );
       break;
 
-    render_literal(r, (r->flags & OutputFlagXHTML) ? "<hr/>\n" : "<hr>\n"); break;
+    render_literal(r, (r->flags & OutputFlagXHTML) ? "<hr />\n" : "<hr>\n"); break;
 
     case MD_TEXT_SOFTBR:    render_literal(r, (r->imgnest == 0 ? "\n" : " ")); break;
     case MD_TEXT_HTML:      render_text(r, text, size); break;
