@@ -39,7 +39,8 @@
     "build-docs": "vite build --mode=docs",
     "lint": "eslint . --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint && prettier . --write",
     "test": "node test/spec/spec.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "version": "auto-changelog -p && git add CHANGELOG.md"
   },
   "author": {
     "name": "rsms",
