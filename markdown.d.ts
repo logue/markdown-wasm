@@ -13,12 +13,8 @@ export function ready(): Promise<EmscriptenModule>;
  */
 export function parse(
   source: string | Uint8Array,
-  options?: ParseOptions & { bytes?: never | false }
-): string | null;
-export function parse(
-  source: string | Uint8Array,
-  options?: ParseOptions & { bytes: true }
-): Uint8Array | null;
+  options?: ParseOptions
+): Uint8Array | string | null;
 
 /** ParseFlag type */
 export type ParseFlagsType = (typeof ParseFlags)[keyof typeof ParseFlags];

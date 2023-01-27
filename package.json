@@ -1,14 +1,26 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/markdown-wasm",
-  "version": "1.4.2",
   "type": "module",
+  "version": "1.4.3",
+  "license": "MIT",
   "description": "Markdown parser and html generator implemented in WebAssembly",
   "homepage": "https://github.com/logue/markdown-wasm",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/logue/markdown-wasm.git"
   },
+  "author": {
+    "name": "rsms",
+    "url": "https://rsms.me/"
+  },
+  "contributors": [
+    {
+      "name": "Logue",
+      "email": "logue@hotmail.co.jp",
+      "url": "https://logue.dev"
+    }
+  ],
   "main": "dist/markdown.umd.js",
   "module": "dist/markdown.es.js",
   "types": "markdown.d.ts",
@@ -29,6 +41,11 @@
     "README.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=18.13.0",
+    "yarn": ">=1.22.19"
+  },
+  "packageManager": "yarn@3.3.1",
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
@@ -42,19 +59,6 @@
     "prepare": "husky install",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
-  "author": {
-    "name": "rsms",
-    "url": "https://rsms.me/"
-  },
-  "contributors": [
-    {
-      "name": "Logue",
-      "email": "logue@hotmail.co.jp",
-      "url": "https://logue.dev"
-    }
-  ],
-  "license": "MIT",
-  "packageManager": "yarn@3.3.1",
   "devDependencies": {
     "@types/emscripten": "^1.39.6",
     "@types/node": "^18.11.18",
@@ -83,5 +87,8 @@
   "lint-staged": {
     "*.{js,ts,json,htm,html}": "eslint --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint",
     "*": "prettier -w -u"
+  },
+  "resolutions": {
+    "json5": "^2.2.3"
   }
 }

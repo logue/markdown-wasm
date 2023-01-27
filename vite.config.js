@@ -50,7 +50,7 @@ export default defineConfig(async ({ mode }) => {
       outDir: mode === 'docs' ? 'docs' : undefined,
       // Build Target
       // https://vitejs.dev/config/build-options.html#build-target
-      target: 'esnext',
+      target: 'modules',
       // Minify option
       // https://vitejs.dev/config/build-options.html#build-minify
       minify: mode === 'docs',
