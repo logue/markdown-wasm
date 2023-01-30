@@ -1,18 +1,28 @@
-import { basename } from 'node:path';
-import * as md from '../src/index.js';
+import { ready, parse } from '../src/index.js';
 
-// const libdir = process.argv.includes('-debug') ? 'build/debug' : 'dist';
-// const md = require(`../${libdir}/markdown.node.js`);
+import { basename } from 'node:path';
+import process from 'node:process';
+
+await ready();
 
 const line = '——————————————————————————————————————————————————';
 const wave = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
 
-export let numFailures = 0;
+let numFailures = 0;
 
-export const checkHTMLResult = function check(
+/**
+ * markdown test
+ *
+ * @param {string} name - test name
+ * @param {string | Uint8Array} inputData - input data
+ * @param {string | Uint8Array} expectedOutputData - compare data
+ * @param {import('../markdown').ParseOptions} options
+ */
+export function checkHTMLResult(
   name,
   inputData,
-  expectedOutputData
+  expectedOutputData,
+  options = {}
 ) {
   if (typeof inputData == 'string') {
     inputData = Buffer.from(inputData, 'utf8');
@@ -20,19 +30,19 @@ export const checkHTMLResult = function check(
   if (typeof expectedOutputData == 'string') {
     expectedOutputData = Buffer.from(expectedOutputData, 'utf8');
   }
-  const actual = Buffer.from(md.parse(inputData, { asMemoryView: true }));
+  const actual = Buffer.from(parse(inputData, { bytes: true, ...options }));
   if (expectedOutputData.compare(actual) == 0) {
     log(`${name} OK`);
     return true;
   }
   numFailures++;
   logerr(`${name} FAIL`);
-  console.error(`\n\nExpected output:\n${line}`);
+  console.error(`\n\nExpected output:\n${line}\n`);
   inspectBuf(expectedOutputData, actual);
-  console.error(`${line}\n\nActual output:\n${line}`);
+  console.error(`${line}\n\nActual output:\n${line}\n`);
   inspectBuf(actual, expectedOutputData);
   console.error(line);
-};
+}
 
 export function exit() {
   process.exit(numFailures > 0 ? 1 : 0);

@@ -73,6 +73,8 @@ const OutputFlags = {
   XHTML: 1 << 1,
   /** Allow "javascript:" URIs */
   AllowJSURI: 1 << 2,
+  /** Disable anchor tag in headlines. */
+  DisableHeadlineAnchors: 1 << 3,
 };
 
 /**
@@ -97,6 +99,10 @@ export function parse(source, options = {}) {
 
   /** @type {number} */
   let outputFlags = options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
+
+  if (options.disableHeadlineAnchors) {
+    outputFlags |= OutputFlags.DisableHeadlineAnchors;
+  }
 
   switch (options.format) {
     case 'xhtml':

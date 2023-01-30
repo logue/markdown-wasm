@@ -70,6 +70,7 @@ typedef enum OutputFlags {
   OutputFlagHTML       = 1 << 0,
   OutputFlagXHTML      = 1 << 1,
   OutputFlagAllowJSURI = 1 << 2, // allow "javascript:" URIs in links
+  OutputFlagDisableHeadlineAnchors = 1 << 3,
 } OutputFlags;
 
 typedef int(*JSTextFilterFun)(

@@ -1,7 +1,7 @@
 .yarn/
 .husky/
 .vscode/
-src/markdown.js
+src/markdown.*
 docs/
 dist/
 build/

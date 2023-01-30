@@ -1,7 +1,7 @@
 /* eslint-disable spaced-comment */
 /// <reference types="emscripten" />
 
-export default function init(): Promise<MarkdownModule>;
+export default function Module(): Promise<MarkdownModule>;
 
 export interface MarkdownModule extends EmscriptenModule {
   addFunction(func: (...args: any[]) => any, signature?: string): number;

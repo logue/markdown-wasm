@@ -59,6 +59,9 @@ export interface ParseOptions {
     langname: string,
     body: Uint8Array
   ) => Uint8Array | string | null;
+
+  /** Disable anchor tag in headlines. Defaults to `false` */
+  disableHeadlineAnchors?: boolean;
 }
 
 /** ParseFlags */

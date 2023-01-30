@@ -9,7 +9,7 @@ await ready();
 const source = readFileSync(
   fileURLToPath(new URL('./spec.txt', import.meta.url))
 );
-const timeLabel = `markdown.parse("spec.txt")`;
+const timeLabel = `parse("spec.txt")`;
 console.time(timeLabel);
 let html = parse(source);
 console.timeEnd(timeLabel);
