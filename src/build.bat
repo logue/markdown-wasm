@@ -1,11 +1,10 @@
 cd src
 emcc ^
-  --closure=1 ^
-  --no-entry ^
-  --source-map-base ^
-  -DMD4C_USE_UTF8 ^
+  --closure 1 ^
+  -flto ^
+  -fno-exceptions ^
   -O3 ^
-  -lembind ^
+  -DMD4C_USE_UTF8 ^
   -s ALLOW_MEMORY_GROWTH=1 ^
   -s ALLOW_TABLE_GROWTH=1 ^
   -s ASSERTIONS=0 ^

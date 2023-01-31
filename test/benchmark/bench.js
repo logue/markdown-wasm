@@ -10,6 +10,7 @@ import { micromark } from 'micromark';
 import { ready, parse as _parse } from '../../src/index.js';
 
 import { statSync, readdirSync, readFileSync } from 'node:fs';
+import process from 'node:process';
 
 /** setup markdownit*/
 const markdownit = new MarkdownIt();
@@ -54,6 +55,12 @@ if (statSync(filename).isDirectory()) {
 
 // Benchmark.options.maxTime = 10
 
+/**
+ * toCSV
+ *
+ * @param {string[]} values
+ * @return {string}
+ */
 function csv(values) {
   return values.map(s => String(s).replace(/,/g, '\\,')).join(',');
 }
@@ -85,6 +92,6 @@ function benchmarkFile(benchfile) {
     .add('micromark', () => micromark(contents))
     .add('markdown-wasm', () => _parse(contentsBuffer))
     // .add('markdown-wasm/string', () => _parse(contents))
-    // .add('markdown-wasm/bytes', () =>  _parse(contentsBuffer, { bytes: true })
-    .run();
+    // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
+    .run({ async: true });
 }
