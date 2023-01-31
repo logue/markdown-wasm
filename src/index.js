@@ -81,7 +81,7 @@ const OutputFlags = {
  * Parse markdown
  *
  * @param {string | Uint8Array} source - markdown text
- * @param {object} options - Parser options
+ * @param {import('../markdown').ParseOptions} options - Parser options
  *
  * @return {string | Uint8Array | null}
  */
@@ -98,10 +98,6 @@ export function parse(source, options = {}) {
   /** @type {number} */
   let outputFlags = options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
 
-  if (options.disableHeadlineAnchors) {
-    outputFlags |= OutputFlags.DisableHeadlineAnchors;
-  }
-
   switch (options.format) {
     case 'xhtml':
       outputFlags |= OutputFlags.HTML | OutputFlags.XHTML;
@@ -115,6 +111,10 @@ export function parse(source, options = {}) {
 
     default:
       throw new Error(`[markdown-wasm] invalid format "${options.format}"`);
+  }
+
+  if (options.disableHeadlineAnchors) {
+    outputFlags |= OutputFlags.DisableHeadlineAnchors;
   }
 
   /** @type {number} */

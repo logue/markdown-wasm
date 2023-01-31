@@ -22,7 +22,7 @@ export type ParseFlagsType = (typeof ParseFlags)[keyof typeof ParseFlags];
 /** Options for the parse function */
 export interface ParseOptions {
   /** Customize parsing. Defaults to ParseFlags.DEFAULT */
-  parseFlags?: ParseFlagsType;
+  parseFlags?: ParseFlagsType | number;
 
   /** Select output format. Defaults to "html" */
   format?: 'html' | 'xhtml';

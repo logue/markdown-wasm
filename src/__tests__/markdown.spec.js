@@ -1,5 +1,6 @@
-import { ready, parse } from '../index.js';
+import { ready, parse, ParseFlags } from '../index.js';
 import { it, describe, expect } from 'vitest';
+import spec from './spec.json';
 
 await ready();
 
@@ -83,3 +84,25 @@ describe('XHTML Test', () => {
       '<ul>\n<li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Task</li>\n</ul>\n'
     ));
 });
+
+describe('Commonmark spec test', () =>
+  /**
+   * @type {{
+   *   markdown: string;
+   *   html: string;
+   *   example: number;
+   *   start_line:number;
+   *   end_line: number;
+   *   section: string;
+   * }[]} Commonmark spec
+   */
+  spec.forEach(testCase =>
+    it(`#${testCase.example} ${testCase.section}`, () =>
+      expect(
+        parse(testCase.markdown, {
+          parseFlags: ParseFlags.COMMONMARK,
+          format: 'xhtml',
+          disableHeadlineAnchors: true,
+        })
+      ).equals(testCase.html))
+  ));
