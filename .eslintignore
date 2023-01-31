@@ -1,9 +1,10 @@
-.yarn/
 .husky/
 .vscode/
-src/markdown.*
-docs/
-dist/
+.yarn/
 build/
+dist/
+docs/
+example/example.html
+src/markdown.*
 test/benchmark/samples
 test/spec/spec.html

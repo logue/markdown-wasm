@@ -1,11 +1,11 @@
 import { ready, parse } from '../index.js';
-import { it, describe, assert, expect } from 'vitest';
+import { it, describe, expect } from 'vitest';
 
 await ready();
 
 describe('issue2', () => {
-  // #2
-  it('When MD4C_USE_UTF8 is not defined for md4c, the example input here fail to parse as a valid reference link. In that case, instead of the expected output, we get "<p>[Á]</p>".', () =>
+  // When MD4C_USE_UTF8 is not defined for md4c, the example input here fail to parse as a valid reference link. In that case, instead of the expected output, we get "<p>[Á]</p>".
+  it('MD4C_USE_UTF8', () =>
     expect(
       parse(`
 [á]: /url
@@ -17,34 +17,19 @@ describe('issue2', () => {
 
 describe('issue5', () => {
   it('this triggers the bug', () =>
-    expect(
-      parse(`
-\`\`\`
-                 |
-\`\`\``)
-    ).toBe(`<pre><code>                 |
-</code></pre>
-`));
+    expect(parse('```\n                 |\n```')).equals(
+      '<pre><code>                 |\n</code></pre>\n'
+    ));
 
   it('this does not (indent is 1 less space)#1', () =>
-    expect(
-      parse(`
-\`\`\`
-                |
-\`\`\``)
-    ).toBe(`<pre><code>                |
-</code></pre>
-`));
+    expect(parse('```\n                |\n```')).equals(
+      '<pre><code>                |\n</code></pre>\n'
+    ));
 
   it('this does not (indent is 1 more space)#2', () =>
-    expect(
-      parse(`
-\`\`\`
-                  |
-\`\`\``)
-    ).toBe(`<pre><code>                  |
-</code></pre>
-`));
+    expect(parse('```\n                  |\n```')).equals(
+      '<pre><code>                  |\n</code></pre>\n'
+    ));
 });
 
 describe('issue22', () => {

@@ -7,7 +7,7 @@ import { parse } from 'marked';
 import MarkdownIt from 'markdown-it';
 import { Remarkable } from 'remarkable';
 import { micromark } from 'micromark';
-import { ready, parse as _parse } from '../../src/index.js';
+import { ready, parse as _parse, ParseFlags } from '../../src/index.js';
 
 import { statSync, readdirSync, readFileSync } from 'node:fs';
 import process from 'node:process';
@@ -90,7 +90,9 @@ function benchmarkFile(benchfile) {
     .add('markdown-it', () => markdownit.render(contents))
     .add('remarkable', () => remarkable.render(contents))
     .add('micromark', () => micromark(contents))
-    .add('markdown-wasm', () => _parse(contentsBuffer))
+    .add('markdown-wasm', () =>
+      _parse(contentsBuffer, { parseFlags: ParseFlags.COMMONMARK })
+    )
     // .add('markdown-wasm/string', () => _parse(contents))
     // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
     .run({ async: true });

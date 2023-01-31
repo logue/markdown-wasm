@@ -254,7 +254,7 @@ function createBarChart(data, dataValueKey, graphConfig) {
     .attr('font-size', size);
 
   // y-axis labels
-  let g = svg
+  svg
     .append('g')
     .attr('text-anchor', 'end')
     .attr('font-weight', 500)
@@ -441,6 +441,7 @@ function createMinMaxBarChart(data, graphConfig) {
   return d3n.svgString();
 }
 
+/*
 function createStackedBarChart(data, graphConfig) {
   const barHeight = 25;
   const margin = { top: 30, right: 0, bottom: 10, left: 100 };
@@ -508,6 +509,7 @@ ${format(d.data[d.key])}`
 
   return d3n.svgString();
 }
+*/
 
 function writefile(dir, filename, contents) {
   if (extname(filename).toLowerCase() === '.svg') {
@@ -524,6 +526,7 @@ function writefile(dir, filename, contents) {
 
 // displayImageInTerminal(readFileSync("output.png"))
 
+/*
 function displayImageInTerminal(imageBuffer, name) {
   // iTerm image:
   // ESC ] 1337 ; File = [arguments] : base-64 encoded file contents ^G
@@ -542,6 +545,7 @@ function displayImageInTerminal(imageBuffer, name) {
     return Buffer.from(s, 'utf8').toString('base64');
   }
 }
+*/
 
 // optimizeSvg(svgText :string) :Promise<string>
 function optimizeSvg(svgText) {

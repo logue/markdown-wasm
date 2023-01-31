@@ -9,7 +9,7 @@
 
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
-- Zero dependencies (47.81 kB gzipped without minify.)
+- Zero dependencies (47.32 kB gzipped without minify.)
 - Portable & safe (WASM executes in isolated memory and can run almost anywhere)
 - [Simple API](#api)
 - [Very fast](#benchmarks)
@@ -107,6 +107,9 @@ export interface ParseOptions {
     langname: string,
     body: Uint8Array
   ) => Uint8Array | string | null;
+
+  /** Disable anchor tag in headlines. Defaults to `false` */
+  disableHeadlineAnchors?: boolean;
 }
 
 /** ParseFlags */

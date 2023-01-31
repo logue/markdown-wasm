@@ -2,7 +2,6 @@ import { ready, parse } from '../src/index.js';
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
-// const md = require("../build/debug/markdown.node.js")
 
 await ready();
 
@@ -29,7 +28,7 @@ if (process.argv.includes('-bench')) {
   });
   benchmark('bytes + onCodeBlock', {
     bytes: true,
-    onCodeBlock(lang, body) {
+    onCodeBlock() {
       return null; // causes the body to be HTML-escaped & included as is
     },
   });
@@ -38,8 +37,7 @@ if (process.argv.includes('-bench')) {
 function benchmark(name, options) {
   console.log(`benchmark start ${name} (sampling ~2s of data)`);
   const timeStart = Date.now();
-  const N = 1000,
-    T = 2000;
+  const N = 1000;
   let ntotal = 0;
   while (Date.now() - timeStart < 2000) {
     for (let i = 0; i < N; i++) {

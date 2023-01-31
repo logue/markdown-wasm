@@ -93,9 +93,7 @@ export function parse(source, options = {}) {
   }
   /** @type {number} */
   const parseFlags =
-    options.parseFlags === undefined
-      ? ParseFlags.COMMONMARK
-      : options.parseFlags;
+    options.parseFlags === undefined ? ParseFlags.DEFAULT : options.parseFlags;
 
   /** @type {number} */
   let outputFlags = options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
