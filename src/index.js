@@ -1,6 +1,6 @@
 import init from './markdown.js';
 
-/** Wasm Module */
+/** @type {import('../src/markdown').MarkdownModule} Markdown Wasm Module */
 let Module;
 /** @type {number} used by strFromUTF8Ptr as a temporary address-sized integer */
 let tmpPtr = 0;

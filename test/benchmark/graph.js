@@ -262,7 +262,7 @@ function createBarChart(data, dataValueKey, graphConfig) {
     .data(data)
     .join('text')
     .attr('alignment-baseline', 'central')
-    .attr('x', d => x(0))
+    .attr('x', () => x(0))
     .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
     .attr('dx', -labelPadding * 2)
     .text(d => d.name);

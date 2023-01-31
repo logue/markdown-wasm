@@ -1,6 +1,7 @@
 /* eslint-disable spaced-comment */
 /// <reference types="emscripten" />
 
+/** Initialize markdown.wasm Module */
 export default function Module(): Promise<MarkdownModule>;
 
 export interface MarkdownModule extends EmscriptenModule {
@@ -24,6 +25,7 @@ export interface MarkdownModule extends EmscriptenModule {
   /** alias of realloc */
   _wrealloc(ptr: number, size: number): number;
 
+  /** alias of free */
   _wfree(ptr: number): void;
 
   /** code and message */

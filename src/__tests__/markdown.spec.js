@@ -64,3 +64,22 @@ describe('issue22', () => {
 <h4><a id="test4" class="anchor" aria-hidden="true" href="#test4"></a>Test4</h4>
 `));
 });
+
+describe('XHTML Test', () => {
+  it('hr tag', () =>
+    expect(parse('---', { format: 'xhtml' })).toBe('<hr />\n'));
+
+  it('img tag', () =>
+    expect(
+      parse('![image](https://rsms.me/raster/examples/image1.jpg)', {
+        format: 'xhtml',
+      })
+    ).toBe(
+      '<p><img src="https://rsms.me/raster/examples/image1.jpg" alt="image" /></p>\n'
+    ));
+
+  it('task list', () =>
+    expect(parse('- [x] Task', { format: 'xhtml' })).toBe(
+      '<ul>\n<li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Task</li>\n</ul>\n'
+    ));
+});
