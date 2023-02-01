@@ -97,12 +97,14 @@ describe('Commonmark spec test', () =>
    * }[]} Commonmark spec
    */
   spec.forEach(testCase =>
-    it(`#${testCase.example} ${testCase.section}`, () =>
-      expect(
-        parse(testCase.markdown, {
-          parseFlags: ParseFlags.COMMONMARK,
-          format: 'xhtml',
-          disableHeadlineAnchors: true,
-        })
-      ).equals(testCase.html))
+    describe(testCase.section, () =>
+      it(`#${testCase.example}`, () =>
+        expect(
+          parse(testCase.markdown, {
+            parseFlags: ParseFlags.COMMONMARK,
+            format: 'xhtml',
+            disableHeadlineAnchors: true,
+          })
+        ).equals(testCase.html))
+    )
   ));

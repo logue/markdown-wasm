@@ -229,9 +229,10 @@ static void render_open_ol_block(FmtHTML *r, const MD_BLOCK_OL_DETAIL *det)
 
 static void render_open_li_block(FmtHTML *r, const MD_BLOCK_LI_DETAIL *det)
 {
+  render_literal(r, "<li");
   if (det->is_task)
   {
-    render_literal(r, "<li class=\"task-list-item\"><input type=\"checkbox\" class=\"task-list-item-checkbox\"");
+    render_literal(r, " class=\"task-list-item\"><input type=\"checkbox\" class=\"task-list-item-checkbox\"");
     if (r->flags & OutputFlagXHTML)
     {
       render_literal(r, " disabled=\"disabled\"");
@@ -239,7 +240,7 @@ static void render_open_li_block(FmtHTML *r, const MD_BLOCK_LI_DETAIL *det)
       {
         render_literal(r, " checked=\"checked\"");
       }
-      render_literal(r, " />");
+      render_literal(r, " /");
     }
     else
     {
@@ -248,13 +249,9 @@ static void render_open_li_block(FmtHTML *r, const MD_BLOCK_LI_DETAIL *det)
       {
         render_literal(r, " checked");
       }
-      render_literal(r, ">");
     }
   }
-  else
-  {
-    render_literal(r, "<li>");
-  }
+  render_literal(r, ">");
 }
 
 static void render_open_code_block(FmtHTML *r, const MD_BLOCK_CODE_DETAIL *det)
@@ -527,7 +524,7 @@ static int enter_span_callback(MD_SPANTYPE type, void *detail, void *userdata)
     render_literal(r, "<em>");
     break;
   case MD_SPAN_STRONG:
-    render_literal(r, "<b>");
+    render_literal(r, "<strong>");
     break;
   case MD_SPAN_U:
     render_literal(r, "<u>");
@@ -577,7 +574,7 @@ static int leave_span_callback(MD_SPANTYPE type, void *detail, void *userdata)
     render_literal(r, "</em>");
     break;
   case MD_SPAN_STRONG:
-    render_literal(r, "</b>");
+    render_literal(r, "</strong>");
     break;
   case MD_SPAN_U:
     render_literal(r, "</u>");
