@@ -24,8 +24,20 @@ export interface ParseOptions {
   /** Customize parsing. Defaults to ParseFlags.DEFAULT */
   parseFlags?: ParseFlagsType | number;
 
-  /** Select output format. Defaults to "html" */
-  format?: 'html' | 'xhtml';
+  /** Enable Debug log. default is false */
+  debug?: boolean;
+
+  /** Use xhtml format. Default is true. */
+  xhtml?: boolean;
+
+  /** Output special characters as entity reference characters */
+  verbatimEntities: boolean;
+
+  /** Allow "javascript:" in links */
+  allowJSURIs?: boolean;
+
+  /** Disable anchor tag in headlines. Defaults to `false` */
+  disableHeadlineAnchors?: boolean;
 
   /**
    * bytes=true causes parse() to return the result as a Uint8Array instead of a string.
@@ -38,9 +50,6 @@ export interface ParseOptions {
    * to a string. In most cases you're better off leaving this unset or false.
    */
   bytes?: boolean;
-
-  /** Allow "javascript:" in links */
-  allowJSURIs?: boolean;
 
   /**
    * Optional callback which if provided is called for each code block.
@@ -59,9 +68,6 @@ export interface ParseOptions {
     langname: string,
     body: Uint8Array
   ) => Uint8Array | string | null;
-
-  /** Disable anchor tag in headlines. Defaults to `false` */
-  disableHeadlineAnchors?: boolean;
 }
 
 /** ParseFlags */
@@ -95,20 +101,22 @@ export declare const ParseFlags: {
   /** Enable underline extension (disables '_' for emphasis) */
   readonly UNDERLINE: 0x4000;
 
-  /** Default flags */
-  readonly DEFAULT: 0x0001 | 0x0002 | 0x0004 | 0x0200 | 0x0100 | 0x0800;
-  // COLLAPSE_WHITESPACE
-  // PERMISSIVE_ATX_HEADERS
-  // PERMISSIVE_URL_AUTO_LINKS
-  // STRIKETHROUGH
-  // TABLES
-  // TASK_LISTS
-
-  /** No HTML */
+  readonly PERMISSIVE_AUTOLINKS: 0x0008 | 0x0004 | 0x400; // PERMISSIVE_EMAIL_AUTO_LINKS | PERMISSIVE_URL_AUTO_LINKS | PERMISSIVE_WWW_AUTOLINKS
   readonly NO_HTML: 0x0020 | 0x0040; // NO_HTML_BLOCKS | NO_HTML_SPANS
 
-  /** Commonmark Comply */
-  readonly COMMONMARK: 0x0000;
+  /** Default flags */
+  readonly DEFAULT: 0x0001 | 0x0002 | 0x0004 | 0x0200 | 0x0100 | 0x0800; //  COLLAPSE_WHITESPACE | PERMISSIVE_ATX_HEADERS | PERMISSIVE_URL_AUTO_LINKS | STRIKETHROUGH | TABLES | TASK_LISTS
+
+  /* Convenient sets of flags corresponding to well-known Markdown dialects.
+   *
+   * Note we may only support subset of features of the referred dialect.
+   * The constant just enables those extensions which bring us as close as
+   * possible given what features we implement.
+   *
+   * ABI compatibility note: Meaning of these can change in time as new
+   * extensions, bringing the dialect closer to the original, are implemented.
+   */
+  readonly DIALECT_COMMONMARK: 0;
   /** Github Style */
-  readonly GITHUB: 0x0004 | 0x0100 | 0x0200 | 0x0800; // PERMISSIVE_URL_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
+  readonly DIALECT_GITHUB: 0x0008 | 0x0004 | 0x400 | 0x0100 | 0x0200 | 0x0800; // PERMISSIVE_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
 };

@@ -19,4 +19,4 @@ emcc \
   -s STRICT=0 \
   -s WASM=1 \
   -o markdown.js \
-  wlib.c wbuf.c md.c md4c.c fmt_html.c
+  wlib.c wbuf.c md.c md4c.c fmt_html.c entity.c

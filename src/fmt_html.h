@@ -10,9 +10,12 @@ typedef struct FmtHTML
   JSTextFilterFun onCodeBlock;
 
   // internal state
-  int imgnest;
+  int image_nesting_level;
   int addanchor;
   int codeBlockNest;
+
+  char escape_map[256];
+
   WBuf tmpbuf;
 } FmtHTML;
 

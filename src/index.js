@@ -47,34 +47,38 @@ export const ParseFlags = {
   /** Enable underline extension (disables '_' for emphasis) */
   UNDERLINE: 0x4000,
 
-  /** Default flags */
-  DEFAULT: 0x0001 | 0x0002 | 0x0004 | 0x0200 | 0x0100 | 0x0800,
-  // COLLAPSE_WHITESPACE
-  // PERMISSIVE_ATX_HEADERS
-  // PERMISSIVE_URL_AUTO_LINKS
-  // STRIKETHROUGH
-  // TABLES
-  // TASK_LISTS
-
-  /** No HTML */
+  PERMISSIVE_AUTOLINKS: 0x0008 | 0x0004 | 0x400, // PERMISSIVE_EMAIL_AUTO_LINKS | PERMISSIVE_URL_AUTO_LINKS | PERMISSIVE_WWW_AUTOLINKS
   NO_HTML: 0x0020 | 0x0040, // NO_HTML_BLOCKS | NO_HTML_SPANS
 
-  /** Commonmark Comply */
-  COMMONMARK: 0,
+  /** Default flags */
+  DEFAULT: 0x0001 | 0x0002 | 0x0004 | 0x0200 | 0x0100 | 0x0800, //  COLLAPSE_WHITESPACE | PERMISSIVE_ATX_HEADERS | PERMISSIVE_URL_AUTO_LINKS | STRIKETHROUGH | TABLES | TASK_LISTS
+
+  /* Convenient sets of flags corresponding to well-known Markdown dialects.
+   *
+   * Note we may only support subset of features of the referred dialect.
+   * The constant just enables those extensions which bring us as close as
+   * possible given what features we implement.
+   *
+   * ABI compatibility note: Meaning of these can change in time as new
+   * extensions, bringing the dialect closer to the original, are implemented.
+   */
+  DIALECT_COMMONMARK: 0,
   /** Github Style */
-  GITHUB: 0x0004 | 0x0100 | 0x0200 | 0x0800, // PERMISSIVE_URL_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
+  DIALECT_GITHUB: 0x0008 | 0x0004 | 0x400 | 0x0100 | 0x0200 | 0x0800, // PERMISSIVE_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
 };
 
 /** @type {Record<string, number>} these should be in sync with "OutputFlags" in common.h */
 const OutputFlags = {
-  /** Output HTML */
-  HTML: 1 << 0,
+  /** Output DebugLog */
+  Debug: 1 << 0,
+  VerbatimEntities: 1 << 1,
+  SkipUtf8Bom: 1 << 2,
   /** Output XHTML (only has effect with HTML flag set)  */
-  XHTML: 1 << 1,
+  XHTML: 1 << 3,
   /** Allow "javascript:" URIs */
-  AllowJSURI: 1 << 2,
+  AllowJSURI: 1 << 4,
   /** Disable anchor tag in headlines. */
-  DisableHeadlineAnchors: 1 << 3,
+  DisableHeadlineAnchors: 1 << 5,
 };
 
 /**
@@ -96,26 +100,22 @@ export function parse(source, options = {}) {
     options.parseFlags === undefined ? ParseFlags.DEFAULT : options.parseFlags;
 
   /** @type {number} */
-  let outputFlags = options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
+  let outputFlags = OutputFlags.SkipUtf8Bom;
 
-  switch (options.format) {
-    case 'xhtml':
-      outputFlags |= OutputFlags.HTML | OutputFlags.XHTML;
-      break;
+  // Allow javascript Uri
+  outputFlags |= options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
 
-    case 'html':
-    case undefined:
-    case null:
-      outputFlags |= OutputFlags.HTML;
-      break;
+  // Output special characters as entity reference characters
+  outputFlags |= options.verbatimEntities ? OutputFlags.VerbatimEntities : 0;
 
-    default:
-      throw new Error(`[markdown-wasm] invalid format "${options.format}"`);
-  }
+  // Output as Xhtml
+  outputFlags |=
+    options.xhtml || options.xhtml !== false ? OutputFlags.XHTML : 0;
 
-  if (options.disableHeadlineAnchors) {
-    outputFlags |= OutputFlags.DisableHeadlineAnchors;
-  }
+  // Disable headline anchors
+  outputFlags |= options.disableHeadlineAnchors
+    ? OutputFlags.DisableHeadlineAnchors
+    : 0;
 
   /** @type {number} */
   const onCodeBlockPtr = options.onCodeBlock

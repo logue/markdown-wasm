@@ -67,24 +67,25 @@ describe('issue22', () => {
 });
 
 describe('XHTML Test', () => {
-  it('hr tag', () =>
-    expect(parse('---', { format: 'xhtml' })).toBe('<hr />\n'));
+  it('hr tag', () => expect(parse('---', { xhtml: true })).toBe('<hr />\n'));
 
   it('img tag', () =>
     expect(
       parse('![image](https://rsms.me/raster/examples/image1.jpg)', {
-        format: 'xhtml',
+        xhtml: true,
       })
     ).toBe(
       '<p><img src="https://rsms.me/raster/examples/image1.jpg" alt="image" /></p>\n'
     ));
 
   it('task list', () =>
-    expect(parse('- [x] Task', { format: 'xhtml' })).toBe(
+    expect(parse('- [x] Task', { xhtml: true })).toBe(
       '<ul>\n<li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Task</li>\n</ul>\n'
     ));
-});
 
+  it('non xhtml hr tag', () =>
+    expect(parse('---', { xhtml: false })).toBe('<hr>\n'));
+});
 describe('Commonmark spec test', () =>
   /**
    * @type {{
@@ -96,15 +97,20 @@ describe('Commonmark spec test', () =>
    *   section: string;
    * }[]} Commonmark spec
    */
-  spec.forEach(testCase =>
+  spec.forEach(testCase => {
+    /*
+    if (testCase.section === 'Lists' || testCase.section === 'List items') {
+      return;
+    }
+    */
     describe(testCase.section, () =>
       it(`#${testCase.example}`, () =>
         expect(
           parse(testCase.markdown, {
-            parseFlags: ParseFlags.COMMONMARK,
-            format: 'xhtml',
+            parseFlags: ParseFlags.DIALECT_COMMONMARK,
+            xhtml: true,
             disableHeadlineAnchors: true,
           })
         ).equals(testCase.html))
-    )
-  ));
+    );
+  }));
