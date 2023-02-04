@@ -9,7 +9,7 @@
 
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
-- Zero dependencies (47.32 kB gzipped without minify.)
+- Zero dependencies (47.46 kB gzipped without minify.)
 - Portable & safe (WASM executes in isolated memory and can run almost anywhere)
 - [Simple API](#api)
 - [Very fast](#benchmarks)
