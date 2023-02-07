@@ -91,7 +91,10 @@ function benchmarkFile(benchfile) {
     .add('remarkable', () => remarkable.render(contents))
     .add('micromark', () => micromark(contents))
     .add('markdown-wasm', () =>
-      _parse(contentsBuffer, { parseFlags: ParseFlags.COMMONMARK })
+      _parse(contentsBuffer, {
+        parseFlags: ParseFlags.DIALECT_COMMONMARK,
+        disableHeadlineAnchors: true,
+      })
     )
     // .add('markdown-wasm/string', () => _parse(contents))
     // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })

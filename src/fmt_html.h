@@ -1,5 +1,7 @@
 #pragma once
 
+#include "md4c.h"
+
 typedef struct FmtHTML
 {
   OutputFlags flags;
@@ -14,9 +16,11 @@ typedef struct FmtHTML
   int addanchor;
   int codeBlockNest;
 
+  void (*process_output)(const MD_CHAR *, MD_SIZE, void *);
+  void *userdata;
   char escape_map[256];
 
   WBuf tmpbuf;
 } FmtHTML;
 
-int fmt_html(const char *input, u32 inputlen, FmtHTML *fmt);
+int fmt_html(const MD_CHAR *input, MD_SIZE inputlen, FmtHTML *fmt);

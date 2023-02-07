@@ -29,7 +29,6 @@
 
 #include "common.h"
 #include "fmt_html.h"
-#include "md4c.h"
 #include "entity.h"
 
 // typedef struct FmtHTML_st {
@@ -277,7 +276,7 @@ static char slugMap[256] = {
     /* 0xF0 */ 'd', 'n', 'o', 'o', 'o', 'o', 'o', '-', 'o', 'u', 'u', 'u', 'u', 'y', '-', 'y', // ð ñ ò ó ô õ ö ÷ ø ù ú û ü ý þ ÿ
 };
 
-static size_t WBufAppendSlug(WBuf *b, const char *pch, size_t len)
+static size_t WBufAppendSlug(WBuf *b, const MD_CHAR *pch, MD_SIZE len)
 {
   WBufReserve(b, len);
   const char *start = b->ptr;

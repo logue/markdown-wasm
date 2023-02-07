@@ -71,7 +71,9 @@ export const ParseFlags = {
 const OutputFlags = {
   /** Output DebugLog */
   Debug: 1 << 0,
+  /** Use entity reference character */
   VerbatimEntities: 1 << 1,
+  /** Remove UTF-8 BOM */
   SkipUtf8Bom: 1 << 2,
   /** Output XHTML (only has effect with HTML flag set)  */
   XHTML: 1 << 3,
@@ -96,8 +98,9 @@ export function parse(source, options = {}) {
     );
   }
   /** @type {number} */
-  const parseFlags =
-    options.parseFlags === undefined ? ParseFlags.DEFAULT : options.parseFlags;
+  const parseFlags = options.parseFlags
+    ? options.parseFlags
+    : ParseFlags.DEFAULT;
 
   /** @type {number} */
   let outputFlags = OutputFlags.SkipUtf8Bom;
@@ -110,7 +113,7 @@ export function parse(source, options = {}) {
 
   // Output as Xhtml
   outputFlags |=
-    options.xhtml || options.xhtml !== false ? OutputFlags.XHTML : 0;
+    options.xhtml && options.xhtml === false ? 0 : OutputFlags.XHTML;
 
   // Disable headline anchors
   outputFlags |= options.disableHeadlineAnchors
