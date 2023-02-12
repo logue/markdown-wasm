@@ -6,7 +6,7 @@ typedef struct FmtHTML
 {
   OutputFlags flags;
   u32 parserFlags; // passed along to md_parse
-  WBuf *outbuf;
+  WBuf *userdata;
 
   // optional callbacks
   JSTextFilterFun onCodeBlock;
@@ -17,7 +17,6 @@ typedef struct FmtHTML
   int codeBlockNest;
 
   void (*process_output)(const MD_CHAR *, MD_SIZE, void *);
-  void *userdata;
   char escape_map[256];
 
   WBuf tmpbuf;

@@ -11,7 +11,7 @@ const source = readFileSync(
 const outbuf = parse(source, {
   bytes: true,
   onCodeBlock(lang, body) {
-    console.log(`onCodeBlock (${lang})`);
+    console.log(`onCodeBlock (${lang}): ${body}`);
     return html_escape(body.toString().toUpperCase());
   },
 });
@@ -28,8 +28,9 @@ if (process.argv.includes('-bench')) {
   });
   benchmark('bytes + onCodeBlock', {
     bytes: true,
-    onCodeBlock() {
-      return null; // causes the body to be HTML-escaped & included as is
+    onCodeBlock(...arr) {
+      console.log(arr);
+      return 0; // causes the body to be HTML-escaped & included as is
     },
   });
 }

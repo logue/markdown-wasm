@@ -52,7 +52,7 @@
 
 static inline void render_verbatim(FmtHTML *r, const MD_CHAR *text, MD_SIZE size)
 {
-  WBufAppendBytes(r->outbuf, text, size);
+  WBufAppendBytes(r->userdata, text, size);
 }
 
 /* Keep this as a macro. Most compiler should then be smart enough to replace
@@ -422,7 +422,7 @@ render_close_code_block(FmtHTML *r, const MD_BLOCK_CODE_DETAIL *det)
       const char *outptr = NULL;
       outlen = r->onCodeBlock(det->lang.text, (u32)det->lang.size, text, (u32)len, &outptr);
       if (outlen > 0 && outptr != NULL)
-        WBufAppendBytes(r->outbuf, outptr, (size_t)outlen);
+        WBufAppendBytes(r->userdata, outptr, (size_t)outlen);
       if (outptr != NULL)
         free((void *)outptr);
     }
@@ -771,16 +771,16 @@ text_callback(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE size, void *userdat
     {
       RENDER_VERBATIM(r, "<a id=\"");
 
-      const char *slugptr = r->outbuf->ptr;
-      size_t sluglen = WBufAppendSlug(r->outbuf, text, size);
+      const char *slugptr = r->userdata->ptr;
+      size_t sluglen = WBufAppendSlug(r->userdata, text, size);
 
       RENDER_VERBATIM(r, "\" class=\"anchor\" aria-hidden=\"true\" href=\"#");
 
       if (sluglen > 0)
       {
-        WBufReserve(r->outbuf, sluglen);
-        memcpy(r->outbuf->ptr, slugptr, sluglen);
-        r->outbuf->ptr += sluglen;
+        WBufReserve(r->userdata, sluglen);
+        memcpy(r->userdata->ptr, slugptr, sluglen);
+        r->userdata->ptr += sluglen;
       }
 
       RENDER_VERBATIM(r, "\"></a>");

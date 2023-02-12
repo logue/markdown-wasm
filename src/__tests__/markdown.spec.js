@@ -79,7 +79,9 @@ describe('XHTML Test', () => {
     ));
 
   it('task list', () =>
-    expect(parse('- [x] Task', { xhtml: true })).toBe(
+    expect(
+      parse('- [x] Task', { xhtml: true, parseFlags: ParseFlags.TASK_LISTS })
+    ).toBe(
       '<ul>\n<li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Task</li>\n</ul>\n'
     ));
 

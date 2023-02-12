@@ -40,7 +40,7 @@ export size_t parseUTF8(
   FmtHTML fmt = {
       .flags = outflags,
       .parserFlags = parser_flags,
-      .outbuf = &outbuf,
+      .userdata = &outbuf,
       .onCodeBlock = onCodeBlock,
   };
 
@@ -54,6 +54,6 @@ export size_t parseUTF8(
   }
 
   *outptr = outbuf.start;
-  // dlog("outbuf =>\n%.*s\n", WBufLen(&outbuf), outbuf.start);
+  dlog("outbuf =>\n%.*s\n", WBufLen(&outbuf), outbuf.start);
   return WBufLen(&outbuf);
 }

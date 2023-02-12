@@ -97,26 +97,37 @@ export function parse(source, options = {}) {
       '[markdown-wasm] markdown-wasm does not initialized. Use `await ready();` before `parse()` function.'
     );
   }
-  /** @type {number} */
-  const parseFlags = options.parseFlags
-    ? options.parseFlags
-    : ParseFlags.DEFAULT;
+
+  /** @type {import('../markdown').ParseOptions} Override default config */
+  const opt = {
+    // Defaults
+    ...{
+      allowJSURIs: 0,
+      verbatimEntities: 0,
+      parseFlags: ParseFlags.DEFAULT,
+      xhtml: true,
+      disableHeadlineAnchors: false,
+      debug: false,
+      bytes: false,
+    },
+    // Override options
+    ...options,
+  };
 
   /** @type {number} */
   let outputFlags = OutputFlags.SkipUtf8Bom;
 
   // Allow javascript Uri
-  outputFlags |= options.allowJSURIs ? OutputFlags.AllowJSURI : 0;
+  outputFlags |= opt.allowJSURIs ? OutputFlags.AllowJSURI : 0;
 
   // Output special characters as entity reference characters
-  outputFlags |= options.verbatimEntities ? OutputFlags.VerbatimEntities : 0;
+  outputFlags |= opt.verbatimEntities ? OutputFlags.VerbatimEntities : 0;
 
   // Output as Xhtml
-  outputFlags |=
-    options.xhtml && options.xhtml === false ? 0 : OutputFlags.XHTML;
+  outputFlags |= opt.xhtml === true ? OutputFlags.XHTML : 0;
 
   // Disable headline anchors
-  outputFlags |= options.disableHeadlineAnchors
+  outputFlags |= opt.disableHeadlineAnchors
     ? OutputFlags.DisableHeadlineAnchors
     : 0;
 
@@ -133,7 +144,7 @@ export function parse(source, options = {}) {
       Module._parseUTF8(
         inptr,
         inlen,
-        parseFlags,
+        options.parseFlags,
         outputFlags,
         outptr,
         onCodeBlockPtr
@@ -168,7 +179,7 @@ export function parse(source, options = {}) {
 function create_onCodeBlock_fn(onCodeBlock) {
   const fnptr = Module.addFunction((metaptr, metalen, inptr, inlen, outptr) => {
     try {
-      // lang is the "language" tag, if any, provided with the code block
+      /** @type {string} lang is the "language" tag, if any, provided with the code block */
       const lang =
         metalen > 0
           ? new TextDecoder('utf-8').decode(
@@ -179,16 +190,18 @@ function create_onCodeBlock_fn(onCodeBlock) {
       /** @type {Uint8Array} body is a view into heap memory of the segment of source (UTF8 bytes) */
       const body = Module.HEAPU8.subarray(inptr, inptr + inlen);
 
-      /** result from the onCodeBlock function */
+      /** @type {string?} result from the onCodeBlock function */
       const result = onCodeBlock(lang, new TextDecoder('utf-8').decode(body));
 
-      if (result === null || result === undefined) {
+      if (!result) {
         // Callback indicates that it does not wish to filter.
         // The md.c implementation will html-encode the body.
         return -1;
       }
 
+      /** @type {Uint8Array} */
       const resbuf = as_byte_array(result);
+
       if (resbuf.length > 0) {
         // copy resbuf to WASM heap memory
         const resptr = mallocbuf(resbuf, resbuf.length);
