@@ -1,6 +1,6 @@
 import { ready, parse, ParseFlags } from '../index.js';
 import { it, describe, expect } from 'vitest';
-import spec from './spec.json';
+import spec from 'commonmark-spec';
 
 await ready();
 
@@ -88,31 +88,17 @@ describe('XHTML Test', () => {
   it('non xhtml hr tag', () =>
     expect(parse('---', { xhtml: false })).toBe('<hr>\n'));
 });
-describe('Commonmark spec test', () =>
-  /**
-   * @type {{
-   *   markdown: string;
-   *   html: string;
-   *   example: number;
-   *   start_line:number;
-   *   end_line: number;
-   *   section: string;
-   * }[]} Commonmark spec
-   */
-  spec.forEach(testCase => {
-    /*
-    if (testCase.section === 'Lists' || testCase.section === 'List items') {
-      return;
-    }
-    */
+
+describe('Commonmark spec test', async () => {
+  spec.tests.forEach(testCase => {
     describe(testCase.section, () =>
-      it(`#${testCase.example}`, () =>
+      it(`#${testCase.number}`, () =>
         expect(
           parse(testCase.markdown, {
             parseFlags: ParseFlags.DIALECT_COMMONMARK,
-            xhtml: true,
             disableHeadlineAnchors: true,
           })
         ).equals(testCase.html))
     );
-  }));
+  });
+});

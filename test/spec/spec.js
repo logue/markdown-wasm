@@ -1,14 +1,13 @@
 import { ready, parse } from '../../src/index.js';
 import { exit } from '../testutil.js';
+import spec from 'commonmark-spec';
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
 await ready();
 // https://spec.commonmark.org
-const source = readFileSync(
-  fileURLToPath(new URL('./spec.txt', import.meta.url))
-);
+const source = spec.text;
 const timeLabel = `parse("spec.txt")`;
 console.time(timeLabel);
 let html = parse(source);
