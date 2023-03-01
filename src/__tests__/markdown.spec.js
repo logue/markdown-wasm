@@ -1,6 +1,6 @@
 import { ready, parse, ParseFlags } from '../index.js';
 import { it, describe, expect } from 'vitest';
-import spec from './spec.json';
+import spec from 'commonmark-spec';
 
 await ready();
 
@@ -86,25 +86,24 @@ describe('XHTML Test', () => {
 });
 
 describe('Commonmark spec test', () =>
-  /**
-   * @type {{
-   *   markdown: string;
-   *   html: string;
-   *   example: number;
-   *   start_line:number;
-   *   end_line: number;
-   *   section: string;
-   * }[]} Commonmark spec
-   */
-  spec.forEach(testCase =>
-    describe(testCase.section, () =>
-      it(`#${testCase.example}`, () =>
-        expect(
-          parse(testCase.markdown, {
-            parseFlags: ParseFlags.COMMONMARK,
-            format: 'xhtml',
-            disableHeadlineAnchors: true,
-          })
-        ).equals(testCase.html))
-    )
+  spec.tests.forEach(
+    /**
+     * @type {
+     *   markdown: string;
+     *   html: string;
+     *   section: string;
+     *   number: number;
+     * } Commonmark spec
+     */
+    testCase =>
+      describe(testCase.section, () =>
+        it(`#${testCase.number}`, () =>
+          expect(
+            parse(testCase.markdown, {
+              parseFlags: ParseFlags.COMMONMARK,
+              format: 'xhtml',
+              disableHeadlineAnchors: true,
+            })
+          ).equals(testCase.html))
+      )
   ));

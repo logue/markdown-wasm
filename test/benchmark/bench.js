@@ -3,34 +3,38 @@ import Benchmark from 'benchmark';
 
 import { Parser, HtmlRenderer } from 'commonmark';
 import Showdown from 'showdown';
-import { parse } from 'marked';
+import { parse as markdParse } from 'marked';
 import MarkdownIt from 'markdown-it';
 import { Remarkable } from 'remarkable';
 import { micromark } from 'micromark';
-import { ready, parse as _parse, ParseFlags } from '../../src/index.js';
+import { ready, parse, ParseFlags } from '../../src/index.js';
 
-import { statSync, readdirSync, readFileSync } from 'node:fs';
+import { stat, readdir, readFile } from 'node:fs/promises';
+import { TextDecoder } from 'node:util';
 import process from 'node:process';
 
 /** setup markdownit*/
-const markdownit = new MarkdownIt();
-const markdownit_encode = markdownit.utils.lib.mdurl.encode;
-markdownit.normalizeLink = url => markdownit_encode(url);
+const markdownit = new MarkdownIt('commonmark');
+// const markdownit_encode = markdownit.utils.lib.mdurl.encode;
+// markdownit.normalizeLink = url => markdownit_encode(url);
 // disable expensive IDNa links encoding:
-markdownit.normalizeLinkText = str => str;
+// markdownit.normalizeLinkText = str => str;
 
 /** setup showdown */
 const showdown = new Showdown.Converter();
 
 /** setup commonmark */
-const parser = new Parser();
+const commonmarkParser = new Parser();
 const renderer = new HtmlRenderer();
 
 /** setup remarkable */
-const remarkable = new Remarkable();
+const remarkable = new Remarkable('commonmark');
 
 /** Setup markdown-wasm */
 await ready();
+
+/** Decoder */
+const decoder = new TextDecoder('utf-8');
 
 // parse CLI input
 const filename = process.argv[2];
@@ -43,12 +47,12 @@ if (!filename) {
 // print CSV header
 console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
 
-// run tests on all files in a directory or a single file
-if (statSync(filename).isDirectory()) {
+const inputStat = await stat(filename);
+if (inputStat.isDirectory()) {
   process.chdir(filename);
-  for (let fn of readdirSync('.')) {
-    benchmarkFile(fn);
-  }
+  const dir = await readdir('.');
+  // run tests on all files in a directory or a single file
+  dir.forEach(fn => benchmarkFile(fn));
 } else {
   benchmarkFile(filename);
 }
@@ -65,15 +69,22 @@ function csv(values) {
   return values.map(s => String(s).replace(/,/g, '\\,')).join(',');
 }
 
-function benchmarkFile(benchfile) {
-  const contents = readFileSync(benchfile, 'utf8');
-  const contentsBuffer = readFileSync(benchfile);
+/**
+ * Benchmark
+ *
+ * @param {string} benchfile
+ */
+async function benchmarkFile(benchfile) {
+  /** @type {Uint8Array} */
+  const contentsBuffer = await readFile(benchfile);
+  /** @type {string} */
+  const contents = decoder.decode(contentsBuffer);
 
   // let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
   //   contentsBuffer.length
   // },`;
 
-  new Benchmark.Suite({
+  await new Benchmark.Suite({
     onCycle(ev) {
       const b = ev.target;
       // console.log("cycle", b)
@@ -84,14 +95,14 @@ function benchmarkFile(benchfile) {
     //   console.log("onComplete", {ev}, b.stats, b.times)
     // }
   })
-    .add('commonmark', () => renderer.render(parser.parse(contents)))
+    .add('commonmark', () => renderer.render(commonmarkParser.parse(contents)))
     .add('showdown', () => showdown.makeHtml(contents))
-    .add('marked', () => parse(contents))
+    .add('marked', () => markdParse(contents))
     .add('markdown-it', () => markdownit.render(contents))
     .add('remarkable', () => remarkable.render(contents))
     .add('micromark', () => micromark(contents))
     .add('markdown-wasm', () =>
-      _parse(contentsBuffer, { parseFlags: ParseFlags.COMMONMARK })
+       parse(contentsBuffer, { parseFlags: ParseFlags.COMMONMARK })
     )
     // .add('markdown-wasm/string', () => _parse(contents))
     // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
