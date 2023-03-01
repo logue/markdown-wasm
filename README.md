@@ -7,6 +7,8 @@
 [![Open in Gitpod](https://shields.io/badge/Open%20in-Gitpod-green?logo=Gitpod)](https://gitpod.io/#https://github.com/logue/@logue/markdown-wasm)
 [![Twitter Follow](https://img.shields.io/twitter/follow/logue256?style=plastic)](https://twitter.com/logue256)
 
+`v1.5.0` is in progress. Compatibility is more important than speed.
+
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
 - Zero dependencies (76.32 kB gzipped without minify.)
