@@ -1,6 +1,11 @@
 import init from './markdown.js';
 
-/** @type {import('../src/markdown').MarkdownModule} Markdown Wasm Module */
+/**
+ * @typedef {import('../markdown').ParseOptions } ParseOptions
+ * @typedef {import('../markdown').MarkdownModule } ParseOptions
+ */
+
+/** @type {MarkdownModule} Markdown Wasm Module */
 let Module;
 /** @type {number} used by strFromUTF8Ptr as a temporary address-sized integer */
 let tmpPtr = 0;
@@ -87,7 +92,7 @@ const OutputFlags = {
  * Parse markdown
  *
  * @param {string | Uint8Array} source - markdown text
- * @param {import('../markdown').ParseOptions} options - Parser options
+ * @param {ParseOptions} options - Parser options
  *
  * @return {string | Uint8Array | null}
  */
@@ -133,7 +138,7 @@ export function parse(source, options = {}) {
 
   /** @type {number} */
   const onCodeBlockPtr = options.onCodeBlock
-    ? create_onCodeBlock_fn(options.onCodeBlock)
+    ? createOnCodeBlockFunction(options.onCodeBlock)
     : 0;
 
   /** @type {Uint8Array} */
@@ -176,7 +181,7 @@ export function parse(source, options = {}) {
  * @param {Function} onCodeBlock
  * @return {number}
  */
-function create_onCodeBlock_fn(onCodeBlock) {
+function createOnCodeBlockFunction(onCodeBlock) {
   const fnptr = Module.addFunction((metaptr, metalen, inptr, inlen, outptr) => {
     try {
       /** @type {string} lang is the "language" tag, if any, provided with the code block */
@@ -261,10 +266,6 @@ function as_byte_array(something) {
  *      readonly heapAddr :number  // address in heap == *outptr
  *    }
  *
- * @param {Function} fn
- *
- * @return {Uint8Array & {heapAddr: numer}}
- *
  * @example
  *    // WASM module, in C:
  *    typedef struct Color_ { char r, g, b; } Color;
@@ -284,6 +285,9 @@ function as_byte_array(something) {
  *    let color = withOutPtr(_newColor)
  *    console.log("RGB:", color[0], color[1], color[2])
  *   _freeColor(color.heapAddr)
+ *
+ * @param {CallbackGlobal} fn
+ * @return {Uint8Array}
  */
 function withOutPtr(fn) {
   const len = fn(tmpPtr);
@@ -322,6 +326,7 @@ function withTmpBytePtr(buf, fn) {
  *
  * @param {Uint8Array} byteArray
  * @param {number} length
+ * @return {number}
  */
 function mallocbuf(byteArray, length) {
   const offs = Module._wrealloc(0, length);
@@ -333,6 +338,13 @@ function mallocbuf(byteArray, length) {
  * WError represents an error from a wasm module
  */
 class WError extends Error {
+  /**
+   * @constructor
+   * @param {number} code
+   * @param {string} message
+   * @param {string} file
+   * @param {number} line
+   */
   constructor(code, message, file, line) {
     super(message, file || 'wasm', line || 0);
     this.name = 'WError';
@@ -346,21 +358,23 @@ class WError extends Error {
  *
  * @return {WError | undefined}
  */
-function error_from_wasm() {
+function errorFromWasm() {
   /** @type {number} */
   const code = Module._WErrGetCode();
   if (code !== 0) {
     /** @type {string} */
     const msgptr = Module._WErrGetMsg();
     const message =
-      msgptr !== '' ? Module.UTF8ArrayToString(Module.HEAPU8, msgptr) : '';
+      // eslint-disable-next-line new-cap
+      msgptr === '' ? '' : Module.UTF8ArrayToString(Module.HEAPU8, msgptr);
     Module._WErrClear();
     return new WError(code, message);
   }
 }
 
+/** Error from wasm check */
 function werrCheck() {
-  const err = error_from_wasm();
+  const err = errorFromWasm();
   if (err) {
     throw err;
   }

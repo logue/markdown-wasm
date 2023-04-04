@@ -1,7 +1,13 @@
+/* eslint-disable prefer-rest-params */
+/* eslint-disable prefer-spread */
+
 import { ready, parse } from '../src/index.js';
 
 import { basename } from 'node:path';
 import process from 'node:process';
+/**
+ * @typedef {import('../markdown').ParseOptions } ParseOptions
+ */
 
 await ready();
 
@@ -9,14 +15,14 @@ const line = '——————————————————————
 const wave = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~';
 
 let numFailures = 0;
-
 /**
  * markdown test
  *
  * @param {string} name - test name
  * @param {string | Uint8Array} inputData - input data
  * @param {string | Uint8Array} expectedOutputData - compare data
- * @param {import('../markdown').ParseOptions} options
+ * @param {ParseOptions} options - options
+ * @return {void}
  */
 export function checkHTMLResult(
   name,
@@ -44,6 +50,9 @@ export function checkHTMLResult(
   console.error(line);
 }
 
+/**
+ *
+ */
 export function exit() {
   process.exit(numFailures > 0 ? 1 : 0);
 }
@@ -55,9 +64,11 @@ export { _logerr as logerr };
 
 const logprefix = basename(process.argv[1]) + ':';
 
+/** Output Log */
 function log() {
   console.log.apply(console, [logprefix].concat([].slice.call(arguments)));
 }
+/** Output Error log */
 function logerr() {
   console.error.apply(console, [logprefix].concat([].slice.call(arguments)));
 }
@@ -65,6 +76,11 @@ function logerr() {
 const _inspectBuf = inspectBuf;
 export { _inspectBuf as inspectBuf };
 
+/**
+ *
+ * @param {*} buf
+ * @param {*} otherbuf
+ */
 function inspectBuf(buf, otherbuf) {
   process.stderr.write(buf);
   if (buf[buf.length - 1] != 0x0a) {
@@ -81,7 +97,7 @@ function inspectBuf(buf, otherbuf) {
     : styleNone;
 
   for (let i = 0; i < buf.length; i++) {
-    let b = buf[i];
+    const b = buf[i];
 
     let style = styleNone;
     if (b < 0x20 && b != 0x09 && b != 0x0a && b != 0x0d) {
