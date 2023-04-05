@@ -30,6 +30,9 @@ import D3Node from 'd3-node';
 import * as d3 from 'd3';
 import { optimize } from 'svgo';
 
+/**
+ * Main
+ */
 function main() {
   if (process.argv.length < 3) {
     console.error(
@@ -112,6 +115,11 @@ function main() {
   // ))
 }
 
+/**
+ * Load CSV file
+ * @param {string} csvfile
+ * @return {array}
+ */
 function loadData(csvfile) {
   const csvText = readFileSync(csvfile, 'utf8');
 
@@ -174,6 +182,12 @@ function loadData(csvfile) {
   return data;
 }
 
+/**
+ * Iterative mean
+ *
+ * @param {number[]} numbers
+ * @return {number}
+ */
 function vmath_avg(numbers) {
   // http://www.heikohoffmann.de/htmlthesis/node134.html
   let avg = 0.0;
@@ -188,18 +202,25 @@ function vmath_avg(numbers) {
 const fontFamily = `system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif`;
 const xAxisLabelOpacity = 0.5;
 
-// dataValueKey should be one of the following strings:
-//   avg_ops
-//   min_ops
-//   max_ops
-//   mean_ops
-//   sum_ops
-//   avg_throughput
-//   min_throughput
-//   max_throughput
-//   mean_throughput
-//   sum_throughput
-//
+/**
+ * dataValueKey should be one of the following strings:
+ *
+ *   avg_ops
+ *   min_ops
+ *   max_ops
+ *   mean_ops
+ *   sum_ops
+ *   avg_throughput
+ *   min_throughput
+ *    max_throughput
+ *    mean_throughput
+ *   sum_throughput
+ *
+ * @param {*} data
+ * @param {*} dataValueKey
+ * @param {*} graphConfig
+ * @return {string}
+ */
 function createBarChart(data, dataValueKey, graphConfig) {
   const size = graphConfig.fontSize || 14;
   const xAxisLabelSize = Math.round(size * 10 * 0.8) / 10;
@@ -325,6 +346,12 @@ function createBarChart(data, dataValueKey, graphConfig) {
   return d3n.svgString();
 }
 
+/**
+ *
+ * @param {*} data
+ * @param {*} graphConfig
+ * @return {string}
+ */
 function createMinMaxBarChart(data, graphConfig) {
   // Adapted from https://observablehq.com/@d3/horizontal-bar-chart
   const size = graphConfig.fontSize || 14;
@@ -440,77 +467,12 @@ function createMinMaxBarChart(data, graphConfig) {
   // return svg.node()
   return d3n.svgString();
 }
-
-/*
-function createStackedBarChart(data, graphConfig) {
-  const barHeight = 25;
-  const margin = { top: 30, right: 0, bottom: 10, left: 100 };
-  const height =
-    Math.ceil((data.length + 0.1) * barHeight) + margin.top + margin.bottom;
-  const width = graphConfig.width || 600;
-  const format = graphConfig.format || d3.format(',.2f');
-  const color = graphConfig.color;
-
-  const series = d3
-    .stack()
-    .keys(data.columns.slice(1))(data)
-    .map(d => (d.forEach(v => (v.key = d.key)), d));
-
-  const x = d3
-    .scaleLinear()
-    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
-    .range([margin.left, width - margin.right]);
-
-  const y = d3
-    .scaleBand()
-    .domain(data.map(d => d.name))
-    .range([margin.top, height - margin.bottom])
-    .padding(0.08);
-
-  const xAxis = g =>
-    g
-      .attr('transform', `translate(0,${margin.top})`)
-      .call(d3.axisTop(x).ticks(width / 100, 's'))
-      .call(g => g.selectAll('.domain').remove());
-
-  const yAxis = g =>
-    g
-      .attr('transform', `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y).tickSizeOuter(0))
-      .call(g => g.selectAll('.domain').remove());
-
-  const d3n = new D3Node();
-  const svg = d3n.createSVG(width, height);
-
-  svg.attr('viewBox', [0, 0, width, height]);
-
-  svg
-    .append('g')
-    .selectAll('g')
-    .data(series)
-    .join('g')
-    .attr('fill', d => color(d.key))
-    .selectAll('rect')
-    .data(d => d)
-    .join('rect')
-    .attr('x', d => x(d[0]))
-    .attr('y', (d, i) => y(d.data.name))
-    .attr('width', d => x(d[1]) - x(d[0]))
-    .attr('height', y.bandwidth())
-    .append('title')
-    .text(
-      d => `${d.data.name} ${d.key}
-${format(d.data[d.key])}`
-    );
-
-  svg.append('g').call(xAxis);
-
-  svg.append('g').call(yAxis);
-
-  return d3n.svgString();
-}
-*/
-
+/**
+ * Write svg file
+ * @param {string} dir
+ * @param {string} filename
+ * @param {string} contents
+ */
 function writefile(dir, filename, contents) {
   if (extname(filename).toLowerCase() === '.svg') {
     contents = optimizeSvg(contents);
@@ -521,33 +483,11 @@ function writefile(dir, filename, contents) {
   writeFileSync(filename, contents, 'utf8');
 }
 
-// const buf = canvas.toBuffer("image/png")
-// displayImageInTerminal(buf)
-
-// displayImageInTerminal(readFileSync("output.png"))
-
-/*
-function displayImageInTerminal(imageBuffer, name) {
-  // iTerm image:
-  // ESC ] 1337 ; File = [arguments] : base-64 encoded file contents ^G
-  // https://www.iterm2.com/documentation-images.html
-  process.stdout.write(
-    `\x1B]1337;File=inline=1;width=100%;height=auto;inline=1`
-  );
-  if (name) {
-    process.stdout.write(`;name=${b64('chart.png')}:`);
-  } else {
-    process.stdout.write(`:`);
-  }
-  process.stdout.write(imageBuffer.toString('base64'));
-  process.stdout.write(`\x07\n`);
-  function b64(s) {
-    return Buffer.from(s, 'utf8').toString('base64');
-  }
-}
-*/
-
-// optimizeSvg(svgText :string) :Promise<string>
+/**
+ * optimizeSvg
+ * @param {string} svgText
+ * @return {Promise<string>}
+ */
 function optimizeSvg(svgText) {
   const { data } = optimize(svgText, { multipass: true });
   return data;

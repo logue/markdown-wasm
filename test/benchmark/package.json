@@ -10,18 +10,22 @@
   "license": "BSD-2-Clause",
   "main": "bench.js",
   "scripts": {
-    "bench": "node bench.js ./samples | tee results/bench.csv && node graph.js results/bench.csv"
+    "bench": "node bench.js ./samples",
+    "graph": "node graph.js results/bench.csv"
   },
   "dependencies": {
     "benchmark": "^2.1.4",
     "commonmark": "^0.30.0",
-    "d3": "^7.8.2",
+    "d3": "^7.8.4",
     "d3-node": "^3.0.0",
     "markdown-it": "^13.0.1",
-    "marked": "^4.2.12",
+    "marked": "^4.3.0",
     "micromark": "^3.1.0",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
     "svgo": "^3.0.2"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

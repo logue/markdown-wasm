@@ -102,7 +102,7 @@ async function benchmarkFile(benchfile) {
     .add('remarkable', () => remarkable.render(contents))
     .add('micromark', () => micromark(contents))
     .add('markdown-wasm', () =>
-       parse(contentsBuffer, { parseFlags: ParseFlags.COMMONMARK })
+      parse(contentsBuffer, { parseFlags: ParseFlags.DIALECT_COMMONMARK })
     )
     // .add('markdown-wasm/string', () => _parse(contents))
     // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })

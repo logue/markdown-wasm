@@ -1,8 +1,10 @@
 /* eslint-disable spaced-comment */
 /// <reference types="emscripten" />
 
+import { MarkdownModule } from './src/markdown';
+
 /** Load Markdown wasm */
-export function ready(): Promise<EmscriptenModule>;
+export function ready(): Promise<MarkdownModule>;
 
 /**
  * parse reads markdown source at s and converts it to HTML.
