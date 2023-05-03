@@ -9,7 +9,8 @@ import { Remarkable } from 'remarkable';
 import { micromark } from 'micromark';
 import { ready, parse, ParseFlags } from '../../src/index.js';
 
-import { stat, readdir, readFile } from 'node:fs/promises';
+import { fileURLToPath, URL } from 'node:url';
+import { stat, readdir, readFile, writeFile } from 'node:fs/promises';
 import { TextDecoder } from 'node:util';
 import process from 'node:process';
 
@@ -44,19 +45,37 @@ if (!filename) {
   process.exit(1);
 }
 
+/** @type {string[]} Result Buffer */
+const buffer = [];
+
 // print CSV header
 console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
 
 const inputStat = await stat(filename);
 if (inputStat.isDirectory()) {
   process.chdir(filename);
-  const dir = await readdir('.');
   // run tests on all files in a directory or a single file
-  dir.forEach(fn => benchmarkFile(fn));
+  readdir('.').then(dir =>
+    dir
+      .forEach(async fn => await benchmarkFile(fn))
+      .then(() =>
+        writeFile(
+          fileURLToPath(new URL(`./results/bench.csv`, import.meta.url)),
+          buffer.join('\n'),
+          'utf8'
+        )
+      )
+  );
 } else {
-  benchmarkFile(filename);
+  await benchmarkFile(filename);
+  await writeFile(
+    fileURLToPath(new URL(`./results/bench-${filename}.csv`, import.meta.url)),
+    buffer.join('\n'),
+    'utf8'
+  );
 }
 
+console.log('done.');
 // Benchmark.options.maxTime = 10
 
 /**
@@ -66,7 +85,9 @@ if (inputStat.isDirectory()) {
  * @return {string}
  */
 function csv(values) {
-  return values.map(s => String(s).replace(/,/g, '\\,')).join(',');
+  const line = values.map(s => String(s).replace(/,/g, '\\,')).join(',');
+  buffer.push(line);
+  return line;
 }
 
 /**

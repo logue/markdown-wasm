@@ -21,7 +21,7 @@ html = `
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Markdown spec</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.1.0/github-markdown.min.css"
+      href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.2.0/github-markdown.min.css"
       rel="stylesheet"
     />
   </head>

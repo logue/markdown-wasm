@@ -1,9 +1,9 @@
-/* eslint-disable spaced-comment */
-/// <reference types="emscripten" />
+import { MarkdownModule } from './src/markdown.d.ts';
 
 /** Load Markdown wasm */
-export function ready(): Promise<EmscriptenModule>;
+export function ready(): Promise<MarkdownModule>;
 
+type MarkdownOutput = Uint8Array | string | null;
 /**
  * parse reads markdown source at s and converts it to HTML.
  * When output is a byte array, it will be a reference.
@@ -14,7 +14,7 @@ export function ready(): Promise<EmscriptenModule>;
 export function parse(
   source: string | Uint8Array,
   options?: ParseOptions
-): Uint8Array | string | null;
+): MarkdownOutput;
 
 /** ParseFlag type */
 export type ParseFlagsType = (typeof ParseFlags)[keyof typeof ParseFlags];
@@ -64,10 +64,7 @@ export interface ParseOptions {
    * Note that use of this callback has an adverse impact on performance as it casues
    * calls and data to be bridged between WASM and JS on every invocation.
    */
-  onCodeBlock?: (
-    langname: string,
-    body: Uint8Array
-  ) => Uint8Array | string | null;
+  onCodeBlock?: (langname: string, body: Uint8Array) => MarkdownOutput;
 }
 
 /** ParseFlags */
