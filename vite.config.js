@@ -70,14 +70,14 @@ export default defineConfig(async ({ mode }) => {
       // https://vitejs.dev/config/build-options.html#build-rollupoptions
       rollupOptions: {
         external: [
-          'node:module',
-          'node:util',
           'node:buffer',
-          'node:stream',
-          'node:net',
-          'node:url',
           'node:fs',
+          'node:module',
+          'node:net',
           'node:path',
+          'node:stream',
+          'node:url',
+          'node:util',
         ],
         output: {
           esModule: true,
@@ -87,12 +87,14 @@ export default defineConfig(async ({ mode }) => {
           interop: 'compat',
           systemNullSetters: false,
           globals: {
-            'node:module': 'module',
-            'node:stream': 'stream',
             'node:buffer': 'buffer',
-            'node:util': 'util',
+            'node:fs': 'fs',
+            'node:module': 'module',
             'node:net': 'net',
+            'node:path': 'path',
+            'node:stream': 'stream',
             'node:url': 'url',
+            'node:util': 'util',
           },
           inlineDynamicImports: true,
         },

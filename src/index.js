@@ -1,3 +1,5 @@
+'use strict';
+
 import init from './markdown.js';
 
 /**
@@ -107,8 +109,8 @@ export function parse(source, options = {}) {
   const opt = {
     // Defaults
     ...{
-      allowJSURIs: 0,
-      verbatimEntities: 0,
+      allowJSURIs: false,
+      verbatimEntities: true,
       parseFlags: ParseFlags.DEFAULT,
       xhtml: true,
       disableHeadlineAnchors: false,

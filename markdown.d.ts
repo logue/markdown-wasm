@@ -13,7 +13,7 @@ type MarkdownOutput = Uint8Array | string | null;
  */
 export function parse(
   source: string | Uint8Array,
-  options?: ParseOptions
+  options?: Partial<ParseOptions>
 ): MarkdownOutput;
 
 /** ParseFlag type */
@@ -22,22 +22,22 @@ export type ParseFlagsType = (typeof ParseFlags)[keyof typeof ParseFlags];
 /** Options for the parse function */
 export interface ParseOptions {
   /** Customize parsing. Defaults to ParseFlags.DEFAULT */
-  parseFlags?: ParseFlagsType | number;
+  parseFlags: ParseFlagsType | number;
 
   /** Enable Debug log. default is false */
-  debug?: boolean;
+  debug: boolean;
 
   /** Use xhtml format. Default is true. */
-  xhtml?: boolean;
+  xhtml: boolean;
 
   /** Output special characters as entity reference characters */
   verbatimEntities: boolean;
 
   /** Allow "javascript:" in links */
-  allowJSURIs?: boolean;
+  allowJSURIs: boolean;
 
   /** Disable anchor tag in headlines. Defaults to `false` */
-  disableHeadlineAnchors?: boolean;
+  disableHeadlineAnchors: boolean;
 
   /**
    * bytes=true causes parse() to return the result as a Uint8Array instead of a string.
@@ -49,7 +49,7 @@ export interface ParseOptions {
    * This only provides a performance benefit when you never need to convert the output
    * to a string. In most cases you're better off leaving this unset or false.
    */
-  bytes?: boolean;
+  bytes: boolean;
 
   /**
    * Optional callback which if provided is called for each code block.
@@ -64,7 +64,7 @@ export interface ParseOptions {
    * Note that use of this callback has an adverse impact on performance as it casues
    * calls and data to be bridged between WASM and JS on every invocation.
    */
-  onCodeBlock?: (langname: string, body: Uint8Array) => MarkdownOutput;
+  onCodeBlock: (langname: string, body: Uint8Array) => MarkdownOutput;
 }
 
 /** ParseFlags */

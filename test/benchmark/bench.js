@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --module
 import Benchmark from 'benchmark';
 
 import { Parser, HtmlRenderer } from 'commonmark';
@@ -7,7 +7,7 @@ import { parse as markdParse } from 'marked';
 import MarkdownIt from 'markdown-it';
 import { Remarkable } from 'remarkable';
 import { micromark } from 'micromark';
-import { ready, parse, ParseFlags } from '../../src/index.js';
+import { ParseFlags, parse, ready } from '../../src/index.js';
 
 import { fileURLToPath, URL } from 'node:url';
 import { stat, readdir, readFile, writeFile } from 'node:fs/promises';
@@ -51,31 +51,9 @@ const buffer = [];
 // print CSV header
 console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
 
+/** @type {import('node:fs').Stats} */
 const inputStat = await stat(filename);
-if (inputStat.isDirectory()) {
-  process.chdir(filename);
-  // run tests on all files in a directory or a single file
-  readdir('.').then(dir =>
-    dir
-      .forEach(async fn => await benchmarkFile(fn))
-      .then(() =>
-        writeFile(
-          fileURLToPath(new URL(`./results/bench.csv`, import.meta.url)),
-          buffer.join('\n'),
-          'utf8'
-        )
-      )
-  );
-} else {
-  await benchmarkFile(filename);
-  await writeFile(
-    fileURLToPath(new URL(`./results/bench-${filename}.csv`, import.meta.url)),
-    buffer.join('\n'),
-    'utf8'
-  );
-}
 
-console.log('done.');
 // Benchmark.options.maxTime = 10
 
 /**
@@ -101,31 +79,57 @@ async function benchmarkFile(benchfile) {
   /** @type {string} */
   const contents = decoder.decode(contentsBuffer);
 
-  // let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
-  //   contentsBuffer.length
-  // },`;
+  return (
+    new Benchmark.Suite({
+      onCycle(ev) {
+        const b = ev.target;
+        // console.log("cycle", b)
+        console.log(csv([b.name, benchfile, b.hz, contentsBuffer.length]));
+      },
+      onComplete(ev) {
+        const b = ev.target;
+        console.log('', { ev }, b.stats, b.times);
+      },
+    })
+      .add('commonmark', () =>
+        renderer.render(commonmarkParser.parse(contents))
+      )
+      .add('showdown', () => showdown.makeHtml(contents))
+      .add('marked', () =>
+        markdParse(contents, { headerIds: false, mangle: false })
+      )
+      .add('markdown-it', () => markdownit.render(contents))
+      .add('remarkable', () => remarkable.render(contents))
+      .add('micromark', () => micromark(contents))
+      .add('markdown-wasm', () =>
+        parse(contentsBuffer, {
+          parseFlags: ParseFlags.DIALECT_COMMONMARK,
+          disableHeadlineAnchors: true,
+          verbatimEntities: false,
+        })
+      )
+      // .add('markdown-wasm/string', () => _parse(contents))
+      // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
+      .run({ async: true })
+  );
+}
 
-  await new Benchmark.Suite({
-    onCycle(ev) {
-      const b = ev.target;
-      // console.log("cycle", b)
-      console.log(csv([b.name, benchfile, b.hz, contentsBuffer.length]));
-    },
-    // onComplete(ev) {
-    //   let b = ev.target
-    //   console.log("onComplete", {ev}, b.stats, b.times)
-    // }
-  })
-    .add('commonmark', () => renderer.render(commonmarkParser.parse(contents)))
-    .add('showdown', () => showdown.makeHtml(contents))
-    .add('marked', () => markdParse(contents))
-    .add('markdown-it', () => markdownit.render(contents))
-    .add('remarkable', () => remarkable.render(contents))
-    .add('micromark', () => micromark(contents))
-    .add('markdown-wasm', () =>
-      parse(contentsBuffer, { parseFlags: ParseFlags.DIALECT_COMMONMARK })
-    )
-    // .add('markdown-wasm/string', () => _parse(contents))
-    // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
-    .run({ async: true });
+if (inputStat.isDirectory()) {
+  process.chdir(filename);
+  // run tests on all files in a directory or a single file
+  const files = await readdir('.');
+  files.forEach(async file => await benchmarkFile(file));
+
+  await writeFile(
+    fileURLToPath(new URL(`./results/bench.csv`, import.meta.url)),
+    buffer.join('\n'),
+    'utf8'
+  );
+} else {
+  await benchmarkFile(filename);
+  await writeFile(
+    fileURLToPath(new URL(`./results/bench-${filename}.csv`, import.meta.url)),
+    buffer.join('\n'),
+    'utf8'
+  );
 }
