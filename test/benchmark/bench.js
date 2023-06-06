@@ -52,9 +52,9 @@ if (inputStat.isDirectory()) {
   process.chdir(filename);
   const dir = await readdir('.');
   // run tests on all files in a directory or a single file
-  dir.forEach(fn => benchmarkFile(fn));
+  dir.forEach(fn => void benchmarkFile(fn));
 } else {
-  benchmarkFile(filename);
+  await benchmarkFile(filename);
 }
 
 // Benchmark.options.maxTime = 10
@@ -97,7 +97,9 @@ async function benchmarkFile(benchfile) {
   })
     .add('commonmark', () => renderer.render(commonmarkParser.parse(contents)))
     .add('showdown', () => showdown.makeHtml(contents))
-    .add('marked', () => markdParse(contents))
+    .add('marked', () =>
+      markdParse(contents, { mangle: false, headerIds: false })
+    )
     .add('markdown-it', () => markdownit.render(contents))
     .add('remarkable', () => remarkable.render(contents))
     .add('micromark', () => micromark(contents))

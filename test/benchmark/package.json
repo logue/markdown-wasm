@@ -16,11 +16,11 @@
   "dependencies": {
     "benchmark": "^2.1.4",
     "commonmark": "^0.30.0",
-    "d3": "^7.8.4",
+    "d3": "^7.8.5",
     "d3-node": "^3.0.0",
     "markdown-it": "^13.0.1",
-    "marked": "^4.3.0",
-    "micromark": "^3.1.0",
+    "marked": "^5.0.4",
+    "micromark": "^3.2.0",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
     "svgo": "^3.0.2"

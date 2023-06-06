@@ -977,9 +977,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3@npm:^7.8.4":
-  version: 7.8.4
-  resolution: "d3@npm:7.8.4"
+"d3@npm:^7.8.5":
+  version: 7.8.5
+  resolution: "d3@npm:7.8.5"
   dependencies:
     d3-array: 3
     d3-axis: 3
@@ -1011,7 +1011,7 @@ __metadata:
     d3-timer: 3
     d3-transition: 3
     d3-zoom: 3
-  checksum: 8dfea4d026e5597ab9c46035df7f0ca4f3891b2b52b21b181bd8660fc61d85f0bbe3cc2b8f1e922978084156cb017cbbfa350a8e42349310642023a9f1517471
+  checksum: e407e79731f74d946a5eb8dec2f037b5a4ad33c294409b1d3531fdf7094de48adfe364974cb37e2396bdb81e23149d56d0ede716c004d6aebb52b3cc114cd15c
   languageName: node
   linkType: hard
 
@@ -1783,11 +1783,11 @@ __metadata:
   dependencies:
     benchmark: ^2.1.4
     commonmark: ^0.30.0
-    d3: ^7.8.4
+    d3: ^7.8.5
     d3-node: ^3.0.0
     markdown-it: ^13.0.1
-    marked: ^4.3.0
-    micromark: ^3.1.0
+    marked: ^5.0.4
+    micromark: ^3.2.0
     npm-run-all: ^4.1.5
     remarkable: ^2.0.1
     showdown: ^2.1.0
@@ -1795,12 +1795,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"marked@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "marked@npm:4.3.0"
+"marked@npm:^5.0.4":
+  version: 5.0.4
+  resolution: "marked@npm:5.0.4"
   bin:
     marked: bin/marked.js
-  checksum: 0db6817893952c3ec710eb9ceafb8468bf5ae38cb0f92b7b083baa13d70b19774674be04db5b817681fa7c5c6a088f61300815e4dd75a59696f4716ad69f6260
+  checksum: 7230d63555b54549a89f197856c1eba591e1ce8d4f6f9ba3e996d7b01e0b90fe4cd575225100e0ff773fe900bf274164c8d9aba9556984651e685cbfc2bb7def
   languageName: node
   linkType: hard
 
@@ -2032,9 +2032,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromark@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "micromark@npm:3.1.0"
+"micromark@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "micromark@npm:3.2.0"
   dependencies:
     "@types/debug": ^4.0.0
     debug: ^4.0.0
@@ -2053,7 +2053,7 @@ __metadata:
     micromark-util-symbol: ^1.0.0
     micromark-util-types: ^1.0.1
     uvu: ^0.5.0
-  checksum: 5fe5bc3bf92e2ddd37b5f0034080fc3a4d4b3c1130dd5e435bb96ec75e9453091272852e71a4d74906a8fcf992d6f79d794607657c534bda49941e9950a92e28
+  checksum: 56c15851ad3eb8301aede65603473443e50c92a54849cac1dadd57e4ec33ab03a0a77f3df03de47133e6e8f695dae83b759b514586193269e98c0bf319ecd5e4
   languageName: node
   linkType: hard
 
