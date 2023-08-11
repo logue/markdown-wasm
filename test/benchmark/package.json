@@ -19,8 +19,8 @@
     "d3": "^7.8.5",
     "d3-node": "^3.0.0",
     "markdown-it": "^13.0.1",
-    "marked": "^5.0.4",
-    "micromark": "^3.2.0",
+    "marked": "^7.0.2",
+    "micromark": "^4.0.0",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
     "svgo": "^3.0.2"

@@ -63,6 +63,6 @@ function html_escape(str) {
         '>': '&gt;',
         "'": '&#39;',
         '"': '&quot;',
-      }[tag])
+      })[tag]
   );
 }
