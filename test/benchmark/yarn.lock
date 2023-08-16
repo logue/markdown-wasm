@@ -1781,7 +1781,7 @@ __metadata:
     d3: ^7.8.5
     d3-node: ^3.0.0
     markdown-it: ^13.0.1
-    marked: ^7.0.2
+    marked: ^7.0.3
     micromark: ^4.0.0
     npm-run-all: ^4.1.5
     remarkable: ^2.0.1
@@ -1790,12 +1790,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"marked@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "marked@npm:7.0.2"
+"marked@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "marked@npm:7.0.3"
   bin:
     marked: bin/marked.js
-  checksum: dabfd499c4852d671b73fbd10081a93349f74e4141a29697be99d33327e9aacd30e794bcc771a397ceb8060e5205e2f82862e1623c333802a3be0594134ba6c7
+  checksum: 423a0bd75a6bc072d1e3bcdb888c0838dcd8468c1d2e6fc9b9e45e0f6bf39ecbfe01a32758e33b3ef8dffc9328ee63de5f4471476cfa563fc4e368d164b8eb9a
   languageName: node
   linkType: hard
 
