@@ -33,15 +33,15 @@ await ready();
 console.log(parse('# hello\n*world*'));
 ```
 
-Web browser
+CDN Usage. The entry point is `markdown`.
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@logue/markdown-wasm@latest/dist/markdown.umd.js"
+  src="https://cdn.jsdelivr.net/npm/@logue/markdown-wasm@latest/dist/markdown.iife.js"
   crossorigin="anonymous"
 ></script>
 <script>
-  const markdown = await window['markdown'].ready()
+  await markdown.ready();
   console.log(markdown.parse('# hello\n*world*'));
 </script>
 ```
@@ -187,13 +187,13 @@ of different sample markdown files.
 
 ### Test Environments
 
-Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v19.3.0
+Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v20.5.1
 
 | Name                                                      | Version |
 | --------------------------------------------------------- | ------- |
 | [commonmark](https://github.com/commonmark/commonmark.js) | 0.30.0  |
 | [markdown-it](https://github.com/markdown-it/markdown-it) | 13.0.1  |
-| [marked](https://github.com/markedjs/marked)              | 7.0.3   |
+| [marked](https://github.com/markedjs/marked)              | 7.0.4   |
 | [micromark](https://github.com/micromark/micromark)       | 4.0.0   |
 | [remarkable](https://github.com/jonschlinkert/remarkable) | 2.0.1   |
 | [showdown](https://github.com/showdownjs/showdown)        | 2.1.0   |
@@ -232,4 +232,4 @@ See [`test/benchmark`](test/benchmark#readme) for more information.
 
 Copyright (c)
 2019-2020 Rasmus Andersson <https://rsms.me/>
-2023 Masashi Yoshikawa <https://logue.dev/>
+2023 Logue <https://logue.dev/>
