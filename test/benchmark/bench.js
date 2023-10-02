@@ -1,4 +1,4 @@
-#!/usr/bin/env node --module
+#!/usr/bin/env node
 import Benchmark from 'benchmark';
 
 import { Parser, HtmlRenderer } from 'commonmark';
@@ -7,10 +7,9 @@ import { parse as markdParse } from 'marked';
 import MarkdownIt from 'markdown-it';
 import { Remarkable } from 'remarkable';
 import { micromark } from 'micromark';
-import { ParseFlags, parse, ready } from '../../src/index.js';
+import { ready, parse, ParseFlags } from '../../src/index.js';
 
-import { fileURLToPath, URL } from 'node:url';
-import { stat, readdir, readFile, writeFile } from 'node:fs/promises';
+import { stat, readdir, readFile } from 'node:fs/promises';
 import { TextDecoder } from 'node:util';
 import process from 'node:process';
 
@@ -45,14 +44,18 @@ if (!filename) {
   process.exit(1);
 }
 
-/** @type {string[]} Result Buffer */
-const buffer = [];
-
 // print CSV header
 console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
 
-/** @type {import('node:fs').Stats} */
 const inputStat = await stat(filename);
+if (inputStat.isDirectory()) {
+  process.chdir(filename);
+  const dir = await readdir('.');
+  // run tests on all files in a directory or a single file
+  dir.forEach(fn => void benchmarkFile(fn));
+} else {
+  await benchmarkFile(filename);
+}
 
 // Benchmark.options.maxTime = 10
 
@@ -63,9 +66,7 @@ const inputStat = await stat(filename);
  * @return {string}
  */
 function csv(values) {
-  const line = values.map(s => String(s).replace(/,/g, '\\,')).join(',');
-  buffer.push(line);
-  return line;
+  return values.map(s => String(s).replace(/,/g, '\\,')).join(',');
 }
 
 /**
@@ -79,57 +80,33 @@ async function benchmarkFile(benchfile) {
   /** @type {string} */
   const contents = decoder.decode(contentsBuffer);
 
-  return (
-    new Benchmark.Suite({
-      onCycle(ev) {
-        const b = ev.target;
-        // console.log("cycle", b)
-        console.log(csv([b.name, benchfile, b.hz, contentsBuffer.length]));
-      },
-      onComplete(ev) {
-        const b = ev.target;
-        console.log('', { ev }, b.stats, b.times);
-      },
-    })
-      .add('commonmark', () =>
-        renderer.render(commonmarkParser.parse(contents))
-      )
-      .add('showdown', () => showdown.makeHtml(contents))
-      .add('marked', () =>
-        markdParse(contents, { headerIds: false, mangle: false })
-      )
-      .add('markdown-it', () => markdownit.render(contents))
-      .add('remarkable', () => remarkable.render(contents))
-      .add('micromark', () => micromark(contents))
-      .add('markdown-wasm', () =>
-        parse(contentsBuffer, {
-          parseFlags: ParseFlags.DIALECT_COMMONMARK,
-          disableHeadlineAnchors: true,
-          verbatimEntities: false,
-        })
-      )
-      // .add('markdown-wasm/string', () => _parse(contents))
-      // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
-      .run({ async: true })
-  );
-}
+  // let csvLinePrefix = `${benchfile.replace(/,/g, "\\,")},${
+  //   contentsBuffer.length
+  // },`;
 
-if (inputStat.isDirectory()) {
-  process.chdir(filename);
-  // run tests on all files in a directory or a single file
-  const files = await readdir('.');
-  files.forEach(async file => await benchmarkFile(file));
-
-  await writeFile(
-    fileURLToPath(new URL(`./results/bench.csv`, import.meta.url)),
-    buffer.join('\n'),
-    'utf8'
-  );
-} else {
-  await benchmarkFile(filename);
-  await writeFile(
-    fileURLToPath(new URL(`./results/bench-${filename}.csv`, import.meta.url)),
-    buffer.join('\n'),
-    'utf8'
-  );
+  await new Benchmark.Suite({
+    onCycle(ev) {
+      const b = ev.target;
+      // console.log("cycle", b)
+      console.log(csv([b.name, benchfile, b.hz, contentsBuffer.length]));
+    },
+    // onComplete(ev) {
+    //   let b = ev.target
+    //   console.log("onComplete", {ev}, b.stats, b.times)
+    // }
+  })
+    .add('commonmark', () => renderer.render(commonmarkParser.parse(contents)))
+    .add('showdown', () => showdown.makeHtml(contents))
+    .add('marked', () =>
+      markdParse(contents, { mangle: false, headerIds: false })
+    )
+    .add('markdown-it', () => markdownit.render(contents))
+    .add('remarkable', () => remarkable.render(contents))
+    .add('micromark', () => micromark(contents))
+    .add('markdown-wasm', () =>
+      parse(contentsBuffer, { parseFlags: ParseFlags.DIALECT_COMMONMARK })
+    )
+    // .add('markdown-wasm/string', () => _parse(contents))
+    // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
+    .run({ async: true });
 }
