@@ -4,7 +4,7 @@ import banner from 'vite-plugin-banner';
 
 import { fileURLToPath, URL } from 'node:url';
 
-const pkg = require('./package.json');
+import pkg from './package.json';
 
 // Export vite config
 export default defineConfig(async ({ mode }) => {

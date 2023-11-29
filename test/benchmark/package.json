@@ -19,11 +19,11 @@
     "d3": "^7.8.5",
     "d3-node": "^3.0.0",
     "markdown-it": "^13.0.2",
-    "marked": "^9.0.3",
+    "marked": "^10.0.0",
     "micromark": "^4.0.0",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
-    "svgo": "^3.0.2"
+    "svgo": "^3.0.4"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
