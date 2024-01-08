@@ -13,14 +13,6 @@ export default defineConfig(async ({ mode }) => {
   const config = {
     // https://vitejs.dev/config/shared-options.html#base
     base: './',
-    // https://vitejs.dev/config/server-options.html
-    server: {
-      fs: {
-        // Allow serving files from one level up to the project root
-        allow: ['..'],
-      },
-      cors: false,
-    },
     plugins: [
       // vite-plugin-checker
       // https://github.com/fi3ework/vite-plugin-checker
@@ -51,9 +43,6 @@ export default defineConfig(async ({ mode }) => {
       // Build Target
       // https://vitejs.dev/config/build-options.html#build-target
       target: 'esnext',
-      // Minify option
-      // https://vitejs.dev/config/build-options.html#build-minify
-      minify: mode === 'docs',
       // https://vitejs.dev/config/build-options.html#build-lib
       lib:
         mode === 'docs'
