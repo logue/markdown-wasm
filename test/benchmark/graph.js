@@ -78,10 +78,10 @@ function main() {
         return bytes <= 1024
           ? `${bytes.toFixed(0)}B/s`
           : bytes <= 1024000
-          ? `${(bytes / 1024).toFixed(0)}kB/s`
-          : bytes <= 1024000000
-          ? `${(bytes / 1024000).toFixed(0)}MB/s`
-          : `${(bytes / 1024000000).toFixed(0)}GB/s`;
+            ? `${(bytes / 1024).toFixed(0)}kB/s`
+            : bytes <= 1024000000
+              ? `${(bytes / 1024000).toFixed(0)}MB/s`
+              : `${(bytes / 1024000000).toFixed(0)}GB/s`;
       },
     })
   );
@@ -100,10 +100,10 @@ function main() {
         ns <= 1000
           ? `${ns.toFixed(0)}ns`
           : ns <= 1000000
-          ? `${(ns / 1000).toFixed(1)}us`
-          : ns <= 1000000000
-          ? `${(ns / 1000000).toFixed(1)}ms`
-          : `${(ns / 1000000000).toFixed(1)}s`,
+            ? `${(ns / 1000).toFixed(1)}us`
+            : ns <= 1000000000
+              ? `${(ns / 1000000).toFixed(1)}ms`
+              : `${(ns / 1000000000).toFixed(1)}s`,
     })
   );
 
@@ -249,8 +249,8 @@ function createBarChart(data, dataValueKey, graphConfig) {
       a[dataValueKey] < b[dataValueKey]
         ? 1
         : b[dataValueKey] < a[dataValueKey]
-        ? -1
-        : 0
+          ? -1
+          : 0
     );
 
   const d3n = new D3Node();

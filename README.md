@@ -191,9 +191,9 @@ Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v21.4.0
 
 | Name                                                      | Version |
 | --------------------------------------------------------- | ------- |
-| [commonmark](https://github.com/commonmark/commonmark.js) | 0.30.0  |
+| [commonmark](https://github.com/commonmark/commonmark.js) | 0.31.0  |
 | [markdown-it](https://github.com/markdown-it/markdown-it) | 14.0.0  |
-| [marked](https://github.com/markedjs/marked)              | 11.1.1  |
+| [marked](https://github.com/markedjs/marked)              | 11.2.0  |
 | [micromark](https://github.com/micromark/micromark)       | 4.0.0   |
 | [remarkable](https://github.com/jonschlinkert/remarkable) | 2.0.1   |
 | [showdown](https://github.com/showdownjs/showdown)        | 2.1.0   |
