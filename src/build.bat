@@ -5,10 +5,12 @@ emcc ^
   -fno-exceptions ^
   -O3 ^
   -DMD4C_USE_UTF8 ^
+  -lembind ^
   -s ALLOW_MEMORY_GROWTH=1 ^
   -s ALLOW_TABLE_GROWTH=1 ^
   -s ASSERTIONS=0 ^
   -s ENVIRONMENT=web,node ^
+  -s ERROR_ON_UNDEFINED_SYMBOLS ^
   -s EXPORT_ES6=1 ^
   -s EXPORTED_RUNTIME_METHODS=addFunction,removeFunction,addOnPostRun,UTF8ArrayToString ^
   -s FILESYSTEM=0 ^

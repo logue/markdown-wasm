@@ -55,37 +55,6 @@ export default defineConfig(async ({ mode }) => {
             },
       // https://vitejs.dev/config/build-options.html#build-sourcemap
       sourcemap: true,
-      // Rollup Options
-      // https://vitejs.dev/config/build-options.html#build-rollupoptions
-      rollupOptions: {
-        external: [
-          'node:module',
-          'node:util',
-          'node:buffer',
-          'node:stream',
-          'node:net',
-          'node:url',
-          'node:fs',
-          'node:path',
-        ],
-        output: {
-          esModule: true,
-          generatedCode: {
-            reservedNamesAsProps: false,
-          },
-          interop: 'compat',
-          systemNullSetters: false,
-          globals: {
-            'node:module': 'module',
-            'node:stream': 'stream',
-            'node:buffer': 'buffer',
-            'node:util': 'util',
-            'node:net': 'net',
-            'node:url': 'url',
-          },
-          inlineDynamicImports: true,
-        },
-      },
     },
     esbuild: {
       drop: mode === 'serve' ? [] : ['console'],
