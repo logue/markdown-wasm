@@ -1,7 +1,10 @@
 import { checker } from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
 import banner from 'vite-plugin-banner';
+import wasm from 'vite-plugin-wasm';
+import { dataToEsm } from '@rollup/pluginutils';
 
+import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
 const pkg = require('./package.json');
@@ -35,6 +38,17 @@ export default defineConfig(async ({ mode }) => {
  * @see {@link ${pkg.homepage}}
  */
 `),
+      {
+        name: 'vite-plugin-base64',
+        async transform(_source, id) {
+          if (!id.endsWith('.wasm')) return;
+          const file = readFileSync(id);
+          const base64 = file.toString('base64');
+          const code = `data:application/wasm;base64,${base64}";`;
+          return dataToEsm(code);
+        },
+      },
+      wasm(),
     ],
     // Build Options
     // https://vitejs.dev/config/build-options.html
