@@ -2,6 +2,7 @@
 cd src
 emcc \
   --closure 1 \
+  --no-entry \
   -flto \
   -fno-exceptions \
   -O3 \
@@ -21,5 +22,6 @@ emcc \
   -s NO_EXIT_RUNTIME=1 \
   -s STRICT=0 \
   -s WASM=1 \
+  -Wno-enum-constexpr-conversion \
   -o markdown.js \
   wlib.c wbuf.c md.c md4c.c fmt_html.c
