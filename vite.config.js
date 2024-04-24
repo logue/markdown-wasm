@@ -1,13 +1,16 @@
-import { checker } from 'vite-plugin-checker';
-import { defineConfig } from 'vite';
-import banner from 'vite-plugin-banner';
-import wasm from 'vite-plugin-wasm';
-import { dataToEsm } from '@rollup/pluginutils';
-
+/* eslint-disable import/order */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
-const pkg = require('./package.json');
+import { defineConfig } from 'vite';
+
+import { dataToEsm } from '@rollup/pluginutils';
+import banner from 'vite-plugin-banner';
+import { checker } from 'vite-plugin-checker';
+import topLevelAwait from 'vite-plugin-top-level-await';
+import wasm from 'vite-plugin-wasm';
+
+import pkg from './package.json';
 
 // Export vite config
 export default defineConfig(async ({ mode }) => {
@@ -49,6 +52,7 @@ export default defineConfig(async ({ mode }) => {
         },
       },
       wasm(),
+      topLevelAwait(),
     ],
     // Build Options
     // https://vitejs.dev/config/build-options.html

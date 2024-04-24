@@ -1,7 +1,7 @@
-import { ready, parse } from '../src/index.js';
-
 import { basename } from 'node:path';
 import process from 'node:process';
+
+import { ready, parse } from '../src/index.js';
 
 await ready();
 
@@ -24,14 +24,14 @@ export function checkHTMLResult(
   expectedOutputData,
   options = {}
 ) {
-  if (typeof inputData == 'string') {
+  if (typeof inputData === 'string') {
     inputData = Buffer.from(inputData, 'utf8');
   }
-  if (typeof expectedOutputData == 'string') {
+  if (typeof expectedOutputData === 'string') {
     expectedOutputData = Buffer.from(expectedOutputData, 'utf8');
   }
   const actual = Buffer.from(parse(inputData, { bytes: true, ...options }));
-  if (expectedOutputData.compare(actual) == 0) {
+  if (expectedOutputData.compare(actual) === 0) {
     log(`${name} OK`);
     return true;
   }
@@ -67,7 +67,7 @@ export { _inspectBuf as inspectBuf };
 
 function inspectBuf(buf, otherbuf) {
   process.stderr.write(buf);
-  if (buf[buf.length - 1] != 0x0a) {
+  if (buf[buf.length - 1] !== 0x0a) {
     process.stderr.write('<no-ending-line-break>\n');
   }
   console.error(wave);
@@ -81,19 +81,19 @@ function inspectBuf(buf, otherbuf) {
     : styleNone;
 
   for (let i = 0; i < buf.length; i++) {
-    let b = buf[i];
+    const b = buf[i];
 
     let style = styleNone;
-    if (b < 0x20 && b != 0x09 && b != 0x0a && b != 0x0d) {
+    if (b < 0x20 && b !== 0x09 && b !== 0x0a && b !== 0x0d) {
       // byte is unexpected control character (except TAB, CR, LF)
       style = styleErr;
-    } else if (otherbuf && otherbuf[i] != b) {
+    } else if (otherbuf && otherbuf[i] !== b) {
       style = styleDiff;
     }
 
     process.stderr.write(style(b.toString(16).padStart(2, '0')) + ' ');
 
-    if (b == 0x0a) {
+    if (b === 0x0a) {
       process.stderr.write('\n');
     }
   }

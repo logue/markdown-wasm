@@ -1,9 +1,10 @@
-import { ready, parse } from '../../src/index.js';
-import { exit } from '../testutil.js';
-import spec from 'commonmark-spec';
-
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
+
+import spec from 'commonmark-spec';
+
+import { ready, parse } from '../../src/index.js';
+import { exit } from '../testutil.js';
 
 await ready();
 // https://spec.commonmark.org

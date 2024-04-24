@@ -26,8 +26,8 @@ THE SOFTWARE.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, extname, relative, resolve } from 'node:path';
 
-import D3Node from 'd3-node';
 import * as d3 from 'd3';
+import D3Node from 'd3-node';
 import { optimize } from 'svgo';
 
 /**
@@ -129,7 +129,7 @@ function loadData(csvfile) {
   d3.csvParse(csvText, d => {
     const lib = libraries[d.library] || (libraries[d.library] = {});
     const ops_sec = parseFloat(d['ops/sec']);
-    const filesize = parseInt(d['filesize']);
+    const filesize = parseInt(d.filesize);
     fileset.add(d.file);
     lib[d.file] = { ops_sec, filesize };
   });
