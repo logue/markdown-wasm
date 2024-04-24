@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
