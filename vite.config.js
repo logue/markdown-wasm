@@ -1,8 +1,13 @@
-import { checker } from 'vite-plugin-checker';
-import { defineConfig } from 'vite';
-import banner from 'vite-plugin-banner';
-
+import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
+
+import { defineConfig } from 'vite';
+
+import { dataToEsm } from '@rollup/pluginutils';
+import banner from 'vite-plugin-banner';
+import { checker } from 'vite-plugin-checker';
+import topLevelAwait from 'vite-plugin-top-level-await';
+import wasm from 'vite-plugin-wasm';
 
 import pkg from './package.json';
 
@@ -13,23 +18,13 @@ export default defineConfig(async ({ mode }) => {
   const config = {
     // https://vitejs.dev/config/shared-options.html#base
     base: './',
-    // https://vitejs.dev/config/server-options.html
-    server: {
-      fs: {
-        // Allow serving files from one level up to the project root
-        allow: ['..'],
-      },
-      cors: false,
-    },
     plugins: [
       // vite-plugin-checker
       // https://github.com/fi3ework/vite-plugin-checker
       checker({
         typescript: false,
         vueTsc: false,
-        eslint: {
-          lintCommand: 'eslint',
-        },
+        // eslint: { lintCommand: 'eslint' },
       }),
       // vite-plugin-banner
       // https://github.com/chengpeiquan/vite-plugin-banner
@@ -43,6 +38,18 @@ export default defineConfig(async ({ mode }) => {
  * @see {@link ${pkg.homepage}}
  */
 `),
+      {
+        name: 'vite-plugin-base64',
+        async transform(_source, id) {
+          if (!id.endsWith('.wasm')) return;
+          const file = readFileSync(id);
+          const base64 = file.toString('base64');
+          const code = `data:application/wasm;base64,${base64}";`;
+          return dataToEsm(code);
+        },
+      },
+      wasm(),
+      topLevelAwait(),
     ],
     // Build Options
     // https://vitejs.dev/config/build-options.html
@@ -51,9 +58,6 @@ export default defineConfig(async ({ mode }) => {
       // Build Target
       // https://vitejs.dev/config/build-options.html#build-target
       target: 'esnext',
-      // Minify option
-      // https://vitejs.dev/config/build-options.html#build-minify
-      minify: mode === 'docs',
       // https://vitejs.dev/config/build-options.html#build-lib
       lib:
         mode === 'docs'
@@ -66,39 +70,6 @@ export default defineConfig(async ({ mode }) => {
             },
       // https://vitejs.dev/config/build-options.html#build-sourcemap
       sourcemap: true,
-      // Rollup Options
-      // https://vitejs.dev/config/build-options.html#build-rollupoptions
-      rollupOptions: {
-        external: [
-          'node:buffer',
-          'node:fs',
-          'node:module',
-          'node:net',
-          'node:path',
-          'node:stream',
-          'node:url',
-          'node:util',
-        ],
-        output: {
-          esModule: true,
-          generatedCode: {
-            reservedNamesAsProps: false,
-          },
-          interop: 'compat',
-          systemNullSetters: false,
-          globals: {
-            'node:buffer': 'buffer',
-            'node:fs': 'fs',
-            'node:module': 'module',
-            'node:net': 'net',
-            'node:path': 'path',
-            'node:stream': 'stream',
-            'node:url': 'url',
-            'node:util': 'util',
-          },
-          inlineDynamicImports: true,
-        },
-      },
     },
     esbuild: {
       drop: mode === 'serve' ? [] : ['console'],

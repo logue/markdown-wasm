@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-import Benchmark from 'benchmark';
+import { stat, readdir, readFile } from 'node:fs/promises';
+import process from 'node:process';
+import { TextDecoder } from 'node:util';
 
+import Benchmark from 'benchmark';
 import { Parser, HtmlRenderer } from 'commonmark';
-import Showdown from 'showdown';
-import { parse as markdParse } from 'marked';
 import MarkdownIt from 'markdown-it';
-import { Remarkable } from 'remarkable';
+import { parse as markdParse } from 'marked';
 import { micromark } from 'micromark';
+import { Remarkable } from 'remarkable';
+import Showdown from 'showdown';
+
 import { ready, parse, ParseFlags } from '../../src/index.js';
 
-import { stat, readdir, readFile } from 'node:fs/promises';
-import { TextDecoder } from 'node:util';
-import process from 'node:process';
-
-/** setup markdownit*/
+/** setup markdownit */
 const markdownit = new MarkdownIt('commonmark');
 // const markdownit_encode = markdownit.utils.lib.mdurl.encode;
 // markdownit.normalizeLink = url => markdownit_encode(url);
@@ -52,7 +52,7 @@ if (inputStat.isDirectory()) {
   process.chdir(filename);
   const dir = await readdir('.');
   // run tests on all files in a directory or a single file
-  dir.forEach(fn => void benchmarkFile(fn));
+  dir.forEach(fn => benchmarkFile(fn));
 } else {
   await benchmarkFile(filename);
 }

@@ -367,7 +367,6 @@ function errorFromWasm() {
     /** @type {string} */
     const msgptr = Module._WErrGetMsg();
     const message =
-      // eslint-disable-next-line new-cap
       msgptr === '' ? '' : Module.UTF8ArrayToString(Module.HEAPU8, msgptr);
     Module._WErrClear();
     return new WError(code, message);

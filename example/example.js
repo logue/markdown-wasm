@@ -1,26 +1,20 @@
-import { ready, parse } from '../src/index.js';
-/**
- * @typedef {import('../markdown').ParseOptions } ParseOptions
- */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
+import { ready, parse } from '../src/index.js';
+
 await ready();
 
-/** @type {Buffer} Input File */
 const source = readFileSync(
   fileURLToPath(new URL('./example.md', import.meta.url))
 );
-/** @type {Uint8Array} Output Buffer */
 const outbuf = parse(source, {
   bytes: true,
   onCodeBlock(lang, body) {
     console.log(`onCodeBlock (${lang}): ${body}`);
-    return htmlEscape(body.toString().toUpperCase());
+    return html_escape(body.toString().toUpperCase());
   },
 });
-
-/** @type {string} Output File path */
 const outfile = fileURLToPath(new URL('./example.html', import.meta.url));
 console.log('write', outfile);
 writeFileSync(outfile, outbuf);
@@ -41,13 +35,6 @@ if (process.argv.includes('-bench')) {
   });
 }
 
-/**
- * Run benchmark.
- *
- * @param {string} name Benchmark name
- * @param {ParseOptions} options markdown-wasm option
- * @return {void}
- */
 function benchmark(name, options) {
   console.log(`benchmark start ${name} (sampling ~2s of data)`);
   const timeStart = Date.now();
@@ -66,12 +53,7 @@ function benchmark(name, options) {
   );
 }
 
-/**
- * Escape html special charactor
- * @param {string} str
- * @return {string}
- */
-function htmlEscape(str) {
+function html_escape(str) {
   return str.replace(
     /[&<>'"]/g,
     tag =>

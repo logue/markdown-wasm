@@ -1,6 +1,8 @@
-import { ready, parse, ParseFlags } from '../index.js';
 import { it, describe, expect } from 'vitest';
+
 import spec from 'commonmark-spec';
+
+import { ready, parse, ParseFlags } from '../index.js';
 
 await ready();
 
