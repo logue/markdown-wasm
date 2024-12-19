@@ -15,8 +15,6 @@ Very fast Markdown parser & HTML renderer implemented in WebAssembly
 - [Very fast](#benchmarks)
 - Based on [md4c](http://github.com/mity/md4c) — compliant to the CommonMark specification
 
-Notice: This fork replaces md4c to `0.4.8`, and some options are available. It also works with nested lists that didn't parse properly in the original.
-
 ## Install
 
 ```sh
