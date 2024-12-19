@@ -2,8 +2,9 @@
   "name": "markdown-wasm-benchmarks",
   "description": "Benchmark suite based on https://github.com/commonmark/commonmark.js bench",
   "type": "module",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "John MacFarlane",
+  "private": true,
   "bugs": {
     "url": "https://github.com/jgm/commonmark.js/issues"
   },
@@ -15,12 +16,12 @@
   },
   "dependencies": {
     "benchmark": "^2.1.4",
-    "commonmark": "^0.31.0",
+    "commonmark": "^0.31.2",
     "d3": "^7.9.0",
-    "d3-node": "^3.0.0",
+    "d3-node": "^4.0.1",
     "markdown-it": "^14.1.0",
-    "marked": "^12.0.2",
-    "micromark": "^4.0.0",
+    "marked": "^15.0.4",
+    "micromark": "^4.0.1",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
     "svgo": "^3.3.2"

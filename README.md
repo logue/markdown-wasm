@@ -7,11 +7,9 @@
 [![Open in Gitpod](https://shields.io/badge/Open%20in-Gitpod-green?logo=Gitpod)](https://gitpod.io/#https://github.com/logue/@logue/markdown-wasm)
 [![Twitter Follow](https://img.shields.io/twitter/follow/logue256?style=plastic)](https://twitter.com/logue256)
 
-`v1.5.0` is in progress. Compatibility is more important than speed.
-
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
-- Zero dependencies (76.32 kB gzipped without minify.)
+- Zero dependencies (87.83 kB gzipped without minify.)
 - Portable & safe (WASM executes in isolated memory and can run almost anywhere)
 - [Simple API](#api)
 - [Very fast](#benchmarks)
@@ -160,9 +158,9 @@ See [`markdown.d.ts`](markdown.d.ts)
 Install latest emscripten to your environment.
 
 ```sh
-yarn install
-yarn build-wasm
-yarn build-bundle
+pnpm install
+pnpm build-wasm
+pnpm build-bundle
 ```
 
 ## Benchmarks
@@ -177,10 +175,10 @@ Core i7 13700K 4.75 GHz running on Windows 11 22H2, NodeJS v19.3.0
 
 | Name                                                      | Version |
 | --------------------------------------------------------- | ------- |
-| [commonmark](https://github.com/commonmark/commonmark.js) | 0.31.0  |
+| [commonmark](https://github.com/commonmark/commonmark.js) | 0.31.2  |
 | [markdown-it](https://github.com/markdown-it/markdown-it) | 14.1.0  |
-| [marked](https://github.com/markedjs/marked)              | 12.0.2  |
-| [micromark](https://github.com/micromark/micromark)       | 4.0.0   |
+| [marked](https://github.com/markedjs/marked)              | 15.0.4  |
+| [micromark](https://github.com/micromark/micromark)       | 4.0.1   |
 | [remarkable](https://github.com/jonschlinkert/remarkable) | 2.0.1   |
 | [showdown](https://github.com/showdownjs/showdown)        | 2.1.0   |
 

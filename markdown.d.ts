@@ -97,6 +97,8 @@ export declare const ParseFlags: {
   readonly WIKI_LINKS: 0x2000;
   /** Enable underline extension (disables '_' for emphasis) */
   readonly UNDERLINE: 0x4000;
+  /** Force all soft breaks to act as hard breaks. */
+  readonly HARD_SOFT_BREAKS: 0x8000;
 
   readonly PERMISSIVE_AUTOLINKS: 0x0008 | 0x0004 | 0x400; // PERMISSIVE_EMAIL_AUTO_LINKS | PERMISSIVE_URL_AUTO_LINKS | PERMISSIVE_WWW_AUTOLINKS
   readonly NO_HTML: 0x0020 | 0x0040; // NO_HTML_BLOCKS | NO_HTML_SPANS

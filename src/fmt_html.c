@@ -2,7 +2,7 @@
  * md4c modified for mdjs.
  * Original source code is licensed as follows:
  *
- * Copyright (c) 2016-2019 Martin Mitas / 2023 Masashi Yoshikawa
+ * Copyright (c) 2016-2024 Martin Mitáš / 2023-2024 Masashi Yoshikawa
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -241,7 +241,7 @@ render_entity(FmtHTML *r, const MD_CHAR *text, MD_SIZE size,
   else
   {
     /* Named entity (e.g. "&nbsp;"). */
-    const struct entity *ent;
+    const ENTITY *ent;
 
     ent = entity_lookup(text, size);
     if (ent != NULL)
