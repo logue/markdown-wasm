@@ -73,6 +73,9 @@ export default defineConfig(async ({ mode }) => {
     },
     esbuild: {
       drop: mode === 'serve' ? [] : ['console'],
+      supported: {
+        'top-level-await': true,
+      },
     },
   };
   return config;

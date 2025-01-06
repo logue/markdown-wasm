@@ -1,4 +1,4 @@
-import { MarkdownModule } from './src/markdown.d.ts';
+import type { MarkdownModule } from './src/markdown.d.ts';
 
 /** Load Markdown wasm */
 export function ready(): Promise<MarkdownModule>;
