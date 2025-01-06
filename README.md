@@ -214,4 +214,4 @@ See [`test/benchmark`](test/benchmark#readme) for more information.
 
 (c) 2019-2020 Rasmus Andersson <https://rsms.me/>
 
-(c) 2023-2024 Masashi Yoshikawa <https://logue.dev/>
+(c) 2023-2025 Masashi Yoshikawa <https://logue.dev/>
