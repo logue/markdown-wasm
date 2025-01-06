@@ -2,9 +2,9 @@
 
 typedef struct WBuf_s
 {
-  char *start; // pointer to start of data
-  char *end;   // pointer to end of data
-  char *ptr;   // pointer to end of valid bytes (cursor)
+    char *start; // pointer to start of data
+    char *end;   // pointer to end of data
+    char *ptr;   // pointer to end of valid bytes (cursor)
 } WBuf;
 
 void WBufInit(WBuf *);

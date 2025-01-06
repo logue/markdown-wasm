@@ -41,17 +41,17 @@ typedef int32_t i32;
 #endif
 
 #define max(a, b) \
-  ({__typeof__ (a) _a = (a); \
+    ({__typeof__ (a) _a = (a); \
     __typeof__ (b) _b = (b); \
     _a > _b ? _a : _b; })
 
 #define min(a, b) \
-  ({__typeof__ (a) _a = (a); \
+    ({__typeof__ (a) _a = (a); \
      __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 
 #define countof(x) \
-  ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
+    ((sizeof(x) / sizeof(0 [x])) / ((size_t)(!(sizeof(x) % sizeof(0 [x])))))
 
 #ifndef DEBUG
 #define DEBUG 0
@@ -68,12 +68,12 @@ typedef int32_t i32;
 // these should be in sync with "OutputFlags" in md.js
 typedef enum OutputFlags
 {
-  OutputFlagDebug = 1 << 1,
-  OutputFlagVerbatimEntites = 1 << 1,
-  OutputFlagSkipUtf8Bom = 1 << 2,
-  OutputFlagXHtml = 1 << 3,
-  OutputFlagAllowJSURI = 1 << 4, // allow "javascript:" URIs in links
-  OutputFlagDisableHeadlineAnchors = 1 << 5,
+    OutputFlagDebug = 1 << 1,
+    OutputFlagVerbatimEntites = 1 << 1,
+    OutputFlagSkipUtf8Bom = 1 << 2,
+    OutputFlagXHtml = 1 << 3,
+    OutputFlagAllowJSURI = 1 << 4, // allow "javascript:" URIs in links
+    OutputFlagDisableHeadlineAnchors = 1 << 5,
 } OutputFlags;
 
 typedef int (*JSTextFilterFun)(

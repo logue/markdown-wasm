@@ -6,15 +6,15 @@
 
 typedef enum ErrorCode
 {
-  ERR_NONE,
-  ERR_MD_PARSE,
-  ERR_OUTFLAGS,
+    ERR_NONE,
+    ERR_MD_PARSE,
+    ERR_OUTFLAGS,
 } ErrorCode;
 
 #if DEBUG
 void __attribute__((constructor)) init()
 {
-  dlog("WASM INIT");
+    dlog("WASM INIT");
 }
 #endif
 
@@ -30,30 +30,30 @@ export size_t parseUTF8(
     const char **outptr,
     JSTextFilterFun onCodeBlock)
 {
-  dlog("parseUTF8 called with inbufptr=%p  inbuflen=%u", inbufptr, inbuflen);
+    dlog("parseUTF8 called with inbufptr=%p  inbuflen=%u", inbufptr, inbuflen);
 
-  WBufReset(&outbuf);
+    WBufReset(&outbuf);
 
-  // approximate output size to minimize reallocations
-  WBufReserve(&outbuf, inbuflen * 2);
+    // approximate output size to minimize reallocations
+    WBufReserve(&outbuf, inbuflen * 2);
 
-  FmtHTML fmt = {
-      .flags = outflags,
-      .parserFlags = parser_flags,
-      .userdata = &outbuf,
-      .onCodeBlock = onCodeBlock,
-  };
+    FmtHTML fmt = {
+        .flags = outflags,
+        .parserFlags = parser_flags,
+        .userdata = &outbuf,
+        .onCodeBlock = onCodeBlock,
+    };
 
-  if (fmt_html(inbufptr, inbuflen, &fmt) != 0)
-  {
-    // fmt_html returns status of md_parse which only fails in extreme cases
-    // like when out of memory. md4c does not provide error codes or error messages.
-    WErrSet(ERR_MD_PARSE, "md parser error");
-    *outptr = 0;
-    return 0;
-  }
+    if (fmt_html(inbufptr, inbuflen, &fmt) != 0)
+    {
+        // fmt_html returns status of md_parse which only fails in extreme cases
+        // like when out of memory. md4c does not provide error codes or error messages.
+        WErrSet(ERR_MD_PARSE, "md parser error");
+        *outptr = 0;
+        return 0;
+    }
 
-  *outptr = outbuf.start;
-  dlog("outbuf =>\n%.*s\n", WBufLen(&outbuf), outbuf.start);
-  return WBufLen(&outbuf);
+    *outptr = outbuf.start;
+    dlog("outbuf =>\n%.*s\n", WBufLen(&outbuf), outbuf.start);
+    return WBufLen(&outbuf);
 }
