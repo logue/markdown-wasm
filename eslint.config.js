@@ -1,19 +1,10 @@
-import globals from 'globals';
+import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
-import pluginJs from '@eslint/js';
 import pluginImport from 'eslint-plugin-import';
-// mimic CommonJS variables -- not needed if using CommonJS
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: pluginJs.configs.recommended,
-});
+import globals from 'globals';
 
-export default [
+export default defineConfig([
   {
     ignores: [
       '.vscode/',
@@ -21,12 +12,17 @@ export default [
       'dist/',
       'public/',
       'src/**/*.generated.*',
-      'eslint.config.js',
       'src/markdown.js',
+      'eslint.config.js',
     ],
   },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
-  ...compat.extends('standard'),
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    plugins: { js },
+    extends: ['js/recommended'],
+  },
+  pluginImport.flatConfigs.recommended,
   {
     languageOptions: {
       parserOptions: {
@@ -34,34 +30,24 @@ export default [
         sourceType: 'module',
       },
     },
-    plugins: {
-      import: pluginImport,
-    },
     settings: {
       // This will do the trick
       'import/parsers': {
         espree: ['.js', '.cjs', '.mjs', '.jsx'],
       },
-      'import/resolver': {
-        node: true,
+      'eslint-import-resolver-custom-alias': {
         alias: {
-          map: [
-            ['@', './src'],
-            ['~', './node_modules'],
-          ],
-          extensions: ['.js', '.jsx'],
+          '@': './src',
+          '~': './node_modules',
         },
-      },
-      vite: {
-        configPath: './vite.config.ts',
+        extensions: ['.js'],
       },
     },
     rules: {
       camelcase: 'off',
       'no-unused-vars': 'warn',
-      // Fix for Vue setup style
       'import/default': 'off',
-      // Fix for Vue setup style
+      'import/namespace': 'off',
       'import/no-default-export': 'off',
       // Sort Import Order.
       // see https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md#importorder-enforce-a-convention-in-module-import-order
@@ -78,13 +64,6 @@ export default [
             'type',
           ],
           pathGroups: [
-            // Vue Core
-            {
-              pattern:
-                '{vue,vue-router,vuex,@/stores,vue-i18n,pinia,vite,vitest,vitest/**,@vitejs/**,@vue/**}',
-              group: 'external',
-              position: 'before',
-            },
             // Internal Codes
             {
               pattern: '{@/**}',
@@ -101,6 +80,5 @@ export default [
       ],
     },
   },
-  // ...pluginVue.configs['flat/recommended'],
   eslintConfigPrettier,
-];
+]);

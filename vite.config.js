@@ -1,9 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
-import { defineConfig } from 'vite';
-
 import { dataToEsm } from '@rollup/pluginutils';
+import { defineConfig } from 'vite';
 import banner from 'vite-plugin-banner';
 import { checker } from 'vite-plugin-checker';
 import topLevelAwait from 'vite-plugin-top-level-await';

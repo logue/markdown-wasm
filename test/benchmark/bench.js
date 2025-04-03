@@ -84,7 +84,7 @@ async function benchmarkFile(benchfile) {
   //   contentsBuffer.length
   // },`;
 
-  await new Benchmark.Suite({
+  new Benchmark.Suite({
     onCycle(ev) {
       const b = ev.target;
       // console.log("cycle", b)
