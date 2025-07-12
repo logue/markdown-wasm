@@ -64,7 +64,7 @@ export default defineConfig(async ({ mode }) => {
           : {
               entry: fileURLToPath(new URL('./src/index.js', import.meta.url)),
               name: 'markdown',
-              formats: ['es', 'umd', 'iife'],
+              formats: ['es', 'umd', 'cjs', 'iife'],
               fileName: format => `markdown.${format}.js`,
             },
       // https://vitejs.dev/config/build-options.html#build-sourcemap
