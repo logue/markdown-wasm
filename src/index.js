@@ -4,7 +4,7 @@ import init from './markdown.js';
 
 /**
  * @typedef {import('../markdown').ParseOptions } ParseOptions
- * @typedef {import('../markdown').MarkdownModule } ParseOptions
+ * @typedef {import('../markdown').MarkdownModule } MarkdownModule
  */
 
 /** @type {MarkdownModule} Markdown Wasm Module */
@@ -12,7 +12,23 @@ let Module;
 /** @type {number} used by strFromUTF8Ptr as a temporary address-sized integer */
 let tmpPtr = 0;
 
-/** Initialize Markdown Wasm */
+/**
+ * Initialize the underlying WebAssembly module.
+ *
+ * This MUST be awaited before calling {@link parse}. Subsequent calls are cheap and
+ * will return the same readiness promise once initialization has started.
+ *
+ * Lifecycle:
+ *  - Loads and instantiates the wasm binary (network or file system depending on env)
+ *  - Allocates a small scratch pointer used by helper functions
+ *
+ * @example
+ * import { ready, parse } from '@logue/markdown-wasm';
+ * await ready();
+ * const html = parse('# Hello');
+ *
+ * @returns {Promise<MarkdownModule>} Resolves when the wasm runtime is ready.
+ */
 export const ready = async () => {
   Module = await init();
 
@@ -23,7 +39,15 @@ export const ready = async () => {
   return await Module.ready;
 };
 
-/** @type {Record<string, number>} - ParseFlags */
+/**
+ * Bit flags controlling markdown parsing features.
+ * Can be OR-ed together and passed as {@link ParseOptions.parseFlags}.
+ * Dialect presets (DIALECT_*) are provided for convenience.
+ *
+ * NOTE: Changing flags affects performance (extra feature logic) and output semantics.
+ * Keep the DEFAULT set unless you explicitly need extra extensions.
+ * @type {Record<string, number>}
+ */
 export const ParseFlags = {
   /** In TEXT, collapse non-trivial whitespace into single ' ' */
   COLLAPSE_WHITESPACE: 0x0001,
@@ -74,7 +98,12 @@ export const ParseFlags = {
   DIALECT_GITHUB: 0x0008 | 0x0004 | 0x400 | 0x0100 | 0x0200 | 0x0800, // PERMISSIVE_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
 };
 
-/** @type {Record<string, number>} these should be in sync with "OutputFlags" in common.h */
+/**
+ * Internal output flags (not exported) mapped to the C side. They influence renderer
+ * behavior such as XHTML formatting and entity escaping. Maintained in sync with
+ * common.h (OutputFlags enum). Modifying these requires a corresponding C update.
+ * @type {Record<string, number>}
+ */
 const OutputFlags = {
   /** Output DebugLog */
   Debug: 1 << 0,
@@ -91,12 +120,21 @@ const OutputFlags = {
 };
 
 /**
- * Parse markdown
+ * Convert a markdown string (or UTF-8 byte array) into HTML.
  *
- * @param {string | Uint8Array} source - markdown text
- * @param {ParseOptions} options - Parser options
+ * Thread-safety: The underlying wasm instance is single-threaded. Avoid calling parse
+ * concurrently from multiple workers sharing the same module without external locking.
  *
- * @return {string | Uint8Array | null}
+ * Memory: When `options.bytes=true`, the returned Uint8Array references wasm memory and
+ * becomes invalid after the next parse call. Copy it (e.g. `out.slice()`) if you need to
+ * retain it.
+ *
+ * Error Handling: Throws if the module is not initialized or if the wasm layer reports
+ * an internal error (exposed as WError).
+ *
+ * @param {string | Uint8Array} source Markdown source text.
+ * @param {ParseOptions} [options] Parser options (partial override of defaults).
+ * @returns {string | Uint8Array | null} HTML string (default), a transient Uint8Array (when bytes=true), or null on empty output.
  */
 export function parse(source, options = {}) {
   if (!Module) {
@@ -151,7 +189,7 @@ export function parse(source, options = {}) {
       Module._parseUTF8(
         inptr,
         inlen,
-        options.parseFlags,
+        opt.parseFlags,
         outputFlags,
         outptr,
         onCodeBlockPtr
@@ -182,6 +220,15 @@ export function parse(source, options = {}) {
  *
  * @param {Function} onCodeBlock
  * @return {number}
+ */
+/**
+ * Wrap the user supplied onCodeBlock callback into a wasm-callable function pointer.
+ * Ensures exceptions are caught and converted to a sentinel (-1) so that the C side
+ * can gracefully fallback.
+ *
+ * @param {(lang: string, body: string) => (string|Uint8Array|null|undefined)} onCodeBlock
+ * @returns {number} Function pointer registered in the wasm table.
+ * @internal
  */
 function createOnCodeBlockFunction(onCodeBlock) {
   const fnptr = Module.addFunction((metaptr, metalen, inptr, inlen, outptr) => {
@@ -237,6 +284,14 @@ function createOnCodeBlockFunction(onCodeBlock) {
  *
  * @return {Uint8Array}
  */
+/**
+ * Normalize various input forms into a Uint8Array (UTF-8 for strings).
+ * Accepts string | Uint8Array | number[] (treated as byte values).
+ *
+ * @param {Uint8Array | string | number[]} something
+ * @returns {Uint8Array}
+ * @internal
+ */
 function as_byte_array(something) {
   if (typeof something === 'string') {
     return new TextEncoder().encode(something);
@@ -291,6 +346,17 @@ function as_byte_array(something) {
  * @param {CallbackGlobal} fn
  * @return {Uint8Array}
  */
+/**
+ * Utility to interact with C functions that write data to a freshly allocated region
+ * and return its length via direct return while placing the pointer at an out param.
+ *
+ * It temporarily reuses a single 4-byte heap slot (tmpPtr) allocated during init.
+ *
+ * @template T
+ * @param {(outptr:number)=>number} fn Function that writes pointer (*outptr) and returns length
+ * @returns {Uint8Array|null} View over wasm memory or null if pointer is 0.
+ * @internal
+ */
 function withOutPtr(fn) {
   const len = fn(tmpPtr);
   const addr = Module.HEAP32[tmpPtr >> 2];
@@ -313,6 +379,14 @@ function withOutPtr(fn) {
  *
  * @return {number}
  */
+/**
+ * Copy a buffer into wasm memory (malloc), invoke callback, then free it.
+ *
+ * @param {Uint8Array} buf Source buffer
+ * @param {(ptr:number,size:number)=>any} fn Callback receiving pointer & size
+ * @returns {any} Return value of callback
+ * @internal
+ */
 function withTmpBytePtr(buf, fn) {
   const size = buf.length;
   const ptr = mallocbuf(buf, size);
@@ -329,6 +403,14 @@ function withTmpBytePtr(buf, fn) {
  * @param {Uint8Array} byteArray
  * @param {number} length
  * @return {number}
+ */
+/**
+ * Allocate `length` bytes and copy contents of `byteArray` into wasm memory.
+ *
+ * @param {Uint8Array} byteArray Source byte array
+ * @param {number} length Number of bytes to copy (<= byteArray.length)
+ * @returns {number} Pointer to allocated memory
+ * @internal
  */
 function mallocbuf(byteArray, length) {
   const offs = Module._wrealloc(0, length);
@@ -360,6 +442,12 @@ class WError extends Error {
  *
  * @return {WError | undefined}
  */
+/**
+ * Read last error from wasm (if any) and clear it.
+ *
+ * @returns {WError | undefined}
+ * @internal
+ */
 function errorFromWasm() {
   /** @type {number} */
   const code = Module._WErrGetCode();
@@ -374,6 +462,10 @@ function errorFromWasm() {
 }
 
 /** Error from wasm check */
+/**
+ * Throw if an error was reported by the wasm layer since last check.
+ * @internal
+ */
 function werrCheck() {
   const err = errorFromWasm();
   if (err) {

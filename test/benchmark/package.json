@@ -20,7 +20,7 @@
     "d3": "^7.9.0",
     "d3-node": "^4.0.1",
     "markdown-it": "^14.1.0",
-    "marked": "^16.0.0",
+    "marked": "^16.4.1",
     "micromark": "^4.0.2",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",

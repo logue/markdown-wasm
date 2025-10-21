@@ -1,4 +1,10 @@
-import type { MarkdownModule } from './src/markdown.d.ts';
+// NOTE:
+//  - Import paths with .d.ts extension may occasionally fail resolution with certain
+//    moduleResolution modes (bundler/legacy), so changed to extensionless.
+//  - Explicit re-export to allow consumers to write
+//    `import type { MarkdownModule } from '@logue/markdown-wasm'`.
+import type { MarkdownModule } from './src/markdown';
+export type { MarkdownModule };
 
 /** Load Markdown wasm */
 export function ready(): Promise<MarkdownModule>;
@@ -22,22 +28,22 @@ export type ParseFlagsType = (typeof ParseFlags)[keyof typeof ParseFlags];
 /** Options for the parse function */
 export interface ParseOptions {
   /** Customize parsing. Defaults to ParseFlags.DEFAULT */
-  parseFlags: ParseFlagsType | number;
+  parseFlags?: ParseFlagsType | number;
 
   /** Enable Debug log. default is false */
-  debug: boolean;
+  debug?: boolean;
 
   /** Use xhtml format. Default is true. */
-  xhtml: boolean;
+  xhtml?: boolean;
 
   /** Output special characters as entity reference characters */
-  verbatimEntities: boolean;
+  verbatimEntities?: boolean;
 
   /** Allow "javascript:" in links */
-  allowJSURIs: boolean;
+  allowJSURIs?: boolean;
 
   /** Disable anchor tag in headlines. Defaults to `false` */
-  disableHeadlineAnchors: boolean;
+  disableHeadlineAnchors?: boolean;
 
   /**
    * bytes=true causes parse() to return the result as a Uint8Array instead of a string.
@@ -49,22 +55,22 @@ export interface ParseOptions {
    * This only provides a performance benefit when you never need to convert the output
    * to a string. In most cases you're better off leaving this unset or false.
    */
-  bytes: boolean;
+  bytes?: boolean;
 
   /**
-   * Optional callback which if provided is called for each code block.
-   * langname holds the "language tag", if any, of the block.
+   * Optional callback invoked for every fenced code block.
    *
-   * The returned value is inserted into the resulting HTML verbatim, without HTML escaping.
-   * Thus, you should take care of properly escaping any special HTML characters.
+   * Parameters:
+   *  - langname: The info string / language tag (empty string if none)
+   *  - body: UTF-8 decoded string content of the code block (or raw bytes depending on internal implementation).
    *
-   * If the function returns null or undefined, or an exception occurs, the body will be
-   * included as-is after going through HTML escaping.
+   * Return value:
+   *  - If you return a string or Uint8Array, it will be injected verbatim (NOT HTML-escaped) into output.
+   *  - Return null/undefined/empty string to fall back to the default HTML-escaped rendering.
    *
-   * Note that use of this callback has an adverse impact on performance as it casues
-   * calls and data to be bridged between WASM and JS on every invocation.
+   * Performance: Using this callback incurs a WASM ↔ JS boundary crossing per code block.
    */
-  onCodeBlock: (langname: string, body: Uint8Array) => MarkdownOutput;
+  onCodeBlock?: (langname: string, body: string | Uint8Array) => MarkdownOutput;
 }
 
 /** ParseFlags */

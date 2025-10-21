@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { stat, readdir, readFile } from 'node:fs/promises';
+import { stat, readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import process from 'node:process';
 import { TextDecoder } from 'node:util';
 
@@ -36,6 +36,9 @@ await ready();
 /** Decoder */
 const decoder = new TextDecoder('utf-8');
 
+/** CSV output buffer */
+const csvOutput = [];
+
 // parse CLI input
 const filename = process.argv[2];
 if (!filename) {
@@ -44,18 +47,25 @@ if (!filename) {
   process.exit(1);
 }
 
-// print CSV header
-console.log(csv(['library', 'file', 'ops/sec', 'filesize']));
+// Add CSV header
+const csvHeader = csv(['library', 'file', 'ops/sec', 'filesize']);
+console.log(csvHeader);
+csvOutput.push(csvHeader);
 
 const inputStat = await stat(filename);
 if (inputStat.isDirectory()) {
   process.chdir(filename);
   const dir = await readdir('.');
   // run tests on all files in a directory or a single file
-  dir.forEach(fn => benchmarkFile(fn));
+  for (const fn of dir) {
+    await benchmarkFile(fn);
+  }
 } else {
   await benchmarkFile(filename);
 }
+
+// Write CSV output to results/bench.csv
+await writeBenchmarkResults();
 
 // Benchmark.options.maxTime = 10
 
@@ -84,29 +94,51 @@ async function benchmarkFile(benchfile) {
   //   contentsBuffer.length
   // },`;
 
-  new Benchmark.Suite({
-    onCycle(ev) {
-      const b = ev.target;
-      // console.log("cycle", b)
-      console.log(csv([b.name, benchfile, b.hz, contentsBuffer.length]));
-    },
-    // onComplete(ev) {
-    //   let b = ev.target
-    //   console.log("onComplete", {ev}, b.stats, b.times)
-    // }
-  })
-    .add('commonmark', () => renderer.render(commonmarkParser.parse(contents)))
-    .add('showdown', () => showdown.makeHtml(contents))
-    .add('marked', () =>
-      markdParse(contents, { mangle: false, headerIds: false })
-    )
-    .add('markdown-it', () => markdownit.render(contents))
-    .add('remarkable', () => remarkable.render(contents))
-    .add('micromark', () => micromark(contents))
-    .add('markdown-wasm', () =>
-      parse(contentsBuffer, { parseFlags: ParseFlags.DIALECT_COMMONMARK })
-    )
-    // .add('markdown-wasm/string', () => _parse(contents))
-    // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
-    .run({ async: true });
+  return new Promise(resolve => {
+    new Benchmark.Suite({
+      onCycle(ev) {
+        const b = ev.target;
+        const csvLine = csv([b.name, benchfile, b.hz, contentsBuffer.length]);
+        console.log(csvLine);
+        csvOutput.push(csvLine);
+      },
+      onComplete() {
+        resolve();
+      },
+    })
+      .add('commonmark', () =>
+        renderer.render(commonmarkParser.parse(contents))
+      )
+      .add('showdown', () => showdown.makeHtml(contents))
+      .add('marked', () =>
+        markdParse(contents, { mangle: false, headerIds: false })
+      )
+      .add('markdown-it', () => markdownit.render(contents))
+      .add('remarkable', () => remarkable.render(contents))
+      .add('micromark', () => micromark(contents))
+      .add('markdown-wasm', () =>
+        parse(contentsBuffer, { parseFlags: ParseFlags.DIALECT_COMMONMARK })
+      )
+      // .add('markdown-wasm/string', () => _parse(contents))
+      // .add('markdown-wasm/bytes', () => _parse(contentsBuffer, { bytes: true })
+      .run({ async: true });
+  });
+}
+
+/**
+ * Write benchmark results to CSV file
+ */
+async function writeBenchmarkResults() {
+  try {
+    // Ensure results directory exists
+    await mkdir('results', { recursive: true });
+
+    // Write CSV content to file
+    const csvContent = csvOutput.join('\n') + '\n';
+    await writeFile('results/bench.csv', csvContent, 'utf-8');
+
+    console.log('\nBenchmark results written to results/bench.csv');
+  } catch (error) {
+    console.error('Error writing benchmark results:', error);
+  }
 }
