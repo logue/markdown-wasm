@@ -55,7 +55,7 @@
     "node": ">=18",
     "pnpm": ">=10.3.0"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
@@ -107,7 +107,6 @@
   },
   "resolutions": {
     "json5": ">=2.2.3",
-    "yaml": ">=2.3.2",
-    "form-data": ">=3.0.4"
+    "yaml": ">=2.3.2"
   }
 }

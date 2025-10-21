@@ -10,6 +10,7 @@
   },
   "license": "BSD-2-Clause",
   "main": "bench.js",
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "bench": "node bench.js ./samples",
     "graph": "node graph.js results/bench.csv"
@@ -25,5 +26,8 @@
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
     "svgo": "^4.0.0"
+  },
+  "resolutions": {
+    "form-data": ">=3.0.4"
   }
 }
