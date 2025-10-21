@@ -23,30 +23,23 @@
   ],
   "main": "dist/markdown.umd.js",
   "module": "dist/markdown.es.js",
-  "jsdelivr": "dist/markdown.iife.js",
   "unpkg": "dist/markdown.iife.js",
   "types": "markdown.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/markdown.es.js",
       "types": "./markdown.d.ts",
-      "require": "./dist/markdown.cjs.js",
-      "default": "./dist/markdown.es.js"
+      "import": "./dist/markdown.es.js",
+      "require": "./dist/markdown.cjs.js"
     },
-    "./umd": {
-      "default": "./dist/markdown.umd.js"
-    },
-    "./iife": {
-      "default": "./dist/markdown.iife.js"
-    },
-    "./package.json": "./package.json"
+    "./umd": "./dist/markdown.umd.js",
+    "./iife": "./dist/markdown.iife.js"
   },
   "files": [
-    "./src/markdown.wasm",
-    "./src/markdown.js",
-    "./src/markdown.d.ts",
-    "./src/index.js",
-    "./dist",
+    "src/markdown.wasm",
+    "src/markdown.js",
+    "src/markdown.d.ts",
+    "src/index.js",
+    "dist",
     "markdown.d.ts",
     "README.md",
     "LICENSE"
@@ -95,11 +88,6 @@
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.5.0",
     "vitest": "^3.2.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.{js,ts,json,htm,html}": "eslint --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint",
