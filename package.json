@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/markdown-wasm",
   "type": "module",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "license": "MIT",
   "description": "Markdown parser and html generator implemented in WebAssembly",
   "homepage": "https://github.com/logue/markdown-wasm",
@@ -98,6 +98,7 @@
   "resolutions": {
     "form-data": ">=3.0.4",
     "json5": ">=2.2.3",
-    "yaml": ">=2.3.2"
+    "yaml": ">=2.3.2",
+    "rollup": ">=4.60.2"
   }
 }
