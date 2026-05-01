@@ -1,5 +1,5 @@
 #!/bin/sh
-cd src
+cd "$(dirname "$0")" || exit 1
 emcc \
   --closure 1 \
   --no-entry \
@@ -14,6 +14,8 @@ emcc \
   -s AUTO_NATIVE_LIBRARIES=0 \
   -s ENVIRONMENT=web,node \
   -s ERROR_ON_UNDEFINED_SYMBOLS \
+  -s EXPORT_ALL=1 \
+  -s EXPORT_ES6=1 \
   -s EXPORTED_RUNTIME_METHODS=addFunction,removeFunction,addOnPostRun,UTF8ArrayToString \
   -s INCOMING_MODULE_JS_API=[] \
   -s FILESYSTEM=0 \
@@ -22,6 +24,5 @@ emcc \
   -s NO_EXIT_RUNTIME=1 \
   -s STRICT=0 \
   -s WASM=1 \
-  -Wno-enum-constexpr-conversion \
   -o markdown.js \
   wlib.c wbuf.c md.c md4c.c fmt_html.c entity.c

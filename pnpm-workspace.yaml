@@ -1,3 +1,6 @@
+packages:
+  - test/benchmark
+
 onlyBuiltDependencies:
   - '@swc/core'
   - esbuild

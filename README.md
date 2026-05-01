@@ -167,15 +167,23 @@ The [`test/benchmark`](test/benchmark) directory contain a benchmark suite which
 run yourself. It tests a few popular markdown parser-renderers by parsing & rendering a bunch
 of different sample markdown files.
 
+To regenerate the benchmark CSV and SVG graphs from the repository root:
+
+```sh
+pnpm install
+pnpm benchmark
+pnpm benchmark:graph
+```
+
 ### Test Environments
 
-AMD Ryzen 9 9900X 4.40 GHz running on Windows 11 25H2, NodeJS v25.0.0
+MacBook Pro M5 running on macOS Tahoe 26.4.1, NodeJS v24.15.0
 
 | Name                                                      | Version |
 | --------------------------------------------------------- | ------- |
 | [commonmark](https://github.com/commonmark/commonmark.js) | 0.31.2  |
-| [markdown-it](https://github.com/markdown-it/markdown-it) | 14.1.0  |
-| [marked](https://github.com/markedjs/marked)              | 16.4.1  |
+| [markdown-it](https://github.com/markdown-it/markdown-it) | 14.1.1  |
+| [marked](https://github.com/markedjs/marked)              | 18.0.2  |
 | [micromark](https://github.com/micromark/micromark)       | 4.0.2   |
 | [remarkable](https://github.com/jonschlinkert/remarkable) | 2.0.1   |
 | [showdown](https://github.com/showdownjs/showdown)        | 2.1.0   |

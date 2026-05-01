@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { stat, readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import process from 'node:process';
 import { TextDecoder } from 'node:util';
 
@@ -38,6 +39,8 @@ const decoder = new TextDecoder('utf-8');
 
 /** CSV output buffer */
 const csvOutput = [];
+/** Keep result output anchored to benchmark directory even when chdir'ing into samples. */
+const benchmarkRootDir = process.cwd();
 
 // parse CLI input
 const filename = process.argv[2];
@@ -58,6 +61,10 @@ if (inputStat.isDirectory()) {
   const dir = await readdir('.');
   // run tests on all files in a directory or a single file
   for (const fn of dir) {
+    const entryStat = await stat(fn);
+    if (!entryStat.isFile()) {
+      continue;
+    }
     await benchmarkFile(fn);
   }
 } else {
@@ -130,14 +137,17 @@ async function benchmarkFile(benchfile) {
  */
 async function writeBenchmarkResults() {
   try {
+    const resultsDir = join(benchmarkRootDir, 'results');
+    const csvPath = join(resultsDir, 'bench.csv');
+
     // Ensure results directory exists
-    await mkdir('results', { recursive: true });
+    await mkdir(resultsDir, { recursive: true });
 
     // Write CSV content to file
     const csvContent = csvOutput.join('\n') + '\n';
-    await writeFile('results/bench.csv', csvContent, 'utf-8');
+    await writeFile(csvPath, csvContent, 'utf-8');
 
-    console.log('\nBenchmark results written to results/bench.csv');
+    console.log(`\nBenchmark results written to ${csvPath}`);
   } catch (error) {
     console.error('Error writing benchmark results:', error);
   }

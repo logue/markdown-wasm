@@ -5,7 +5,6 @@ import { dataToEsm } from '@rollup/pluginutils';
 import { defineConfig } from 'vite';
 import banner from 'vite-plugin-banner';
 import { checker } from 'vite-plugin-checker';
-import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 
 import pkg from './package.json';
@@ -48,7 +47,6 @@ export default defineConfig(async ({ mode }) => {
         },
       },
       wasm(),
-      topLevelAwait(),
     ],
     // Build Options
     // https://vitejs.dev/config/build-options.html

@@ -1,6 +1,7 @@
 #pragma once
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -15,7 +16,6 @@
 #endif
 #endif
 
-typedef uint8_t bool;
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef int16_t i16;
@@ -28,9 +28,6 @@ typedef int32_t i32;
 #ifndef FALSE
 #define FALSE 0
 #endif
-
-#define true TRUE
-#define false FALSE
 
 #ifndef static_assert
 #if __has_feature(c_static_assert)
