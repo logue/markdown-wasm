@@ -10,14 +10,14 @@ This is a paragraph
 
 This is a paragraph with style _italic_ _italic_ **bold** **bold**
 
-![image](https://rsms.me/raster/examples/image1.jpg)
-![](https://rsms.me/image.png?without-alt)
+![image](https://www.gravatar.com/avatar/55cd40fddaa006a743cbf7532f021ee1?s=256)
+![](https://www.gravatar.com/avatar/55cd40fddaa006a743cbf7532f021ee1)
 
-_Hello [link](https://rsms.me/) lol_
+_Hello [link](https://logue.dev/) lol_
 
-Hello [_link_](https://rsms.me/) lol "cat"
+Hello [_link_](https://logue.dev/) lol "cat"
 
-Hello from _[link](https://rsms.me/)_ to **everyone** `reading this`
+Hello from _[link](https://logue.dev/)_ to **everyone** `reading this`
 
 Here's an [**important** anchor link](#example).
 

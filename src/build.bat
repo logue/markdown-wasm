@@ -25,3 +25,5 @@ emcc ^
   -s WASM=1 ^
   -o markdown.js ^
   wlib.c wbuf.c md.c md4c.c fmt_html.c entity.c
+
+powershell -NoProfile -Command "(Get-Content markdown.js -Raw).Replace('await import(\"node:module\")','await import(/* @vite-ignore */(\"node:\"+\"module\"))') | Set-Content markdown.js"

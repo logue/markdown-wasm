@@ -65,6 +65,11 @@ export default defineConfig(async ({ mode }) => {
               formats: ['es', 'umd', 'cjs', 'iife'],
               fileName: format => `markdown.${format}.js`,
             },
+      rollupOptions: {
+        output: {
+          inlineDynamicImports: true,
+        },
+      },
       // https://vitejs.dev/config/build-options.html#build-sourcemap
       sourcemap: true,
     },

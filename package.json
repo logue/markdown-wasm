@@ -52,7 +52,7 @@
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
-    "build": "run-p build-wasm build-only",
+    "build": "run-s build-wasm build-only",
     "build:clean": "rimraf dist",
     "build-wasm": "cd src && ./build",
     "build-only": "vite build",
