@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@logue/markdown-wasm",
   "type": "module",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "license": "MIT",
   "description": "Markdown parser and html generator implemented in WebAssembly",
   "homepage": "https://github.com/logue/markdown-wasm",
@@ -39,16 +39,20 @@
     "src/markdown.js",
     "src/markdown.d.ts",
     "src/index.js",
+    "src/cli.js",
+    "bin",
     "dist",
     "markdown.d.ts",
     "README.md",
     "LICENSE"
   ],
-  "engines": {
-    "node": ">=24",
-    "pnpm": ">=10"
+  "bin": {
+    "md2html": "./bin/md2html.js"
   },
-  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.0.9",
   "scripts": {
     "dev": "vite",
     "clean": "rimraf node_modules/.vite",
@@ -66,31 +70,37 @@
     "prepare": "husky",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@rollup/pluginutils": "^5.3.0",
     "@types/emscripten": "^1.41.5",
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.6.2",
     "commonmark-spec": "^0.31.2",
     "esbuild": "^0.28.0",
-    "eslint": "^10.2.1",
+    "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-custom-alias": "^1.3.2",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-jsdoc": "^62.9.0",
-    "globals": "^17.5.0",
+    "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.0.4",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.8.3",
     "rimraf": "^6.1.3",
-    "vite": "^8.0.10",
+    "vite": "^8.0.11",
     "vite-plugin-banner": "^0.8.1",
     "vite-plugin-checker": "^0.13.0",
     "vite-plugin-static-copy": "^4.1.0",
     "vite-plugin-wasm": "^3.6.0",
     "vitest": "^4.1.5"
   },
+  "preferUnplugged": [
+    "markdown-wasm"
+  ],
   "lint-staged": {
     "*.{js,ts,json,htm,html}": "eslint --fix --cache --cache-location ./node_modules/.vite/vite-plugin-eslint",
     "*": "prettier -w -u"

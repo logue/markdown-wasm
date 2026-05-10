@@ -44,6 +44,33 @@ Web browser
 </script>
 ```
 
+## CLI Usage
+
+```shell
+md2html [FILE] [-o FILE] [-t NAME]
+```
+
+### Options
+
+| switch             | type    | description |
+| ------------------ | ------- | ----------- | --------------------------------------------------------- |
+| `--version`        | boolean |             | Show version number                                       |
+| `--help`           | boolean |             | Show help                                                 |
+| `-o`, `--output`   | string  |             | Output file path                                          |
+| `-t`, `--template` | string  | `default`   | Template name                                             |
+| `--toc-min`        | number  | `2`         | Minimum heading level to include in the table of contents |
+| `--toc-max`        | number  | `4`         | Maximum heading level to include in the table of contents |
+| `--html`           | boolean | `false`     | Allow HTML in the input                                   |
+
+### CLI Examples
+
+Convert input.md to output.html.
+
+```shell
+md2html input.md -o output.html
+cat input.md | md2html > output.html Convert input.md to output.html.
+```
+
 ## API
 
 ```ts

@@ -1,7 +1,6 @@
 import spec from 'commonmark-spec';
 import { it, describe, expect } from 'vitest';
 
-
 import { ready, parse, ParseFlags } from '../index.js';
 
 await ready();

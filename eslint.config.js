@@ -1,7 +1,7 @@
 import js from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import pluginImport from 'eslint-plugin-import';
+import pluginImport from 'eslint-plugin-import-x';
 import globals from 'globals';
 
 export default defineConfig([
@@ -46,12 +46,12 @@ export default defineConfig([
     rules: {
       camelcase: 'off',
       'no-unused-vars': 'warn',
-      'import/default': 'off',
-      'import/namespace': 'off',
-      'import/no-default-export': 'off',
+      'import-x/default': 'off',
+      'import-x/namespace': 'off',
+      'import-x/no-default-export': 'off',
       // Sort Import Order.
       // see https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md#importorder-enforce-a-convention-in-module-import-order
-      'import/order': [
+      'import-x/order': [
         'error',
         {
           groups: [

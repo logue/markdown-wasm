@@ -1,6 +1,10 @@
 packages:
   - test/benchmark
 
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+
 onlyBuiltDependencies:
   - '@swc/core'
   - esbuild
