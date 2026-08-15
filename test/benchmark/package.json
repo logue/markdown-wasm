@@ -10,7 +10,7 @@
   },
   "license": "BSD-2-Clause",
   "main": "bench.js",
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "bench": "node bench.js ./samples",
     "graph": "node graph.js results/bench.csv"
@@ -19,12 +19,12 @@
     "benchmark": "^2.1.4",
     "commonmark": "^0.31.2",
     "d3": "^7.9.0",
-    "d3-node": "^4.0.1",
-    "markdown-it": "^14.1.1",
-    "marked": "^18.0.2",
+    "d3-node": "^4.0.2",
+    "markdown-it": "^15.0.0",
+    "marked": "^18.0.9",
     "micromark": "^4.0.2",
     "remarkable": "^2.0.1",
     "showdown": "^2.1.0",
-    "svgo": "^4.0.1"
+    "svgo": "^4.0.2"
   }
 }

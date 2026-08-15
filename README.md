@@ -209,8 +209,8 @@ MacBook Pro M5 running on macOS Tahoe 26.4.1, NodeJS v24.15.0
 | Name                                                      | Version |
 | --------------------------------------------------------- | ------- |
 | [commonmark](https://github.com/commonmark/commonmark.js) | 0.31.2  |
-| [markdown-it](https://github.com/markdown-it/markdown-it) | 14.1.1  |
-| [marked](https://github.com/markedjs/marked)              | 18.0.2  |
+| [markdown-it](https://github.com/markdown-it/markdown-it) | 15.0.0  |
+| [marked](https://github.com/markedjs/marked)              | 18.0.9  |
 | [micromark](https://github.com/micromark/micromark)       | 4.0.2   |
 | [remarkable](https://github.com/jonschlinkert/remarkable) | 2.0.1   |
 | [showdown](https://github.com/showdownjs/showdown)        | 2.1.0   |
@@ -249,4 +249,4 @@ See [`test/benchmark`](test/benchmark#readme) for more information.
 
 (c) 2019-2020 Rasmus Andersson <https://rsms.me/>
 
-(c) 2023-2025 Masashi Yoshikawa <https://logue.dev/>
+(c) 2023-2025 Logue <https://logue.dev/>

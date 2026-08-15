@@ -1,10 +1,15 @@
 packages:
   - test/benchmark
-
 allowBuilds:
   esbuild: true
   unrs-resolver: true
-
+overrides:
+  brace-expansion: '>=5.0.9'
+  form-data: '>=4.0.6'
+  ws: '>=8.21.3'
 onlyBuiltDependencies:
   - '@swc/core'
   - esbuild
+# Do not enforce minimum release age for dependencies.
+# Version selection is delegated to package.json constraints.
+minimumReleaseAge: 0

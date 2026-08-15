@@ -10,6 +10,7 @@ export default defineConfig([
       '.vscode/',
       '.yarn/',
       'dist/',
+      'docs/',
       'public/',
       'src/**/*.generated.*',
       'src/markdown.js',

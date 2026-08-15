@@ -7,7 +7,6 @@ emcc \
   -fno-exceptions \
   -O3 \
   -DMD4C_USE_UTF8 \
-  -lembind \
   -s ALLOW_MEMORY_GROWTH=1 \
   -s ALLOW_TABLE_GROWTH=1 \
   -s ASSERTIONS=0 \
