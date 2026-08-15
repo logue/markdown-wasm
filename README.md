@@ -1,11 +1,12 @@
 # @logue/markdown-wasm
 
-[![jsdelivr CDN](https://data.jsdelivr.com/v1/package/npm/@logue/markdown-wasm/badge)](https://www.jsdelivr.com/package/npm/@logue/markdown-wasm)
-[![NPM Downloads](https://img.shields.io/npm/dm/@logue/markdown-wasm.svg?style=flat)](https://www.npmjs.com/package/@logue/markdown-wasm)
-[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/@logue/markdown-wasm/file/README.md)
 [![npm version](https://img.shields.io/npm/v/@logue/markdown-wasm.svg)](https://www.npmjs.com/package/@logue/markdown-wasm)
-[![Open in Gitpod](https://shields.io/badge/Open%20in-Gitpod-green?logo=Gitpod)](https://gitpod.io/#https://github.com/logue/@logue/markdown-wasm)
-[![Twitter Follow](https://img.shields.io/twitter/follow/logue256?style=plastic)](https://twitter.com/logue256)
+[![NPM Downloads](https://img.shields.io/npm/dm/@logue/markdown-wasm.svg?style=flat)](https://www.npmjs.com/package/@logue/markdown-wasm)
+[![jsdelivr CDN](https://data.jsdelivr.com/v1/package/npm/@logue/markdown-wasm/badge)](https://www.jsdelivr.com/package/npm/@logue/markdown-wasm)
+[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/@logue/markdown-wasm/file/README.md)
+[![Open in Gitpod](https://shields.io/badge/Open%20in-Gitpod-green?logo=Gitpod)](https://gitpod.io/#https://github.com/logue/markdown-wasm)
+[![X Follow](https://img.shields.io/twitter/follow/logue256?style=plastic)](https://twitter.com/logue256)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/logue?label=Sponsor&logo=github&color=ea4aaa)](https://github.com/sponsors/logue)
 
 Very fast Markdown parser & HTML renderer implemented in WebAssembly
 
@@ -18,7 +19,7 @@ Very fast Markdown parser & HTML renderer implemented in WebAssembly
 ## Install
 
 ```sh
-yarn add markdown-wasm
+pnpm add markdown-wasm
 ```
 
 ## Examples
@@ -52,15 +53,15 @@ md2html [FILE] [-o FILE] [-t NAME]
 
 ### Options
 
-| switch             | type    | description |
-| ------------------ | ------- | ----------- | --------------------------------------------------------- |
-| `--version`        | boolean |             | Show version number                                       |
-| `--help`           | boolean |             | Show help                                                 |
-| `-o`, `--output`   | string  |             | Output file path                                          |
-| `-t`, `--template` | string  | `default`   | Template name                                             |
-| `--toc-min`        | number  | `2`         | Minimum heading level to include in the table of contents |
-| `--toc-max`        | number  | `4`         | Maximum heading level to include in the table of contents |
-| `--html`           | boolean | `false`     | Allow HTML in the input                                   |
+| Switch             | Type    | Default   | Description                                               |
+| ------------------ | ------- | --------- | --------------------------------------------------------- |
+| `--version`        | boolean |           | Show version number                                       |
+| `--help`           | boolean |           | Show help                                                 |
+| `-o`, `--output`   | string  |           | Output file path                                          |
+| `-t`, `--template` | string  | `default` | Template name                                             |
+| `--toc-min`        | number  | `2`       | Minimum heading level to include in the table of contents |
+| `--toc-max`        | number  | `4`       | Maximum heading level to include in the table of contents |
+| `--html`           | boolean | `false`   | Allow HTML in the input                                   |
 
 ### CLI Examples
 
@@ -249,4 +250,4 @@ See [`test/benchmark`](test/benchmark#readme) for more information.
 
 (c) 2019-2020 Rasmus Andersson <https://rsms.me/>
 
-(c) 2023-2025 Logue <https://logue.dev/>
+(c) 2023-2026 Logue <https://logue.dev/>
