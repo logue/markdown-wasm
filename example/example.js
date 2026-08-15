@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
-import { ready, parse } from '../src/index.js';
+import { ready, parse } from '../src/index.ts';
 
 await ready();
 

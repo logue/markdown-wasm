@@ -1,15 +1,10 @@
-'use strict';
-
 import init from './markdown.js';
 
-/**
- * @typedef {import('../markdown').ParseOptions } ParseOptions
- * @typedef {import('../markdown').MarkdownModule } MarkdownModule
- */
+import type { MarkdownModule, ParseOptions } from '../markdown.js';
 
-/** @type {MarkdownModule} Markdown Wasm Module */
-let Module;
-/** @type {number} used by strFromUTF8Ptr as a temporary address-sized integer */
+/** Markdown Wasm Module */
+let Module: MarkdownModule;
+/** used by withOutPtr as a temporary address-sized integer */
 let tmpPtr = 0;
 
 /**
@@ -27,9 +22,9 @@ let tmpPtr = 0;
  * await ready();
  * const html = parse('# Hello');
  *
- * @returns {Promise<MarkdownModule>} Resolves when the wasm runtime is ready.
+ * @returns Resolves when the wasm runtime is ready.
  */
-export const ready = async () => {
+export const ready = async (): Promise<MarkdownModule> => {
   Module = await init();
 
   Module.addOnPostRun(() => {
@@ -46,9 +41,8 @@ export const ready = async () => {
  *
  * NOTE: Changing flags affects performance (extra feature logic) and output semantics.
  * Keep the DEFAULT set unless you explicitly need extra extensions.
- * @type {Record<string, number>}
  */
-export const ParseFlags = {
+export const ParseFlags: Record<string, number> = {
   /** In TEXT, collapse non-trivial whitespace into single ' ' */
   COLLAPSE_WHITESPACE: 0x0001,
   /** Do not require space in ATX headers ( ###header ) */
@@ -102,9 +96,8 @@ export const ParseFlags = {
  * Internal output flags (not exported) mapped to the C side. They influence renderer
  * behavior such as XHTML formatting and entity escaping. Maintained in sync with
  * common.h (OutputFlags enum). Modifying these requires a corresponding C update.
- * @type {Record<string, number>}
  */
-const OutputFlags = {
+const OutputFlags: Record<string, number> = {
   /** Output DebugLog */
   Debug: 1 << 0,
   /** Use entity reference character */
@@ -119,6 +112,9 @@ const OutputFlags = {
   DisableHeadlineAnchors: 1 << 5,
 };
 
+/** A view into wasm heap memory returned by {@link withOutPtr}. */
+type HeapData = Uint8Array & { heapAddr: number };
+
 /**
  * Convert a markdown string (or UTF-8 byte array) into HTML.
  *
@@ -132,35 +128,33 @@ const OutputFlags = {
  * Error Handling: Throws if the module is not initialized or if the wasm layer reports
  * an internal error (exposed as WError).
  *
- * @param {string | Uint8Array} source Markdown source text.
- * @param {ParseOptions} [options] Parser options (partial override of defaults).
- * @returns {string | Uint8Array | null} HTML string (default), a transient Uint8Array (when bytes=true), or null on empty output.
+ * @param source Markdown source text.
+ * @param options Parser options (partial override of defaults).
+ * @returns HTML string (default), a transient Uint8Array (when bytes=true), or null on empty output.
  */
-export function parse(source, options = {}) {
+export function parse(
+  source: string | Uint8Array,
+  options: Partial<ParseOptions> = {}
+): string | Uint8Array | null {
   if (!Module) {
     throw new Error(
       '[markdown-wasm] markdown-wasm does not initialized. Use `await ready();` before `parse()` function.'
     );
   }
 
-  /** @type {import('../markdown').ParseOptions} Override default config */
-  const opt = {
-    // Defaults
-    ...{
-      allowJSURIs: false,
-      verbatimEntities: true,
-      parseFlags: ParseFlags.DEFAULT,
-      xhtml: true,
-      disableHeadlineAnchors: false,
-      debug: false,
-      bytes: false,
-    },
-    // Override options
+  // Defaults, overridden by caller-supplied options
+  const opt: ParseOptions = {
+    allowJSURIs: false,
+    verbatimEntities: true,
+    parseFlags: ParseFlags.DEFAULT,
+    xhtml: true,
+    disableHeadlineAnchors: false,
+    debug: false,
+    bytes: false,
     ...options,
   };
 
-  /** @type {number} */
-  let outputFlags = OutputFlags.SkipUtf8Bom;
+  let outputFlags: number = OutputFlags.SkipUtf8Bom;
 
   // Allow javascript Uri
   outputFlags |= opt.allowJSURIs ? OutputFlags.AllowJSURI : 0;
@@ -176,20 +170,17 @@ export function parse(source, options = {}) {
     ? OutputFlags.DisableHeadlineAnchors
     : 0;
 
-  /** @type {number} */
-  const onCodeBlockPtr = options.onCodeBlock
+  const onCodeBlockPtr: number = options.onCodeBlock
     ? createOnCodeBlockFunction(options.onCodeBlock)
     : 0;
 
-  /** @type {Uint8Array} */
-  const buf = as_byte_array(source);
-  /** @type {Uint8Array} */
-  const outbuf = withOutPtr(outptr =>
+  const buf: Uint8Array = as_byte_array(source);
+  const outbuf: HeapData | null = withOutPtr(outptr =>
     withTmpBytePtr(buf, (inptr, inlen) =>
       Module._parseUTF8(
         inptr,
         inlen,
-        opt.parseFlags,
+        opt.parseFlags ?? ParseFlags.DEFAULT,
         outputFlags,
         outptr,
         onCodeBlockPtr
@@ -212,87 +203,84 @@ export function parse(source, options = {}) {
 }
 
 /**
- * Function's C type: JSTextFilterFun
- * (metaptr ptr, metalen ptr, inptr ptr, inlen ptr, outptr ptr) -> outlen int
- *
- * Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c
- * @see {@link https://emscripten.org/docs/porting/connecting_cpp_and_javascript/}
- *
- * @param {Function} onCodeBlock
- * @return {number}
- */
-/**
  * Wrap the user supplied onCodeBlock callback into a wasm-callable function pointer.
  * Ensures exceptions are caught and converted to a sentinel (-1) so that the C side
  * can gracefully fallback.
  *
- * @param {(lang: string, body: string) => (string|Uint8Array|null|undefined)} onCodeBlock
- * @returns {number} Function pointer registered in the wasm table.
+ * Function's C type: JSTextFilterFun
+ * (metaptr ptr, metalen ptr, inptr ptr, inlen ptr, outptr ptr) -> outlen int
+ *
+ * @see {@link https://emscripten.org/docs/porting/connecting_cpp_and_javascript/ Interacting with code}
+ *
+ * @param onCodeBlock user supplied callback
+ * @returns Function pointer registered in the wasm table.
  * @internal
  */
-function createOnCodeBlockFunction(onCodeBlock) {
-  const fnptr = Module.addFunction((metaptr, metalen, inptr, inlen, outptr) => {
-    try {
-      /** @type {string} lang is the "language" tag, if any, provided with the code block */
-      const lang =
-        metalen > 0
-          ? new TextDecoder('utf-8').decode(
-              Module.HEAPU8.subarray(metaptr, metaptr + metalen)
-            )
-          : '';
+function createOnCodeBlockFunction(
+  onCodeBlock: NonNullable<ParseOptions['onCodeBlock']>
+): number {
+  const fnptr = Module.addFunction(
+    (
+      metaptr: number,
+      metalen: number,
+      inptr: number,
+      inlen: number,
+      outptr: number
+    ): number => {
+      try {
+        /** lang is the "language" tag, if any, provided with the code block */
+        const lang: string =
+          metalen > 0
+            ? new TextDecoder('utf-8').decode(
+                Module.HEAPU8.subarray(metaptr, metaptr + metalen)
+              )
+            : '';
 
-      /** @type {Uint8Array} body is a view into heap memory of the segment of source (UTF8 bytes) */
-      const body = Module.HEAPU8.subarray(inptr, inptr + inlen);
+        /** body is a view into heap memory of the segment of source (UTF8 bytes) */
+        const body = Module.HEAPU8.subarray(inptr, inptr + inlen);
 
-      /** @type {string?} result from the onCodeBlock function */
-      const result = onCodeBlock(lang, new TextDecoder('utf-8').decode(body));
+        /** result from the onCodeBlock function */
+        const result = onCodeBlock(lang, new TextDecoder('utf-8').decode(body));
 
-      if (!result) {
-        // Callback indicates that it does not wish to filter.
-        // The md.c implementation will html-encode the body.
+        if (!result) {
+          // Callback indicates that it does not wish to filter.
+          // The md.c implementation will html-encode the body.
+          return -1;
+        }
+
+        const resbuf: Uint8Array = as_byte_array(result);
+
+        if (resbuf.length > 0) {
+          // copy resbuf to WASM heap memory
+          const resptr = mallocbuf(resbuf, resbuf.length);
+          // write pointer value
+          Module.HEAPU32[outptr >> 2 /* == outptr / 4 */] = resptr;
+          // Note: fmt_html.c calls free(resptr)
+        }
+
+        return resbuf.length;
+      } catch (err) {
+        console.error(
+          `[markdown-wasm] error in markdown onCodeBlock callback: ${
+            err instanceof Error ? err.stack : err
+          }`
+        );
         return -1;
       }
-
-      /** @type {Uint8Array} */
-      const resbuf = as_byte_array(result);
-
-      if (resbuf.length > 0) {
-        // copy resbuf to WASM heap memory
-        const resptr = mallocbuf(resbuf, resbuf.length);
-        // write pointer value
-        Module.HEAPU32[outptr >> 2 /* == outptr / 4 */] = resptr;
-        // Note: fmt_html.c calls free(resptr)
-      }
-
-      return resbuf.length;
-    } catch (err) {
-      console.error(
-        `[markdown-wasm] error in markdown onCodeBlock callback: ${
-          err.stack || err
-        }`
-      );
-      return -1;
-    }
-  }, 'iiiiii');
+    },
+    'iiiiii'
+  );
   return fnptr;
 }
 
 /**
- * to Byte Array
- *
- * @param {Uint8Array | string | number[]} something
- *
- * @return {Uint8Array}
- */
-/**
  * Normalize various input forms into a Uint8Array (UTF-8 for strings).
  * Accepts string | Uint8Array | number[] (treated as byte values).
  *
- * @param {Uint8Array | string | number[]} something
- * @returns {Uint8Array}
+ * @param something value to convert
  * @internal
  */
-function as_byte_array(something) {
+function as_byte_array(something: Uint8Array | string | number[]): Uint8Array {
   if (typeof something === 'string') {
     return new TextEncoder().encode(something);
   } else if (something instanceof Uint8Array) {
@@ -302,26 +290,10 @@ function as_byte_array(something) {
 }
 
 /**
- * withOutPtr facilitates the following:
- * 1. calls fn with an address to memory that fits a pointer.
- *     fn(outptr) is expected to:
- *     a. Write some data into heap memory
- *     b. Write the address of that data at outptr (i.e. *outptr = heapaddr)
- *     c. Return the length of data written
+ * Utility to interact with C functions that write data to a freshly allocated region
+ * and return its length via direct return while placing the pointer at an out param.
  *
- *  2. withOutPtr reads the address from outptr
- *     a. If the address is 0 (NULL), returns null
- *     b. Else a slice of the heap memory is created, starting at *outptr
- *        and ending at ((*outptr) + length_returned_by_fn).
- *        A free() function is added to the buffer and it is returned.
- *
- *  It is important to free() the memory of the returned buffer when the caller is done.
- *  This is implementation specific, so this function can not help you with that.
- *
- *  The return type is as follows:
- *    interface HeapData extends Uint8Array {
- *      readonly heapAddr :number  // address in heap == *outptr
- *    }
+ * It temporarily reuses a single 4-byte heap slot (tmpPtr) allocated during init.
  *
  * @example
  *    // WASM module, in C:
@@ -343,51 +315,33 @@ function as_byte_array(something) {
  *    console.log("RGB:", color[0], color[1], color[2])
  *   _freeColor(color.heapAddr)
  *
- * @param {CallbackGlobal} fn
- * @return {Uint8Array}
- */
-/**
- * Utility to interact with C functions that write data to a freshly allocated region
- * and return its length via direct return while placing the pointer at an out param.
- *
- * It temporarily reuses a single 4-byte heap slot (tmpPtr) allocated during init.
- *
- * @template T
- * @param {(outptr:number)=>number} fn Function that writes pointer (*outptr) and returns length
- * @returns {Uint8Array|null} View over wasm memory or null if pointer is 0.
+ * @param fn Function that writes pointer (*outptr) and returns length
+ * @returns View over wasm memory or null if pointer is 0.
  * @internal
  */
-function withOutPtr(fn) {
+function withOutPtr(fn: (outptr: number) => number): HeapData | null {
   const len = fn(tmpPtr);
   const addr = Module.HEAP32[tmpPtr >> 2];
   if (addr === 0) {
     return null;
   }
-  const buf = Module.HEAPU8.subarray(addr, addr + len);
+  const buf = Module.HEAPU8.subarray(addr, addr + len) as HeapData;
   buf.heapAddr = addr;
   return buf;
 }
 
 /**
- * withTmpBytePtr takes an ArrayBuffer or Uint8Array and:
- * 1. copies it into the WASM module memory
- * 2. calls fn(pointer, size)
- * 3. calls free(pointer)
- *
- * @param {Uint8Array} buf
- * @param {Function} fn
- *
- * @return {number}
- */
-/**
  * Copy a buffer into wasm memory (malloc), invoke callback, then free it.
  *
- * @param {Uint8Array} buf Source buffer
- * @param {(ptr:number,size:number)=>any} fn Callback receiving pointer & size
- * @returns {any} Return value of callback
+ * @param buf Source buffer
+ * @param fn Callback receiving pointer & size
+ * @returns Return value of callback
  * @internal
  */
-function withTmpBytePtr(buf, fn) {
+function withTmpBytePtr<T>(
+  buf: Uint8Array,
+  fn: (ptr: number, size: number) => T
+): T {
   const size = buf.length;
   const ptr = mallocbuf(buf, size);
   const r = fn(ptr, size);
@@ -396,23 +350,14 @@ function withTmpBytePtr(buf, fn) {
 }
 
 /**
- * mallocbuf allocates memory in the WASM heap and copies length bytes
- * from byteArray into the allocated location.
- * Returns the address to the allocated memory.
- *
- * @param {Uint8Array} byteArray
- * @param {number} length
- * @return {number}
- */
-/**
  * Allocate `length` bytes and copy contents of `byteArray` into wasm memory.
  *
- * @param {Uint8Array} byteArray Source byte array
- * @param {number} length Number of bytes to copy (<= byteArray.length)
- * @returns {number} Pointer to allocated memory
+ * @param byteArray Source byte array
+ * @param length Number of bytes to copy (<= byteArray.length)
+ * @returns Pointer to allocated memory
  * @internal
  */
-function mallocbuf(byteArray, length) {
+function mallocbuf(byteArray: Uint8Array, length: number): number {
   const offs = Module._wrealloc(0, length);
   Module.HEAPU8.set(byteArray, offs);
   return offs;
@@ -422,51 +367,36 @@ function mallocbuf(byteArray, length) {
  * WError represents an error from a wasm module
  */
 class WError extends Error {
-  /**
-   * @constructor
-   * @param {number} code
-   * @param {string} message
-   * @param {string} file
-   * @param {number} line
-   */
-  constructor(code, message, file, line) {
-    super(message, file || 'wasm', line || 0);
+  code: number;
+
+  constructor(code: number, message?: string) {
+    super(message);
     this.name = 'WError';
     this.code = code;
   }
 }
 
 /**
- * Get & clear last WErr. Returns null if there was no error.
- * Uses a descriptive name so to help in stack traces.
- *
- * @return {WError | undefined}
- */
-/**
  * Read last error from wasm (if any) and clear it.
  *
- * @returns {WError | undefined}
  * @internal
  */
-function errorFromWasm() {
-  /** @type {number} */
+function errorFromWasm(): WError | undefined {
   const code = Module._WErrGetCode();
   if (code !== 0) {
-    /** @type {string} */
     const msgptr = Module._WErrGetMsg();
     const message =
-      msgptr === '' ? '' : Module.UTF8ArrayToString(Module.HEAPU8, msgptr);
+      msgptr === 0 ? '' : Module.UTF8ArrayToString(Module.HEAPU8, msgptr);
     Module._WErrClear();
     return new WError(code, message);
   }
 }
 
-/** Error from wasm check */
 /**
  * Throw if an error was reported by the wasm layer since last check.
  * @internal
  */
-function werrCheck() {
+function werrCheck(): void {
   const err = errorFromWasm();
   if (err) {
     throw err;

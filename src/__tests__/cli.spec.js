@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 
-import { generateTableOfContents, templates } from '../cli.js';
-import { ready } from '../index.js';
+import { generateTableOfContents, templates } from '../cli.ts';
+import { ready } from '../index.ts';
 
 // Initialize WASM module
 beforeAll(async () => {

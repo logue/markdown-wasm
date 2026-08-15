@@ -1,7 +1,7 @@
 import { basename } from 'node:path';
 import process from 'node:process';
 
-import { ready, parse } from '../src/index.js';
+import { ready, parse } from '../src/index.ts';
 
 await ready();
 

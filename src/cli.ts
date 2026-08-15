@@ -1,12 +1,21 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { ready, parse, ParseFlags } from './index.js';
+import { ready, parse, ParseFlags } from './index.ts';
+
+/** Options accepted by a template function. */
+interface TemplateOptions {
+  title?: string;
+  toc?: string;
+}
+
+/** A template renders the converted HTML content into a full document. */
+type Template = (content: string, options?: TemplateOptions) => string;
 
 /**
  * Available HTML templates for wrapping markdown output
  */
-export const templates = {
+export const templates: Record<string, Template> = {
   default: (content, options = {}) => `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -37,17 +46,34 @@ export const templates = {
   plain: content => content,
 };
 
+interface Heading {
+  level: number;
+  text: string;
+  id: string;
+}
+
+/** Result of {@link generateTableOfContents} when headings were found. */
+interface TableOfContents {
+  toc: string;
+  html: string;
+}
+
 /**
  * Extract headings from HTML content to generate a table of contents
- * @param {string} html - HTML content
- * @param {number} minLevel - Minimum heading level (2-6)
- * @param {number} maxLevel - Maximum heading level (2-6)
- * @returns {string} TOC HTML or empty string
+ *
+ * @param html HTML content
+ * @param minLevel Minimum heading level (2-6)
+ * @param maxLevel Maximum heading level (2-6)
+ * @returns TOC + rewritten HTML (with heading ids), or an empty string when no headings matched.
  */
-export function generateTableOfContents(html, minLevel = 2, maxLevel = 4) {
+export function generateTableOfContents(
+  html: string,
+  minLevel = 2,
+  maxLevel = 4
+): TableOfContents | '' {
   const headingRegex = /<h([1-6])(?:\s[^>]*)?>(.+?)<\/h\1>/g;
-  const headings = [];
-  let match;
+  const headings: Heading[] = [];
+  let match: RegExpExecArray | null;
 
   while ((match = headingRegex.exec(html)) !== null) {
     const level = parseInt(match[1]);
@@ -64,14 +90,14 @@ export function generateTableOfContents(html, minLevel = 2, maxLevel = 4) {
 
   // Replace heading IDs in HTML
   let modifiedHtml = html;
-  headings.forEach((h, i) => {
+  headings.forEach(h => {
     const regex = new RegExp(
-      `<h${h.level}([^>]*)>([^<]*${h.text.replace(/[.*+?^${}()|[\]\\]/g, '$&')}[^<]*)</h${h.level}>`,
+      `<h${h.level}([^>]*)>([^<]*${h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^<]*)</h${h.level}>`,
       'i'
     );
-    modifiedHtml = modifiedHtml.replace(regex, match => {
-      return match.replace(`<h${h.level}`, `<h${h.level} id="${h.id}"`);
-    });
+    modifiedHtml = modifiedHtml.replace(regex, match =>
+      match.replace(`<h${h.level}`, `<h${h.level} id="${h.id}"`)
+    );
   });
 
   // Generate TOC HTML
@@ -95,20 +121,32 @@ export function generateTableOfContents(html, minLevel = 2, maxLevel = 4) {
   return { toc: tocHtml, html: modifiedHtml };
 }
 
+/** Options accepted by the `md2html` command, as parsed by commander. */
+export interface MarkdownConversionOptions {
+  output?: string;
+  template?: string;
+  tocMin?: string | number;
+  tocMax?: string | number;
+  html?: boolean;
+}
+
 /**
  * Handle markdown conversion command
  */
-export async function handleMarkdownConversion(input, options) {
+export async function handleMarkdownConversion(
+  input: string | undefined,
+  options: MarkdownConversionOptions
+): Promise<void> {
   try {
     // Initialize the WebAssembly module
     await ready();
 
-    let markdown;
+    let markdown: string;
 
     // Read from stdin if no input file provided
     if (!input) {
       // Read from stdin
-      const chunks = [];
+      const chunks: string[] = [];
       process.stdin.setEncoding('utf-8');
 
       for await (const chunk of process.stdin) {
@@ -135,11 +173,11 @@ export async function handleMarkdownConversion(input, options) {
       parseFlags,
       verbatimEntities: true,
       xhtml: true,
-    });
+    }) as string;
 
     // Generate table of contents if requested
-    const tocMinLevel = parseInt(options.tocMin) || 2;
-    const tocMaxLevel = parseInt(options.tocMax) || 4;
+    const tocMinLevel = parseInt(String(options.tocMin)) || 2;
+    const tocMaxLevel = parseInt(String(options.tocMax)) || 4;
     let toc = '';
     if (tocMinLevel <= tocMaxLevel) {
       const result = generateTableOfContents(html, tocMinLevel, tocMaxLevel);
@@ -150,7 +188,7 @@ export async function handleMarkdownConversion(input, options) {
     }
 
     // Select template
-    const templateFn = templates[options.template] || templates.default;
+    const templateFn = templates[options.template ?? ''] || templates.default;
 
     // Generate final HTML
     const title = input
@@ -169,7 +207,7 @@ export async function handleMarkdownConversion(input, options) {
       console.log(finalHtml);
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Error: ${error instanceof Error ? error.message : error}`);
     process.exit(1);
   }
 }
@@ -177,7 +215,7 @@ export async function handleMarkdownConversion(input, options) {
 /**
  * Show available templates
  */
-export async function showAvailableTemplates() {
+export async function showAvailableTemplates(): Promise<void> {
   console.log('Available templates:\n');
   Object.keys(templates).forEach(name => {
     console.log(`  • ${name}`);

@@ -20,7 +20,7 @@ export default defineConfig(async ({ mode }) => {
       // vite-plugin-checker
       // https://github.com/fi3ework/vite-plugin-checker
       checker({
-        typescript: false,
+        typescript: true,
         vueTsc: false,
         // eslint: { lintCommand: 'eslint' },
       }),
@@ -60,7 +60,7 @@ export default defineConfig(async ({ mode }) => {
         mode === 'docs'
           ? undefined
           : {
-              entry: fileURLToPath(new URL('./src/index.js', import.meta.url)),
+              entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
               name: 'markdown',
               formats: ['es', 'umd', 'cjs', 'iife'],
               fileName: format => `markdown.${format}.js`,

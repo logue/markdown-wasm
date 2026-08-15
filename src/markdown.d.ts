@@ -1,4 +1,3 @@
-/* eslint-disable spaced-comment */
 /// <reference types="emscripten" />
 
 /** Initialize markdown.wasm Module */
@@ -14,6 +13,7 @@ export interface MarkdownModule extends EmscriptenModule {
   ready: Promise<MarkdownModule>;
 
   // md.c
+  /** @returns Length of the data written at `outptr` (via {@link withOutPtr}) */
   _parseUTF8(
     inbufptr: number,
     inbuflen: number,
@@ -21,7 +21,7 @@ export interface MarkdownModule extends EmscriptenModule {
     outflags: number,
     outptr: number,
     onCodeBlock: number
-  ): Uint8Array;
+  ): number;
 
   // wlib.c
 
@@ -31,8 +31,8 @@ export interface MarkdownModule extends EmscriptenModule {
   /** alias of free */
   _wfree(ptr: number): void;
 
-  /** code and message */
-  _WErrSet(code: number, msg: string): boolean;
+  /** code and pointer to message (in wasm heap memory) */
+  _WErrSet(code: number, msg: number): boolean;
 
   /** clear error state */
   _WErrClear(): void;
@@ -40,6 +40,6 @@ export interface MarkdownModule extends EmscriptenModule {
   /** read code */
   _WErrGetCode(): number;
 
-  /** read message */
-  _WErrGetMsg(): string;
+  /** read pointer to message (in wasm heap memory) */
+  _WErrGetMsg(): number;
 }

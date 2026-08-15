@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+    "types": ["node", "emscripten"],
+
+    /* This project is type-checked only; bundling is done by Vite/esbuild and
+     * runtime execution relies on Node's native TypeScript type stripping,
+     * which requires explicit .ts extensions in relative import specifiers. */
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*.ts", "bin/**/*.ts", "markdown.d.ts", "vite.config.js"],
+  "exclude": ["node_modules", "dist", "docs"]
+}

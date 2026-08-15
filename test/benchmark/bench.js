@@ -12,7 +12,7 @@ import { micromark } from 'micromark';
 import { Remarkable } from 'remarkable';
 import Showdown from 'showdown';
 
-import { ready, parse, ParseFlags } from '../../src/index.js';
+import { ready, parse, ParseFlags } from '../../src/index.ts';
 
 /** setup markdownit */
 const markdownit = new MarkdownIt('commonmark');

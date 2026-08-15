@@ -3,6 +3,7 @@ import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginImport from 'eslint-plugin-import-x';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   {
@@ -22,6 +23,19 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs}'],
     plugins: { js },
     extends: ['js/recommended'],
+    rules: {
+      'no-unused-vars': 'warn',
+    },
+  },
+  tseslint.configs.recommended,
+  {
+    files: ['**/*.d.ts'],
+    rules: {
+      // Ambient declarations describe call signatures; parameter names are
+      // documentation only and third-party APIs (Emscripten) are untyped.
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
   pluginImport.flatConfigs.recommended,
   {
@@ -35,18 +49,18 @@ export default defineConfig([
       // This will do the trick
       'import/parsers': {
         espree: ['.js', '.cjs', '.mjs', '.jsx'],
+        '@typescript-eslint/parser': ['.ts'],
       },
       'eslint-import-resolver-custom-alias': {
         alias: {
           '@': './src',
           '~': './node_modules',
         },
-        extensions: ['.js'],
+        extensions: ['.js', '.ts'],
       },
     },
     rules: {
       camelcase: 'off',
-      'no-unused-vars': 'warn',
       'import-x/default': 'off',
       'import-x/namespace': 'off',
       'import-x/no-default-export': 'off',

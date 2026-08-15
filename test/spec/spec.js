@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url';
 
 import spec from 'commonmark-spec';
 
-import { ready, parse } from '../../src/index.js';
+import { ready, parse } from '../../src/index.ts';
 import { exit } from '../testutil.js';
 
 await ready();
