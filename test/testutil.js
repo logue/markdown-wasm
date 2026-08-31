@@ -61,23 +61,13 @@ const _logerr = logerr;
 
 export { _logerr as logerr };
 
-const logprefix = basename(process.argv[1]) + ':';
+const logprefix = `${basename(process.argv[1])}:`;
 
-function log() {
-  console.log.apply(
-    console,
-    [
-      logprefix,
-    ].concat([].slice.call(arguments)),
-  );
+function log(...args) {
+  console.log(logprefix, ...args);
 }
-function logerr() {
-  console.error.apply(
-    console,
-    [
-      logprefix,
-    ].concat([].slice.call(arguments)),
-  );
+function logerr(...args) {
+  console.error(logprefix, ...args);
 }
 
 const _inspectBuf = inspectBuf;
@@ -93,10 +83,10 @@ function inspectBuf(buf, otherbuf) {
   const styleReset = '\x1b[22;39m';
   const styleNone = (s) => s;
   const styleDiff = process.stderr.isTTY
-    ? (s) => `\x1b[1;33m${s}styleReset`
+    ? (s) => `\x1b[1;33m${s}${styleReset}`
     : styleNone;
   const styleErr = process.stderr.isTTY
-    ? (s) => `\x1b[1;31m${s}styleReset`
+    ? (s) => `\x1b[1;31m${s}${styleReset}`
     : styleNone;
 
   for (let i = 0; i < buf.length; i++) {

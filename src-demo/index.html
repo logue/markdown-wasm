@@ -50,8 +50,8 @@
     ></script>
     <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
+    function gtag(...args) {
+      dataLayer.push(args);
     }
     gtag('js', new Date());
     gtag('config', 'G-2Y2FW3QEG4');
@@ -132,7 +132,7 @@
     <header>
       <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <div class="container-fluid d-flex justify-content-between">
-          <a class="navbar-brand" href="#">markdown-wasm</a>
+          <a class="navbar-brand" href="/">markdown-wasm</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -313,7 +313,7 @@ With default settings, markdown-wasm allows embedded HTML.
 | `00 00 01 00`             | image/x-icon | ico        | Icon image</textarea>
           </div>
           <div class="col-6">
-            <label>HTML output from markdown-wasm</label>
+            <label for="html-output">HTML output from markdown-wasm</label>
             <article class="markdown-body" id="html-output">
               <div title="Loading markdown module...">•••</div>
             </article>

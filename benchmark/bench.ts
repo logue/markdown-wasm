@@ -150,7 +150,7 @@ async function writeBenchmarkResults() {
     });
 
     // Write CSV content to file
-    const csvContent = csvOutput.join('\n') + '\n';
+    const csvContent = `${csvOutput.join('\n')}\n`;
     await writeFile(csvPath, csvContent, 'utf-8');
 
     console.log(`\nBenchmark results written to ${csvPath}`);

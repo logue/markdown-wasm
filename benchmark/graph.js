@@ -127,9 +127,12 @@ function loadData(csvfile) {
   const fileset = new Set();
 
   d3.csvParse(csvText, (d) => {
-    const lib = libraries[d.library] || (libraries[d.library] = {});
+    let lib = libraries[d.library];
+    if (!lib) {
+      lib = libraries[d.library] = {};
+    }
     const ops_sec = Number.parseFloat(d['ops/sec']);
-    const filesize = Number.parseInt(d.filesize);
+    const filesize = Number.parseInt(d.filesize, 10);
     fileset.add(d.file);
     lib[d.file] = {
       ops_sec,
@@ -313,7 +316,7 @@ function createBarChart(data, dataValueKey, graphConfig) {
     .join('rect')
     .attr('fill', (d) => color(d.name))
     .attr('x', x(0))
-    .attr('y', (d, i) => y(i))
+    .attr('y', (_d, i) => y(i))
     .attr('width', (d) => x(d[dataValueKey]) - x(0))
     .attr('height', y.bandwidth());
 
@@ -327,7 +330,7 @@ function createBarChart(data, dataValueKey, graphConfig) {
     .data(data)
     .join('text')
     .attr('x', (d) => x(d[dataValueKey]))
-    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('y', (_d, i) => y(i) + y.bandwidth() / 2)
     .attr('alignment-baseline', 'central')
     .attr('dx', -labelPadding)
     .text((d) => format(d[dataValueKey]))
@@ -435,7 +438,7 @@ function createMinMaxBarChart(data, graphConfig) {
     .join('rect')
     .attr('fill', (d) => color(d.name))
     .attr('x', (d) => x(d.min))
-    .attr('y', (d, i) => y(i))
+    .attr('y', (_d, i) => y(i))
     .attr('width', (d) => x(d.max) - x(d.min))
     .attr('height', y.bandwidth());
 
@@ -449,7 +452,7 @@ function createMinMaxBarChart(data, graphConfig) {
     .data(data)
     .join('text')
     .attr('x', (d) => x(d.min) + (x(d.max) - x(d.min)) / 2)
-    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('y', (_d, i) => y(i) + y.bandwidth() / 2)
     .attr('alignment-baseline', 'central')
     .text((d) => d.name);
 
@@ -463,7 +466,7 @@ function createMinMaxBarChart(data, graphConfig) {
     .data(data)
     .join('text')
     .attr('x', (d) => x(d.min))
-    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('y', (_d, i) => y(i) + y.bandwidth() / 2)
     .attr('alignment-baseline', 'central')
     .attr('dx', labelPadding)
     .text((d) => format(d.min));
@@ -478,7 +481,7 @@ function createMinMaxBarChart(data, graphConfig) {
     .data(data)
     .join('text')
     .attr('x', (d) => x(d.min) + (x(d.max) - x(d.min)))
-    .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
+    .attr('y', (_d, i) => y(i) + y.bandwidth() / 2)
     .attr('alignment-baseline', 'central')
     .attr('dx', -labelPadding)
     .text((d) => format(d.max));

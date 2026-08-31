@@ -74,10 +74,10 @@ export function generateTableOfContents(
 ): TableOfContents | undefined {
   const headingRegex = /<h([1-6])(?:\s[^>]*)?>(.+?)<\/h\1>/g;
   const headings: Heading[] = [];
-  let match: RegExpExecArray | null;
+  let match = headingRegex.exec(html);
 
-  while ((match = headingRegex.exec(html)) !== null) {
-    const level = Number.parseInt(match[1]);
+  while (match !== null) {
+    const level = Number.parseInt(match[1], 10);
     if (level >= minLevel && level <= maxLevel) {
       const text = match[2].replace(/<[^>]+>/g, ''); // Remove any HTML tags
       const id = `heading-${headings.length}`;
@@ -87,6 +87,7 @@ export function generateTableOfContents(
         id,
       });
     }
+    match = headingRegex.exec(html);
   }
 
   if (headings.length === 0) {
@@ -184,8 +185,8 @@ export async function handleMarkdownConversion(
     }) as string;
 
     // Generate table of contents if requested
-    const tocMinLevel = Number.parseInt(String(options.tocMin)) || 2;
-    const tocMaxLevel = Number.parseInt(String(options.tocMax)) || 4;
+    const tocMinLevel = Number.parseInt(String(options.tocMin), 10) || 2;
+    const tocMaxLevel = Number.parseInt(String(options.tocMax), 10) || 4;
     let toc = '';
     if (tocMinLevel <= tocMaxLevel) {
       const result = generateTableOfContents(html, tocMinLevel, tocMaxLevel);

@@ -125,7 +125,7 @@ export function parse(
     ? OutputFlags.DisableHeadlineAnchors
     : 0;
 
-  let outbuf: HeapData | null;
+  let outbuf: HeapData | undefined;
   const buf: Uint8Array = as_byte_array(source);
 
   if (options?.onCodeBlock) {
