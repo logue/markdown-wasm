@@ -14,7 +14,7 @@ interface PackageJson {
 }
 
 const pkg: PackageJson = JSON.parse(
-  await readFile(new URL('../package.json', import.meta.url), 'utf-8')
+  await readFile(new URL('../package.json', import.meta.url), 'utf-8'),
 );
 
 program
@@ -30,12 +30,12 @@ program
   .option(
     '--toc-min <number>',
     'Minimum heading level to include in the table of contents',
-    '2'
+    '2',
   )
   .option(
     '--toc-max <number>',
     'Maximum heading level to include in the table of contents',
-    '4'
+    '4',
   )
   .option('--html', 'Allow HTML in the input', false)
   .action(handleMarkdownConversion);

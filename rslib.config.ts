@@ -1,0 +1,124 @@
+/** For build library use */
+import { readFileSync } from 'node:fs';
+
+import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
+import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
+import { defineConfig } from '@rslib/core';
+
+/**
+ * The UMD name is used for the global variable name when the library
+ * is included via a <script> tag.
+ * DO NOT use kebab-case or snake_case for the UMD name.
+ * Use camelCase or PascalCase instead.
+ *
+ * For example, if your library is called "my-library", you might use
+ * "MyLibrary" as the UMD name.
+ * Then, name might be used in the following way:
+ *
+ * @example
+ * <script src="https://cdn.jsdelivr.net/npm/your-library@1.0.0/dist/index.umd.js"></script>
+ * <script>
+ *   const myLibrary = window.umdName;
+ * </script>
+ */
+const umdName = 'MarkdownWasm'; // CHANGE THIS to your library's global variable name.
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
+  name: string;
+  description: string;
+  author: {
+    name: string;
+    email: string;
+  };
+  license: string;
+  version: string;
+  homepage: string;
+};
+
+const buildDate = new Date().toISOString();
+const bannerText = `/**
+* ${pkg.name}
+*
+* @description ${pkg.description}
+* @author ${pkg.author.name} <${pkg.author.email}>
+* @license ${pkg.license}
+* @version ${pkg.version}
+* @see {@link ${pkg.homepage}}
+*/
+`;
+
+export default defineConfig({
+  plugins: [
+    pluginTypeCheck(),
+    // Keep the UMD build, but do not inject Node polyfills into the browser bundle.
+    // The generated UMD output otherwise contains import.meta code that fails during minification.
+    pluginModuleFederation({
+      name: umdName,
+      exposes: {
+        '.': './src/index.ts',
+      },
+      shared: {
+        react: {
+          singleton: true,
+        },
+        'react-dom': {
+          singleton: true,
+        },
+        vue: {
+          singleton: true,
+        },
+      },
+    }),
+  ],
+  source: {
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+      __BUILD_DATE__: JSON.stringify(buildDate),
+    },
+    tsconfigPath: './tsconfig.rslib.json',
+  },
+  lib: [
+    {
+      format: 'esm',
+      banner: {
+        js: bannerText,
+      },
+      dts: {
+        tsgo: true, // Enable TypeScript 7 native compiler
+        // isolated: true,  // SWC fast_dts
+        bundle: true,
+      },
+      output: {
+        filename: {
+          js: 'index.es.js',
+        },
+        sourceMap: true,
+      },
+    },
+    {
+      // Compatibility-only browser build. npm consumers should prefer the ESM entry
+      // above, which is the default package export and the primary distribution target.
+      format: 'umd',
+      umdName,
+      autoExternal: true,
+      banner: {
+        js: bannerText,
+      },
+      output: {
+        filename: {
+          js: 'index.umd.js',
+        },
+        cleanDistPath: false,
+        minify: true,
+        sourceMap: false,
+      },
+    },
+    {
+      banner: {
+        js: bannerText,
+      },
+      format: 'mf',
+      splitChunks: false,
+    },
+  ],
+});

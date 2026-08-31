@@ -1,7 +1,7 @@
 import { basename } from 'node:path';
 import process from 'node:process';
 
-import { ready, parse } from '../src/index.ts';
+import { parse, ready } from '../src/index.ts';
 
 await ready();
 
@@ -22,7 +22,7 @@ export function checkHTMLResult(
   name,
   inputData,
   expectedOutputData,
-  options = {}
+  options = {},
 ) {
   if (typeof inputData === 'string') {
     inputData = Buffer.from(inputData, 'utf8');
@@ -30,7 +30,12 @@ export function checkHTMLResult(
   if (typeof expectedOutputData === 'string') {
     expectedOutputData = Buffer.from(expectedOutputData, 'utf8');
   }
-  const actual = Buffer.from(parse(inputData, { bytes: true, ...options }));
+  const actual = Buffer.from(
+    parse(inputData, {
+      bytes: true,
+      ...options,
+    }),
+  );
   if (expectedOutputData.compare(actual) === 0) {
     log(`${name} OK`);
     return true;
@@ -49,20 +54,34 @@ export function exit() {
 }
 
 const _log = log;
+
 export { _log as log };
+
 const _logerr = logerr;
+
 export { _logerr as logerr };
 
 const logprefix = basename(process.argv[1]) + ':';
 
 function log() {
-  console.log.apply(console, [logprefix].concat([].slice.call(arguments)));
+  console.log.apply(
+    console,
+    [
+      logprefix,
+    ].concat([].slice.call(arguments)),
+  );
 }
 function logerr() {
-  console.error.apply(console, [logprefix].concat([].slice.call(arguments)));
+  console.error.apply(
+    console,
+    [
+      logprefix,
+    ].concat([].slice.call(arguments)),
+  );
 }
 
 const _inspectBuf = inspectBuf;
+
 export { _inspectBuf as inspectBuf };
 
 function inspectBuf(buf, otherbuf) {
@@ -72,12 +91,12 @@ function inspectBuf(buf, otherbuf) {
   }
   console.error(wave);
   const styleReset = '\x1b[22;39m';
-  const styleNone = s => s;
+  const styleNone = (s) => s;
   const styleDiff = process.stderr.isTTY
-    ? s => '\x1b[1;33m' + s + styleReset
+    ? (s) => `\x1b[1;33m${s}styleReset`
     : styleNone;
   const styleErr = process.stderr.isTTY
-    ? s => '\x1b[1;31m' + s + styleReset
+    ? (s) => `\x1b[1;31m${s}styleReset`
     : styleNone;
 
   for (let i = 0; i < buf.length; i++) {
@@ -91,7 +110,7 @@ function inspectBuf(buf, otherbuf) {
       style = styleDiff;
     }
 
-    process.stderr.write(style(b.toString(16).padStart(2, '0')) + ' ');
+    process.stderr.write(`${style(b.toString(16).padStart(2, '0'))} `);
 
     if (b === 0x0a) {
       process.stderr.write('\n');

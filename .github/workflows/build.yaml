@@ -1,0 +1,39 @@
+name: Build Site
+permissions:
+  contents: read
+  pull-requests: write
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  cache-and-install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout  ✔
+        uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        name: Install pnpm 📦
+        with:
+          run_install: false
+
+      - name: Install Node.js ⚡️
+        uses: actions/setup-node@v6
+        with:
+          cache: "pnpm"
+          node-version: 24
+
+      - name: Build 🔧
+        run: |
+          pnpm install
+          pnpm build:demo
+
+      - name: Deploy to gh-pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: demo # The folder the action should deploy.

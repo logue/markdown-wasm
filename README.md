@@ -1,10 +1,9 @@
 # @logue/markdown-wasm
 
-[![npm version](https://img.shields.io/npm/v/@logue/markdown-wasm.svg)](https://www.npmjs.com/package/@logue/markdown-wasm)
-[![NPM Downloads](https://img.shields.io/npm/dm/@logue/markdown-wasm.svg?style=flat)](https://www.npmjs.com/package/@logue/markdown-wasm)
-[![jsdelivr CDN](https://data.jsdelivr.com/v1/package/npm/@logue/markdown-wasm/badge)](https://www.jsdelivr.com/package/npm/@logue/markdown-wasm)
-[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/@logue/markdown-wasm/file/README.md)
-[![Open in Gitpod](https://shields.io/badge/Open%20in-Gitpod-green?logo=Gitpod)](https://gitpod.io/#https://github.com/logue/markdown-wasm)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7-%230074c1.svg)](http://www.typescriptlang.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-11-pink.svg)](https://pnpm.io/)
+[![Rsbuild](https://img.shields.io/badge/rsbuild-2-orange.svg)](https://rsbuild.rs/)
+[![Rsblib](https://img.shields.io/badge/rslib-0.2-yellow.svg)](https://rsbuild.rs/)
 [![X Follow](https://img.shields.io/twitter/follow/logue256?style=plastic)](https://twitter.com/logue256)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/logue?label=Sponsor&logo=github&color=ea4aaa)](https://github.com/sponsors/logue)
 
@@ -27,9 +26,9 @@ pnpm add markdown-wasm
 ES module with WASM loaded separately
 
 ```js
-import { ready, parse } from './dist/markdown.es.js';
+import { ready, parse } from "./dist/markdown.es.js";
 await ready();
-console.log(parse('# hello\n*world*'));
+console.log(parse("# hello\n*world*"));
 ```
 
 Web browser
@@ -177,16 +176,13 @@ export declare const ParseFlags: {
   readonly DIALECT_GITHUB: 0x0008 | 0x0004 | 0x400 | 0x0100 | 0x0200 | 0x0800; // PERMISSIVE_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
 ```
 
-See [`markdown.d.ts`](markdown.d.ts)
-
 ## Building from source
 
 Install latest emscripten to your environment.
 
 ```sh
 pnpm install
-pnpm build-wasm
-pnpm build-bundle
+pnpm build
 ```
 
 ## Benchmarks

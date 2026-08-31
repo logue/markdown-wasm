@@ -1,12 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
-import { ready, parse } from '../src/index.ts';
+import { parse, ready } from '../src/index.ts';
 
 await ready();
 
 const source = readFileSync(
-  fileURLToPath(new URL('./example.md', import.meta.url))
+  fileURLToPath(new URL('./example.md', import.meta.url)),
 );
 const outbuf = parse(source, {
   bytes: true,
@@ -49,20 +49,20 @@ function benchmark(name, options) {
   const timeSpent = Date.now() - timeStart;
   console.log(
     `benchmark end ${name} -- avg parse time: ` +
-      `${((timeSpent / ntotal) * 1000).toFixed(1)}us`
+      `${((timeSpent / ntotal) * 1000).toFixed(1)}us`,
   );
 }
 
 function html_escape(str) {
   return str.replace(
     /[&<>'"]/g,
-    tag =>
+    (tag) =>
       ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         "'": '&#39;',
         '"': '&quot;',
-      })[tag]
+      })[tag],
   );
 }

@@ -1,6 +1,11 @@
-import init from './markdown.js';
+import type { MarkdownModule } from '@/generated/markdown';
+import init from '@/generated/markdown.js';
+import type { HeapData } from '@/types/HeapData';
+import type { MarkdownOutput } from '@/types/MarkdownOutput';
+import { ParseFlags } from '@/types/ParseFlags';
+import type { ParseOptions } from '@/types/ParseOptions';
 
-import type { MarkdownModule, ParseOptions } from '../markdown.js';
+export { type MarkdownModule, ParseFlags };
 
 /** Markdown Wasm Module */
 let Module: MarkdownModule;
@@ -25,71 +30,24 @@ let tmpPtr = 0;
  * @returns Resolves when the wasm runtime is ready.
  */
 export const ready = async (): Promise<MarkdownModule> => {
-  Module = await init();
+  const initWithOptions = init as (
+    moduleArg?: Record<string, unknown>,
+  ) => Promise<MarkdownModule>;
+
+  Module = await initWithOptions({
+    locateFile: (filename: string) => {
+      if (filename === 'markdown.wasm') {
+        return new URL(`./generated/${filename}`, import.meta.url).href;
+      }
+      return filename;
+    },
+  });
 
   Module.addOnPostRun(() => {
     tmpPtr = Module._wrealloc(0, 4);
   });
 
   return await Module.ready;
-};
-
-/**
- * Bit flags controlling markdown parsing features.
- * Can be OR-ed together and passed as {@link ParseOptions.parseFlags}.
- * Dialect presets (DIALECT_*) are provided for convenience.
- *
- * NOTE: Changing flags affects performance (extra feature logic) and output semantics.
- * Keep the DEFAULT set unless you explicitly need extra extensions.
- */
-export const ParseFlags: Record<string, number> = {
-  /** In TEXT, collapse non-trivial whitespace into single ' ' */
-  COLLAPSE_WHITESPACE: 0x0001,
-  /** Do not require space in ATX headers ( ###header ) */
-  PERMISSIVE_ATX_HEADERS: 0x0002,
-  /** Recognize URLs as links even without <...> */
-  PERMISSIVE_URL_AUTO_LINKS: 0x0004,
-  /** Recognize e-mails as links even without <...> */
-  PERMISSIVE_EMAIL_AUTO_LINKS: 0x0008,
-  /** Disable indented code blocks. (Only fenced code works) */
-  NO_INDENTED_CODE_BLOCKS: 0x0010,
-  /** Disable raw HTML blocks. */
-  NO_HTML_BLOCKS: 0x0020,
-  /** Disable raw HTML (inline). */
-  NO_HTML_SPANS: 0x0040,
-  /** Enable tables extension. */
-  TABLES: 0x0100,
-  /** Enable strikethrough extension. */
-  STRIKETHROUGH: 0x0200,
-  /** Enable WWW autolinks (without proto; just 'www.') */
-  PERMISSIVE_WWW_AUTOLINKS: 0x0400,
-  /** Enable task list extension. */
-  TASK_LISTS: 0x0800,
-  /** Enable $ and $$ containing LaTeX equations. */
-  LATEX_MATH_SPANS: 0x1000,
-  /** Enable wiki links extension. */
-  WIKI_LINKS: 0x2000,
-  /** Enable underline extension (disables '_' for emphasis) */
-  UNDERLINE: 0x4000,
-
-  PERMISSIVE_AUTOLINKS: 0x0008 | 0x0004 | 0x400, // PERMISSIVE_EMAIL_AUTO_LINKS | PERMISSIVE_URL_AUTO_LINKS | PERMISSIVE_WWW_AUTOLINKS
-  NO_HTML: 0x0020 | 0x0040, // NO_HTML_BLOCKS | NO_HTML_SPANS
-
-  /** Default flags */
-  DEFAULT: 0x0001 | 0x0002 | 0x0004 | 0x0200 | 0x0100 | 0x0800, //  COLLAPSE_WHITESPACE | PERMISSIVE_ATX_HEADERS | PERMISSIVE_URL_AUTO_LINKS | STRIKETHROUGH | TABLES | TASK_LISTS
-
-  /* Convenient sets of flags corresponding to well-known Markdown dialects.
-   *
-   * Note we may only support subset of features of the referred dialect.
-   * The constant just enables those extensions which bring us as close as
-   * possible given what features we implement.
-   *
-   * ABI compatibility note: Meaning of these can change in time as new
-   * extensions, bringing the dialect closer to the original, are implemented.
-   */
-  DIALECT_COMMONMARK: 0,
-  /** Github Style */
-  DIALECT_GITHUB: 0x0008 | 0x0004 | 0x400 | 0x0100 | 0x0200 | 0x0800, // PERMISSIVE_AUTO_LINKS | TABLES | STRIKETHROUGH | TASK_LISTS
 };
 
 /**
@@ -112,9 +70,6 @@ const OutputFlags: Record<string, number> = {
   DisableHeadlineAnchors: 1 << 5,
 };
 
-/** A view into wasm heap memory returned by {@link withOutPtr}. */
-type HeapData = Uint8Array & { heapAddr: number };
-
 /**
  * Convert a markdown string (or UTF-8 byte array) into HTML.
  *
@@ -134,11 +89,11 @@ type HeapData = Uint8Array & { heapAddr: number };
  */
 export function parse(
   source: string | Uint8Array,
-  options: Partial<ParseOptions> = {}
-): string | Uint8Array | null {
+  options?: Partial<ParseOptions>,
+): MarkdownOutput {
   if (!Module) {
     throw new Error(
-      '[markdown-wasm] markdown-wasm does not initialized. Use `await ready();` before `parse()` function.'
+      '[markdown-wasm] markdown-wasm does not initialized. Use `await ready();` before `parse()` function.',
     );
   }
 
@@ -170,26 +125,38 @@ export function parse(
     ? OutputFlags.DisableHeadlineAnchors
     : 0;
 
-  const onCodeBlockPtr: number = options.onCodeBlock
-    ? createOnCodeBlockFunction(options.onCodeBlock)
-    : 0;
-
+  let outbuf: HeapData | null;
   const buf: Uint8Array = as_byte_array(source);
-  const outbuf: HeapData | null = withOutPtr(outptr =>
-    withTmpBytePtr(buf, (inptr, inlen) =>
-      Module._parseUTF8(
-        inptr,
-        inlen,
-        opt.parseFlags ?? ParseFlags.DEFAULT,
-        outputFlags,
-        outptr,
-        onCodeBlockPtr
-      )
-    )
-  );
 
-  if (options.onCodeBlock) {
+  if (options?.onCodeBlock) {
+    const onCodeBlockPtr = createOnCodeBlockFunction(options.onCodeBlock);
+    outbuf = withOutPtr((outptr) =>
+      withTmpBytePtr(buf, (inptr, inlen) =>
+        Module._parseUTF8(
+          inptr,
+          inlen,
+          opt.parseFlags ?? ParseFlags.DEFAULT,
+          outputFlags,
+          outptr,
+          onCodeBlockPtr,
+        ),
+      ),
+    );
+
     Module.removeFunction(onCodeBlockPtr);
+  } else {
+    outbuf = withOutPtr((outptr) =>
+      withTmpBytePtr(buf, (inptr, inlen) =>
+        Module._parseUTF8(
+          inptr,
+          inlen,
+          opt.parseFlags ?? ParseFlags.DEFAULT,
+          outputFlags,
+          outptr,
+          0,
+        ),
+      ),
+    );
   }
 
   // check for error and throw if needed
@@ -199,7 +166,7 @@ export function parse(
     return null;
   }
 
-  return options.bytes ? outbuf : new TextDecoder('utf-8').decode(outbuf);
+  return options?.bytes ? outbuf : new TextDecoder('utf-8').decode(outbuf);
 }
 
 /**
@@ -217,7 +184,7 @@ export function parse(
  * @internal
  */
 function createOnCodeBlockFunction(
-  onCodeBlock: NonNullable<ParseOptions['onCodeBlock']>
+  onCodeBlock: NonNullable<ParseOptions['onCodeBlock']>,
 ): number {
   const fnptr = Module.addFunction(
     (
@@ -225,14 +192,14 @@ function createOnCodeBlockFunction(
       metalen: number,
       inptr: number,
       inlen: number,
-      outptr: number
+      outptr: number,
     ): number => {
       try {
         /** lang is the "language" tag, if any, provided with the code block */
         const lang: string =
           metalen > 0
             ? new TextDecoder('utf-8').decode(
-                Module.HEAPU8.subarray(metaptr, metaptr + metalen)
+                Module.HEAPU8.subarray(metaptr, metaptr + metalen),
               )
             : '';
 
@@ -259,16 +226,16 @@ function createOnCodeBlockFunction(
         }
 
         return resbuf.length;
-      } catch (err) {
+      } catch (error) {
         console.error(
           `[markdown-wasm] error in markdown onCodeBlock callback: ${
-            err instanceof Error ? err.stack : err
-          }`
+            error instanceof Error ? error.stack : error
+          }`,
         );
         return -1;
       }
     },
-    'iiiiii'
+    'iiiiii',
   );
   return fnptr;
 }
@@ -340,7 +307,7 @@ function withOutPtr(fn: (outptr: number) => number): HeapData | null {
  */
 function withTmpBytePtr<T>(
   buf: Uint8Array,
-  fn: (ptr: number, size: number) => T
+  fn: (ptr: number, size: number) => T,
 ): T {
   const size = buf.length;
   const ptr = mallocbuf(buf, size);

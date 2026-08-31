@@ -1,0 +1,149 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="840"
+  height="336"
+  font-family='system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif'
+  font-size="16"
+  viewBox="0 0 840 336"
+>
+  <g font-weight="500" text-anchor="end">
+    <text x="156" y="68" alignment-baseline="central" dx="-10">
+      markdown-wasm
+    </text>
+    <text x="156" y="104" alignment-baseline="central" dx="-10">
+      remarkable
+    </text>
+    <text x="156" y="140" alignment-baseline="central" dx="-10">
+      commonmark
+    </text>
+    <text x="156" y="176" alignment-baseline="central" dx="-10">marked</text>
+    <text x="156" y="212" alignment-baseline="central" dx="-10">
+      markdown-it
+    </text>
+    <text x="156" y="248" alignment-baseline="central" dx="-10">showdown</text>
+    <text x="156" y="284" alignment-baseline="central" dx="-10">micromark</text>
+  </g>
+  <path fill="#4e79a7" d="M156 52h668v32H156z" />
+  <path fill="#f28e2c" d="M156 88h594.9v32H156z" />
+  <path fill="#e15759" d="M156 124h324.579v32H156z" />
+  <path fill="#76b7b2" d="M156 160h293.84v32H156z" />
+  <path fill="#59a14f" d="M156 196h177.41v32H156z" />
+  <path fill="#edc949" d="M156 232h40.94v32H156z" />
+  <path fill="#af7aa1" d="M156 268h18.328v32H156z" />
+  <g fill="#fff" font-weight="500" text-anchor="end">
+    <text x="824" y="68" alignment-baseline="central" dx="-5">439,669</text>
+    <text x="750.9" y="104" alignment-baseline="central" dx="-5">391,555</text>
+    <text x="480.579" y="140" alignment-baseline="central" dx="-5">
+      213,634
+    </text>
+    <text x="449.84" y="176" alignment-baseline="central" dx="-5">193,402</text>
+    <text x="333.41" y="212" alignment-baseline="central" dx="-5">116,769</text>
+    <text x="196.94" y="248" alignment-baseline="central" dx="-5">26,946</text>
+    <text
+      x="174.328"
+      y="284"
+      fill="#000"
+      alignment-baseline="central"
+      dx="5"
+      text-anchor="start"
+    >
+      12,063
+    </text>
+  </g>
+  <g fill="none" font-size="12.8" opacity=".5" text-anchor="middle">
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M156.5 48v-6" />
+      <text y="-9" fill="currentColor" dy="0em" transform="translate(156.5 48)">
+        0
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M232.466 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(232.466 48)"
+      >
+        50,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M308.433 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(308.433 48)"
+      >
+        100,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M384.399 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(384.399 48)"
+      >
+        150,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M460.365 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(460.365 48)"
+      >
+        200,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M536.331 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(536.331 48)"
+      >
+        250,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M612.298 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(612.298 48)"
+      >
+        300,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M688.264 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(688.264 48)"
+      >
+        350,000
+      </text>
+    </g>
+    <g class="tick" opacity="1">
+      <path stroke="currentColor" d="M764.23 48v-6" />
+      <text
+        y="-9"
+        fill="currentColor"
+        dy="0em"
+        transform="translate(764.23 48)"
+      >
+        400,000
+      </text>
+    </g>
+  </g>
+</svg>

@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { ready, parse, ParseFlags } from './index.ts';
+import { parse, ready } from '@/index';
+import { ParseFlags } from '@/types/ParseFlags';
 
 /** Options accepted by a template function. */
 interface TemplateOptions {
@@ -32,7 +33,7 @@ export const templates: Record<string, Template> = {
 </body>
 </html>`,
 
-  minimal: content => `<!DOCTYPE html>
+  minimal: (content) => `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -43,7 +44,7 @@ export const templates: Record<string, Template> = {
 </body>
 </html>`,
 
-  plain: content => content,
+  plain: (content) => content,
 };
 
 interface Heading {
@@ -69,34 +70,38 @@ interface TableOfContents {
 export function generateTableOfContents(
   html: string,
   minLevel = 2,
-  maxLevel = 4
-): TableOfContents | '' {
+  maxLevel = 4,
+): TableOfContents | undefined {
   const headingRegex = /<h([1-6])(?:\s[^>]*)?>(.+?)<\/h\1>/g;
   const headings: Heading[] = [];
   let match: RegExpExecArray | null;
 
   while ((match = headingRegex.exec(html)) !== null) {
-    const level = parseInt(match[1]);
+    const level = Number.parseInt(match[1]);
     if (level >= minLevel && level <= maxLevel) {
       const text = match[2].replace(/<[^>]+>/g, ''); // Remove any HTML tags
       const id = `heading-${headings.length}`;
-      headings.push({ level, text, id });
+      headings.push({
+        level,
+        text,
+        id,
+      });
     }
   }
 
   if (headings.length === 0) {
-    return '';
+    return;
   }
 
   // Replace heading IDs in HTML
   let modifiedHtml = html;
-  headings.forEach(h => {
+  headings.forEach((h) => {
     const regex = new RegExp(
       `<h${h.level}([^>]*)>([^<]*${h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^<]*)</h${h.level}>`,
-      'i'
+      'i',
     );
-    modifiedHtml = modifiedHtml.replace(regex, match =>
-      match.replace(`<h${h.level}`, `<h${h.level} id="${h.id}"`)
+    modifiedHtml = modifiedHtml.replace(regex, (match) =>
+      match.replace(`<h${h.level}`, `<h${h.level} id="${h.id}"`),
     );
   });
 
@@ -104,7 +109,7 @@ export function generateTableOfContents(
   let tocHtml = '<strong>TOC</strong><ul>';
   let currentLevel = minLevel;
 
-  headings.forEach(h => {
+  headings.forEach((h) => {
     while (currentLevel < h.level) {
       tocHtml += '<ul>';
       currentLevel++;
@@ -118,7 +123,10 @@ export function generateTableOfContents(
 
   tocHtml += '</ul>'.repeat(currentLevel - minLevel + 1);
 
-  return { toc: tocHtml, html: modifiedHtml };
+  return {
+    toc: tocHtml,
+    html: modifiedHtml,
+  };
 }
 
 /** Options accepted by the `md2html` command, as parsed by commander. */
@@ -135,7 +143,7 @@ export interface MarkdownConversionOptions {
  */
 export async function handleMarkdownConversion(
   input: string | undefined,
-  options: MarkdownConversionOptions
+  options: MarkdownConversionOptions,
 ): Promise<void> {
   try {
     // Initialize the WebAssembly module
@@ -176,12 +184,12 @@ export async function handleMarkdownConversion(
     }) as string;
 
     // Generate table of contents if requested
-    const tocMinLevel = parseInt(String(options.tocMin)) || 2;
-    const tocMaxLevel = parseInt(String(options.tocMax)) || 4;
+    const tocMinLevel = Number.parseInt(String(options.tocMin)) || 2;
+    const tocMaxLevel = Number.parseInt(String(options.tocMax)) || 4;
     let toc = '';
     if (tocMinLevel <= tocMaxLevel) {
       const result = generateTableOfContents(html, tocMinLevel, tocMaxLevel);
-      if (result && result.toc) {
+      if (result?.toc) {
         html = result.html;
         toc = result.toc;
       }
@@ -195,7 +203,10 @@ export async function handleMarkdownConversion(
       ? path.basename(input, path.extname(input))
       : 'Document';
 
-    const finalHtml = templateFn(html, { title, toc: toc || undefined });
+    const finalHtml = templateFn(html, {
+      title,
+      toc: toc || undefined,
+    });
 
     // Output result
     if (options.output) {
@@ -217,10 +228,10 @@ export async function handleMarkdownConversion(
  */
 export async function showAvailableTemplates(): Promise<void> {
   console.log('Available templates:\n');
-  Object.keys(templates).forEach(name => {
+  Object.keys(templates).forEach((name) => {
     console.log(`  • ${name}`);
   });
   console.log(
-    '\nUse with -t or --template option. Example: md2html input.md -t minimal'
+    '\nUse with -t or --template option. Example: md2html input.md -t minimal',
   );
 }
